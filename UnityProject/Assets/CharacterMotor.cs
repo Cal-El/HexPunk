@@ -25,7 +25,10 @@ public class CharacterMotor : MonoBehaviour {
 
     private void Move() {
 
-        Vector3 direction = Vector3.Normalize(myCam.transform.right*Input.GetAxis("Horizontal") +  Vector3.Cross(myCam.transform.right,Vector3.up) * Input.GetAxis("Vertical"));
+        Vector3 direction = ((myCam.transform.right*Input.GetAxis("Horizontal")) + (Vector3.Cross(myCam.transform.right,Vector3.up) * Input.GetAxis("Vertical")));
+        if(direction.magnitude >= 1) {
+            direction = direction.normalized;
+        }
         cc.Move(direction * speed * Time.deltaTime);
         Debug.Log("Input: " + direction + ", Position: " + transform.position);
     }
