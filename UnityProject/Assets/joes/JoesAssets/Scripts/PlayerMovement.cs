@@ -7,6 +7,7 @@ public class PlayerMovement : NetworkBehaviour {
 	private CharacterController controller;
     public GameObject playerCamera;
     public Camera myCam;
+    public bool controlEnabled =true;
     
     private float xAxis = 0;
 	private float yAxis = 0;
@@ -22,11 +23,11 @@ public class PlayerMovement : NetworkBehaviour {
 	
 	void Update() {
 
-        if (!isLocalPlayer)
+        if (!isLocalPlayer || !controlEnabled)
         {
             return;
         }
-
+        
         Aim();
 
         xAxis = Input.GetAxis("Horizontal");
