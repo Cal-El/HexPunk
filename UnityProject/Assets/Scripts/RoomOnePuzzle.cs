@@ -3,8 +3,6 @@ using System.Collections;
 
 public class RoomOnePuzzle : Room {
 
-    private Plate[] PowerTree;
-
 	// Use this for initialization
 	void Start () {
         plates = GetComponentsInChildren<PressurePad>();
@@ -13,23 +11,27 @@ public class RoomOnePuzzle : Room {
 	
 	// Update is called once per frame
 	void Update () {
-	    for(int i = 0; i < PowerTree.Length; i++) {
-            if (PowerTree[i].plate != null) {
-                if (PowerTree[i].parents == null) {
-                    PowerTree[i].plate.Powered = true;
+        if (!doorOpen && roomUnlocked) {
+            RoomActive = true;
+            for (int i = 0; i < PowerTree.Length; i++) {
+                if (PowerTree[i].plate != null) {
+                    if (PowerTree[i].parents == null) {
+                        PowerTree[i].plate.Powered = true;
+                    } else {
+                        PowerTree[i].plate.Powered = CheckParentsForPower(i);
+                    }
                 } else {
-                    PowerTree[i].plate.Powered = CheckParentsForPower(i);
+                    Debug.Log("PlateID " + i + " not set");
                 }
-            } else {
-                Debug.Log("PlateID " + i + " not set");
             }
-        }
-        if(PowerTree[5].plate.Powered 
-            && PowerTree[6].plate.Powered
-            && PowerTree[5].plate.Activated
-            && PowerTree[6].plate.Activated) {
-            doorOpen = true;
-            Debug.Log("Beep boop. Door open");
+            if (PowerTree[5].plate.Powered
+                && PowerTree[6].plate.Powered
+                && PowerTree[5].plate.Activated
+                && PowerTree[6].plate.Activated) {
+                doorOpen = true;
+            }
+        } else {
+            RoomActive = false;
         }
 	}
 
@@ -69,19 +71,5 @@ public class RoomOnePuzzle : Room {
         PowerTree[6].plate = GetPlateWithID(PowerTree[6].ID);
         PowerTree[6].parents = new int[1];
         PowerTree[6].parents[0] = PowerTree[4].ID;
-    }
-
-    PressurePad GetPlateWithID(int u) {
-        foreach(PressurePad p in plates) {
-            if (p.ID == u) return p;
-        }
-        return null;
-    }
-
-    bool CheckParentsForPower(int p) {
-        foreach(int i in PowerTree[p].parents) {
-            if (!PowerTree[i].plate.Powered || !PowerTree[i].plate.Activated) return false;
-        }
-        return true;
     }
 }

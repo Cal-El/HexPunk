@@ -64,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\DoorScript.cs" />
+    <Compile Include="Assets\Megamanager.cs" />
     <Compile Include="Assets\Room.cs" />
     <Compile Include="Assets\Scripts\CharacterMotor.cs" />
     <Compile Include="Assets\Scripts\ConduitStacks.cs" />

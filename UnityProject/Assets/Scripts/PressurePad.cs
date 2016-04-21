@@ -24,7 +24,7 @@ public class PressurePad : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        if (!(singlePress && beenPressed)) {
+        if (!(singlePress && beenPressed) && transform.parent.GetComponent<Room>().RoomActive) {
             bool beingPressed = SomethingOnMe();
             if (beingPressed) {
                 beenPressed = true;

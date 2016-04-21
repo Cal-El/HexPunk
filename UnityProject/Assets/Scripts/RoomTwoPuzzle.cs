@@ -3,34 +3,68 @@ using System.Collections;
 
 public class RoomTwoPuzzle : Room {
 
-    private Plate[] PowerTree;
+    private bool[] lastFrame;
+    private int[] code;
 
     // Use this for initialization
     void Start () {
         plates = GetComponentsInChildren<PressurePad>();
+        code = new int[] { 1, -1, -1, -1 };
         RoomTwoSetup();
     }
 	
 	// Update is called once per frame
 	void Update () {
-        for (int i = 0; i < PowerTree.Length; i++) {
-            if (PowerTree[i].plate != null) {
-                if (PowerTree[i].parents == null) {
-                    PowerTree[i].plate.Powered = true;
-                } else {
-                    PowerTree[i].plate.Powered = CheckParentsForPower(i);
-                }
-            } else {
-                Debug.Log("PlateID " + i + " not set");
+        if (!doorOpen && roomUnlocked) {
+            RoomActive = true;
+            if (PowerTree[0].plate.Activated) {
+                Reset();
             }
+
+
+
+            for (int i = 1; i < PowerTree.Length; i++) {
+                if (PowerTree[i].plate.Activated && !lastFrame[i] && code[0] <= 3) {
+                    code[code[0]] = PowerTree[i].ID;
+                    code[0]++;
+                }
+                if (PowerTree[i].plate != null) {
+                    if (PowerTree[i].parents == null) {
+                        PowerTree[i].plate.Powered = true;
+                    } else {
+                        PowerTree[i].plate.Powered = CheckParentsForPower(i);
+                    }
+                } else {
+                    Debug.Log("PlateID " + i + " not set");
+                }
+                lastFrame[i] = PowerTree[i].plate.Activated;
+            }
+            Debug.Log(code[0] + ", " + code[1] + ", " + code[2] + ", " + code[3]);
+            if (code[0] == 4) {
+                if (code[1] == 3 && code[2] == 1 && code[3] == 4) {
+                    doorOpen = true;
+                } else {
+                    Reset();
+                }
+            }
+            
+        } else {
+            RoomActive = false;
         }
-        if (PowerTree[0].plate.Activated) {
-            PowerTree[1].plate.Reset();
-            PowerTree[2].plate.Reset();
-            PowerTree[3].plate.Reset();
-            PowerTree[4].plate.Reset();
-            PowerTree[5].plate.Reset();
-        }
+    }
+
+    void Reset() {
+        code = new int[] { 1, -1, -1, -1 };
+        PowerTree[1].plate.Reset();
+        PowerTree[2].plate.Reset();
+        PowerTree[3].plate.Reset();
+        PowerTree[4].plate.Reset();
+        PowerTree[5].plate.Reset();
+        lastFrame[1] = false;
+        lastFrame[2] = false;
+        lastFrame[3] = false;
+        lastFrame[4] = false;
+        lastFrame[5] = false;
     }
 
     void RoomTwoSetup() {
@@ -59,19 +93,7 @@ public class RoomTwoPuzzle : Room {
         PowerTree[5].ID = 5;
         PowerTree[5].plate = GetPlateWithID(PowerTree[5].ID);
         PowerTree[5].parents = null;
-    }
 
-    PressurePad GetPlateWithID(int u) {
-        foreach (PressurePad p in plates) {
-            if (p.ID == u) return p;
-        }
-        return null;
-    }
-
-    bool CheckParentsForPower(int p) {
-        foreach (int i in PowerTree[p].parents) {
-            if (!PowerTree[i].plate.Powered || !PowerTree[i].plate.Activated) return false;
-        }
-        return true;
+        lastFrame = new bool[PowerTree.Length];
     }
 }

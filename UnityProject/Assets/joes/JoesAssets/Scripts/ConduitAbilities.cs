@@ -119,7 +119,6 @@ public class ConduitAbilities : NetworkBehaviour {
             hit.transform.SendMessage("TakeDmg", LightingPunch.baseDmg, SendMessageOptions.DontRequireReceiver);
         }
         graphicObj.GetComponent<MeshRenderer>().material.color = Color.blue;
-        Debug.Log("Ability 1");
     }
 
     private void Ability2()
@@ -160,7 +159,6 @@ public class ConduitAbilities : NetworkBehaviour {
             }
         this.transform.position = telePos;
         graphicObj.GetComponent<MeshRenderer>().material.color = Color.yellow;
-        Debug.Log("Ability 4");
     }
 
     private bool GetAxisDown1(string axis)
