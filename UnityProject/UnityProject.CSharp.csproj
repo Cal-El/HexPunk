@@ -58,20 +58,21 @@
     <Reference Include="UnityEngine.Networking">
       <HintPath>Library\UnityAssemblies\UnityEngine.Networking.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.Networking">
-      <HintPath>Library\UnityAssemblies\UnityEngine.Networking.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>Library\UnityAssemblies\UnityEngine.UI.dll</HintPath>
-    </Reference>
     <Reference Include="UnityEditor">
       <HintPath>Library\UnityAssemblies\UnityEditor.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\CharacterMotor.cs" />
-    <Compile Include="Assets\ConduitStacks.cs" />
-    <Compile Include="Assets\PlayerInput.cs" />
+    <Compile Include="Assets\RoomTwoPuzzle.cs" />
+    <Compile Include="Assets\Scripts\CharacterMotor.cs" />
+    <Compile Include="Assets\Scripts\ConduitStacks.cs" />
+    <Compile Include="Assets\Scripts\DestructibleObject.cs" />
+    <Compile Include="Assets\Scripts\ExtDebug.cs" />
+    <Compile Include="Assets\Scripts\PlayerImage.cs" />
+    <Compile Include="Assets\Scripts\PlayerInput.cs" />
+    <Compile Include="Assets\Scripts\PowerWire.cs" />
+    <Compile Include="Assets\Scripts\PressurePad.cs" />
+    <Compile Include="Assets\Scripts\RoomOnePuzzle.cs" />
     <Compile Include="Assets\joes\JoesAssets\Scripts\ConduitAbilities.cs" />
     <Compile Include="Assets\joes\JoesAssets\Scripts\PlayerCamera.cs" />
     <Compile Include="Assets\joes\JoesAssets\Scripts\PlayerMovement.cs" />

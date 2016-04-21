@@ -19,6 +19,9 @@ public class PlayerMovement : NetworkBehaviour {
 	void Start () {
 		controller = GetComponent<CharacterController>();
         //yStart = gameObject.transform.position.y;
+        if(myCam == null) {
+            myCam = Camera.main;
+        }
     }
 	
 	void Update() {
@@ -40,7 +43,7 @@ public class PlayerMovement : NetworkBehaviour {
         }
         controller.Move(direction * speed * Time.deltaTime);
         //gameObject.transform.position = new Vector3(gameObject.transform.position.x, yStart, gameObject.transform.position.z);
-        Debug.Log("Input: " + direction + ", Position: " + transform.position);
+        //Debug.Log("Input: " + direction + ", Position: " + transform.position);
 
         //// Find the angle the thumstick is pointed
         //if (xAxis != 0.0f || yAxis != 0.0f) {
@@ -52,7 +55,7 @@ public class PlayerMovement : NetworkBehaviour {
 
     public override void OnStartLocalPlayer()
     {
-        GetComponent<MeshRenderer>().material.color = Color.blue;
+        //GetComponent<MeshRenderer>().material.color = Color.blue;
 
         playerCamera = Instantiate(playerCamera);
         playerCamera.GetComponent<PlayerCamera>().myPlayer = gameObject;

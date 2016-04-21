@@ -4,6 +4,8 @@ using System.Collections;
 
 public class ConduitAbilities : NetworkBehaviour {
 
+    public Transform graphicObj;
+
     private bool isAxisInUse1 = false;
     private bool isAxisInUse2 = false;
     private bool isAxisDown1 = false;
@@ -52,7 +54,7 @@ public class ConduitAbilities : NetworkBehaviour {
         LightningDash.castingTime = 0.25f;
         LightningDash.cooldown = 0.25f;
         LightningDash.range = 1;
-}
+    }
 
     // Update is called once per frame
     void Update()
@@ -61,7 +63,6 @@ public class ConduitAbilities : NetworkBehaviour {
         {
             return;
         }
-        GetComponent<MeshRenderer>().material.color = Color.white;
 
         if (chargeLevel < 5) {
             chargeLevel = Mathf.Clamp(chargeLevel + Time.deltaTime, 0, 5);
@@ -71,6 +72,7 @@ public class ConduitAbilities : NetworkBehaviour {
             this.GetComponent<PlayerMovement>().controlEnabled = false;
         } else {
             this.GetComponent<PlayerMovement>().controlEnabled = true;
+            graphicObj.GetComponent<MeshRenderer>().material.color = Color.white;
         }
         if (castingTimer > 0) {
             castingTimer = Mathf.Max(castingTimer - Time.deltaTime, 0);
@@ -111,19 +113,19 @@ public class ConduitAbilities : NetworkBehaviour {
 
     private void Ability1()
     {
-        GetComponent<MeshRenderer>().material.color = Color.blue;
+        graphicObj.GetComponent<MeshRenderer>().material.color = Color.blue;
         Debug.Log("Ability 1");
     }
 
     private void Ability2()
     {
-        GetComponent<MeshRenderer>().material.color = Color.green;
+        graphicObj.GetComponent<MeshRenderer>().material.color = Color.green;
         Debug.Log("Ability 2");
     }
 
     private void Ability3()
     {
-        GetComponent<MeshRenderer>().material.color = Color.red;
+        graphicObj.GetComponent<MeshRenderer>().material.color = Color.red;
         Debug.Log("Ability 3");
     }
 
@@ -134,22 +136,25 @@ public class ConduitAbilities : NetworkBehaviour {
         Vector3 telePos = ray.origin + (ray.direction * LightningDash.range * chargeLevel);
         if(hit.Length > 0)
             for (int i = 0; i < hit.Length; i++) {
-                if(hit[i].transform.tag != "Character") {
+                if(hit[i].transform.tag != "Character" && hit[i].transform.tag != "Destructible") {
                     telePos = ray.origin + (ray.direction * (hit[i].distance - 0.5f));
                     break;
                 } else {
+    
                     if(LightningDash.range * chargeLevel - hit[i].distance < 0.5f) {
                         telePos = ray.origin + (ray.direction * (hit[i].distance - 0.5f));
                     } else if (LightningDash.range * chargeLevel - hit[i].distance >= 0.5f && LightningDash.range * chargeLevel - hit[i].distance < 1.5f) {
                         telePos = ray.origin + (ray.direction * (hit[i].distance + 1.5f));
                         hit[i].transform.GetComponent<ConduitStacks>().AddStack();
+                        hit[i].transform.SendMessage("TakeDmg", 0.1f, SendMessageOptions.DontRequireReceiver);
                     } else {
                         hit[i].transform.GetComponent<ConduitStacks>().AddStack();
+                        hit[i].transform.SendMessage("TakeDmg", 0.1f, SendMessageOptions.DontRequireReceiver);
                     }
                 }
             }
         this.transform.position = telePos;
-        GetComponent<MeshRenderer>().material.color = Color.yellow;
+        graphicObj.GetComponent<MeshRenderer>().material.color = Color.yellow;
         Debug.Log("Ability 4");
     }
 
