@@ -59,7 +59,7 @@ public class PlayerMovement : NetworkBehaviour {
 
         playerCamera = Instantiate(playerCamera);
         playerCamera.GetComponent<PlayerCamera>().myPlayer = gameObject;
-        myCam = playerCamera.GetComponent<Camera>();
+        myCam = playerCamera.GetComponent<PlayerCamera>().cam;
     }
 
     private void Aim()

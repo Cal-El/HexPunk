@@ -35,7 +35,7 @@ public class ConduitAbilities : NetworkBehaviour {
         LightingPunch.baseDmg = 1;
         LightingPunch.castingTime = 0.25f;
         LightingPunch.cooldown = 0.25f;
-        LightingPunch.range = 1;
+        LightingPunch.range = 2;
 
         StaticStomp.abilityNum = 2;
         StaticStomp.baseDmg = 0;
@@ -53,7 +53,7 @@ public class ConduitAbilities : NetworkBehaviour {
         LightningDash.baseDmg = 0;
         LightningDash.castingTime = 0.25f;
         LightningDash.cooldown = 0.25f;
-        LightningDash.range = 1;
+        LightningDash.range = 1.0f;
     }
 
     // Update is called once per frame
@@ -113,6 +113,11 @@ public class ConduitAbilities : NetworkBehaviour {
 
     private void Ability1()
     {
+        Ray ray = new Ray(transform.position, transform.forward);
+        RaycastHit hit;
+        if(Physics.Raycast(ray, out hit, LightingPunch.range)) {
+            hit.transform.SendMessage("TakeDmg", LightingPunch.baseDmg, SendMessageOptions.DontRequireReceiver);
+        }
         graphicObj.GetComponent<MeshRenderer>().material.color = Color.blue;
         Debug.Log("Ability 1");
     }

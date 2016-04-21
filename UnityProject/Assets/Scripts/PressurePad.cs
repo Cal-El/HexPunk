@@ -39,14 +39,6 @@ public class PressurePad : MonoBehaviour {
                 activate = false;
             }
         }
-
-        //Debugging
-        if (activate) {
-            GetComponent<Renderer>().material.color = Color.green;
-        } else {
-            GetComponent<Renderer>().material.color = Color.red;
-        }
-
     }
 
     public bool Powered {

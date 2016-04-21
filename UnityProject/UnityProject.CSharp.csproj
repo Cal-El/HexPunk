@@ -63,6 +63,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\DoorScript.cs" />
+    <Compile Include="Assets\Room.cs" />
     <Compile Include="Assets\Scripts\CharacterMotor.cs" />
     <Compile Include="Assets\Scripts\ConduitStacks.cs" />
     <Compile Include="Assets\Scripts\DestructibleObject.cs" />
@@ -70,6 +72,7 @@
     <Compile Include="Assets\Scripts\PlayerImage.cs" />
     <Compile Include="Assets\Scripts\PowerWire.cs" />
     <Compile Include="Assets\Scripts\PressurePad.cs" />
+    <Compile Include="Assets\Scripts\PressurePadGraphic.cs" />
     <Compile Include="Assets\Scripts\RoomOnePuzzle.cs" />
     <Compile Include="Assets\Scripts\RoomTwoPuzzle.cs" />
     <Compile Include="Assets\joes\JoesAssets\Scripts\ConduitAbilities.cs" />

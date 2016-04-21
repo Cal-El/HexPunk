@@ -1,18 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class RoomOnePuzzle : MonoBehaviour {
+public class RoomOnePuzzle : Room {
 
-    public PressurePad[] plates;
-    public GameObject door;
-    public bool RoomActive;
-
-
-    public struct Plate {
-        public PressurePad plate;
-        public int ID;
-        public int[] parents;
-    }
     private Plate[] PowerTree;
 
 	// Use this for initialization
@@ -34,13 +24,17 @@ public class RoomOnePuzzle : MonoBehaviour {
                 Debug.Log("PlateID " + i + " not set");
             }
         }
-        if(door != null && PowerTree[PowerTree.Length - 1].plate.Powered) {
+        if(PowerTree[5].plate.Powered 
+            && PowerTree[6].plate.Powered
+            && PowerTree[5].plate.Activated
+            && PowerTree[6].plate.Activated) {
+            doorOpen = true;
             Debug.Log("Beep boop. Door open");
         }
 	}
 
     void RoomOneSetup() {
-        PowerTree = new Plate[6];
+        PowerTree = new Plate[7];
 
         PowerTree[0].ID = 0;
         PowerTree[0].plate = GetPlateWithID(PowerTree[0].ID);
@@ -69,7 +63,12 @@ public class RoomOnePuzzle : MonoBehaviour {
         PowerTree[5].ID = 5;
         PowerTree[5].plate = GetPlateWithID(PowerTree[5].ID);
         PowerTree[5].parents = new int[1];
-        PowerTree[5].parents[0] = PowerTree[3].ID;
+        PowerTree[5].parents[0] = PowerTree[4].ID;
+
+        PowerTree[6].ID = 6;
+        PowerTree[6].plate = GetPlateWithID(PowerTree[6].ID);
+        PowerTree[6].parents = new int[1];
+        PowerTree[6].parents[0] = PowerTree[4].ID;
     }
 
     PressurePad GetPlateWithID(int u) {

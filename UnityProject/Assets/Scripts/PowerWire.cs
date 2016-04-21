@@ -16,7 +16,7 @@ public class PowerWire : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-        poweredMat.mainTextureOffset = new Vector2(0, (poweredMat.mainTextureOffset.y - Time.deltaTime) % 1);
+        poweredMat.mainTextureOffset = new Vector2((poweredMat.mainTextureOffset.x + Time.deltaTime / 20) % 1, (poweredMat.mainTextureOffset.y + Time.deltaTime / 20) % 1);
         if (p != null) {
             if (p.Powered && p.Activated) {
                 r.material = poweredMat;

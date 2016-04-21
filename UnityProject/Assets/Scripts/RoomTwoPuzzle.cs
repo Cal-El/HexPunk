@@ -1,18 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class RoomTwoPuzzle : MonoBehaviour {
+public class RoomTwoPuzzle : Room {
 
-    public PressurePad[] plates;
-    public GameObject door;
-    public bool RoomActive;
-
-
-    public struct Plate {
-        public PressurePad plate;
-        public int ID;
-        public int[] parents;
-    }
     private Plate[] PowerTree;
 
     // Use this for initialization
@@ -38,11 +28,13 @@ public class RoomTwoPuzzle : MonoBehaviour {
             PowerTree[1].plate.Reset();
             PowerTree[2].plate.Reset();
             PowerTree[3].plate.Reset();
+            PowerTree[4].plate.Reset();
+            PowerTree[5].plate.Reset();
         }
     }
 
     void RoomTwoSetup() {
-        PowerTree = new Plate[4];
+        PowerTree = new Plate[6];
 
         PowerTree[0].ID = 0;
         PowerTree[0].plate = GetPlateWithID(PowerTree[0].ID);
@@ -58,7 +50,15 @@ public class RoomTwoPuzzle : MonoBehaviour {
 
         PowerTree[3].ID = 3;
         PowerTree[3].plate = GetPlateWithID(PowerTree[3].ID);
-        PowerTree[2].parents = null;
+        PowerTree[3].parents = null;
+
+        PowerTree[4].ID = 4;
+        PowerTree[4].plate = GetPlateWithID(PowerTree[4].ID);
+        PowerTree[4].parents = null;
+
+        PowerTree[5].ID = 5;
+        PowerTree[5].plate = GetPlateWithID(PowerTree[5].ID);
+        PowerTree[5].parents = null;
     }
 
     PressurePad GetPlateWithID(int u) {
