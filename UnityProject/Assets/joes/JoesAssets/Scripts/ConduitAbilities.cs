@@ -113,7 +113,7 @@ public class ConduitAbilities : NetworkBehaviour {
 
     private void Ability1()
     {
-        Ray ray = new Ray(transform.position, transform.forward);
+        Ray ray = new Ray(transform.position+Vector3.up, transform.forward);
         RaycastHit hit;
         if(Physics.Raycast(ray, out hit, LightingPunch.range)) {
             hit.transform.SendMessage("TakeDmg", LightingPunch.baseDmg, SendMessageOptions.DontRequireReceiver);
@@ -135,7 +135,7 @@ public class ConduitAbilities : NetworkBehaviour {
 
     private void Ability4()
     {
-        Ray ray = new Ray(transform.position, transform.forward);
+        Ray ray = new Ray(transform.position + Vector3.up, transform.forward);
         RaycastHit[] hit = Physics.RaycastAll(ray, LightningDash.range * chargeLevel);
         Vector3 telePos = ray.origin + (ray.direction * LightningDash.range * chargeLevel);
         if(hit.Length > 0)
@@ -157,7 +157,7 @@ public class ConduitAbilities : NetworkBehaviour {
                     }
                 }
             }
-        this.transform.position = telePos;
+        this.transform.position = telePos+Vector3.down;
         graphicObj.GetComponent<MeshRenderer>().material.color = Color.yellow;
     }
 

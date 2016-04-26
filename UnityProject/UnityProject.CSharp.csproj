@@ -69,7 +69,10 @@
     <Compile Include="Assets\Scripts\CharacterMotor.cs" />
     <Compile Include="Assets\Scripts\ConduitStacks.cs" />
     <Compile Include="Assets\Scripts\DestructibleObject.cs" />
+    <Compile Include="Assets\Scripts\ExplosivePad.cs" />
+    <Compile Include="Assets\Scripts\ExplosivePadGraphic.cs" />
     <Compile Include="Assets\Scripts\ExtDebug.cs" />
+    <Compile Include="Assets\Scripts\Pad.cs" />
     <Compile Include="Assets\Scripts\PlayerImage.cs" />
     <Compile Include="Assets\Scripts\PowerWire.cs" />
     <Compile Include="Assets\Scripts\PressurePad.cs" />

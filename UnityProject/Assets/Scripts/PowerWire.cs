@@ -18,7 +18,7 @@ public class PowerWire : MonoBehaviour {
 	void Update () {
         poweredMat.mainTextureOffset = new Vector2((poweredMat.mainTextureOffset.x + Time.deltaTime / 20) % 1, (poweredMat.mainTextureOffset.y + Time.deltaTime / 20) % 1);
         if (p != null) {
-            if (p.Powered && p.Activated) {
+            if (p.Powered && p.Activate) {
                 r.material = poweredMat;
             } else {
                 r.material = origMat;

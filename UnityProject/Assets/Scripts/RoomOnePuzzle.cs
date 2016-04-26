@@ -26,8 +26,8 @@ public class RoomOnePuzzle : Room {
             }
             if (PowerTree[5].plate.Powered
                 && PowerTree[6].plate.Powered
-                && PowerTree[5].plate.Activated
-                && PowerTree[6].plate.Activated) {
+                && PowerTree[5].plate.Activate
+                && PowerTree[6].plate.Activate) {
                 doorOpen = true;
             }
         } else {

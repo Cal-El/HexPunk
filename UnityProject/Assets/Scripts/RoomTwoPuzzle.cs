@@ -5,6 +5,8 @@ public class RoomTwoPuzzle : Room {
 
     private bool[] lastFrame;
     private int[] code;
+    private float resetTimer = 0f;
+    private bool resetting = false;
 
     // Use this for initialization
     void Start () {
@@ -17,14 +19,20 @@ public class RoomTwoPuzzle : Room {
 	void Update () {
         if (!doorOpen && roomUnlocked) {
             RoomActive = true;
-            if (PowerTree[0].plate.Activated) {
+            if (PowerTree[0].plate.Activate) {
                 Reset();
             }
 
+            if (resetting) {
+                resetTimer -= Time.deltaTime;
+                if(resetTimer <= 0) {
+                    Reset();
+                }
+            }
 
 
             for (int i = 1; i < PowerTree.Length; i++) {
-                if (PowerTree[i].plate.Activated && !lastFrame[i] && code[0] <= 3) {
+                if (PowerTree[i].plate.Activate && !lastFrame[i] && code[0] <= 3) {
                     code[code[0]] = PowerTree[i].ID;
                     code[0]++;
                 }
@@ -34,17 +42,15 @@ public class RoomTwoPuzzle : Room {
                     } else {
                         PowerTree[i].plate.Powered = CheckParentsForPower(i);
                     }
-                } else {
-                    Debug.Log("PlateID " + i + " not set");
-                }
-                lastFrame[i] = PowerTree[i].plate.Activated;
+                } 
+                lastFrame[i] = PowerTree[i].plate.Activate;
             }
-            Debug.Log(code[0] + ", " + code[1] + ", " + code[2] + ", " + code[3]);
-            if (code[0] == 4) {
+            if (code[0] == 4 && !resetting) {
                 if (code[1] == 3 && code[2] == 1 && code[3] == 4) {
                     doorOpen = true;
                 } else {
-                    Reset();
+                    resetTimer = 1;
+                    resetting = true;
                 }
             }
             
@@ -54,6 +60,8 @@ public class RoomTwoPuzzle : Room {
     }
 
     void Reset() {
+        resetting = false;
+        resetTimer = 0f;
         code = new int[] { 1, -1, -1, -1 };
         PowerTree[1].plate.Reset();
         PowerTree[2].plate.Reset();

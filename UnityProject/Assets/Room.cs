@@ -25,7 +25,7 @@ public abstract class Room : MonoBehaviour {
 
     public bool CheckParentsForPower(int p) {
         foreach (int i in PowerTree[p].parents) {
-            if (!PowerTree[i].plate.Powered || !PowerTree[i].plate.Activated) return false;
+            if (!PowerTree[i].plate.Powered || !PowerTree[i].plate.Activate) return false;
         }
         return true;
     }
