@@ -65,6 +65,7 @@
   <ItemGroup>
     <Compile Include="Assets\DoorScript.cs" />
     <Compile Include="Assets\Megamanager.cs" />
+    <Compile Include="Assets\MeleeAIBehaviour.cs" />
     <Compile Include="Assets\Room.cs" />
     <Compile Include="Assets\Scripts\CharacterMotor.cs" />
     <Compile Include="Assets\Scripts\ConduitStacks.cs" />
@@ -79,6 +80,7 @@
     <Compile Include="Assets\Scripts\PressurePadGraphic.cs" />
     <Compile Include="Assets\Scripts\RoomOnePuzzle.cs" />
     <Compile Include="Assets\Scripts\RoomTwoPuzzle.cs" />
+    <Compile Include="Assets\Trigger.cs" />
     <Compile Include="Assets\joes\JoesAssets\Scripts\ConduitAbilities.cs" />
     <Compile Include="Assets\joes\JoesAssets\Scripts\PlayerCamera.cs" />
     <Compile Include="Assets\joes\JoesAssets\Scripts\PlayerMovement.cs" />
