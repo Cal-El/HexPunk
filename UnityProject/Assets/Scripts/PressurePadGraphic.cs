@@ -10,7 +10,7 @@ public class PressurePadGraphic : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (transform.parent.GetComponent<PressurePad>().Activate) {
+        if (transform.parent.GetComponent<Pad>().Activate) {
             this.GetComponent<Renderer>().material.color = Color.green;
         } else {
             this.GetComponent<Renderer>().material.color = Color.red;

@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 
-public abstract class Pad : MonoBehaviour {
+public abstract class Pad : NetworkBehaviour {
 
     public bool inverted = false;
     public bool singlePress = false;
@@ -67,6 +68,15 @@ public abstract class Pad : MonoBehaviour {
                 return true;
         }
         return false;
+    }
+
+    protected GameObject SomethingOnMe(int x) {
+        RaycastHit[] hits = Physics.BoxCastAll(this.transform.position, new Vector3(transform.localScale.x / 2, 1, transform.localScale.y / 2), Vector3.up);
+        foreach (RaycastHit hit in hits) {
+            if (hit.transform.tag == "Player" || hit.transform.tag == "Character" || hit.transform.tag == "Destructible")
+                return hit.transform.gameObject;
+        }
+        return null;
     }
 
     public virtual void Reset() {

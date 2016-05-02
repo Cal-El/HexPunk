@@ -45,6 +45,6 @@ public class Megamanager : MonoBehaviour {
         }
 
         roomTree[0].parents = null;
-        roomTree[1].parents = new int[] { 0 };
+        //roomTree[1].parents = new int[] { 0 };
     }
 }
