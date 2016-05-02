@@ -17,9 +17,11 @@ public class ExplosivePad : Pad {
             ShouldBeActive();
             if (!activatedLast && Activate && !fake) {
                 //explode to be implemented when units have health
-                RaycastHit[] hits = Physics.SphereCastAll(transform.position, 5f, Vector3.zero, 0);
+                RaycastHit[] hits = Physics.SphereCastAll(transform.position, 5f, transform.forward, 0);
                 foreach(RaycastHit hit in hits) {
+                    Debug.Log("5 damage to " + hit.transform.name);
                     if (hit.transform.tag == "Player" || hit.transform.tag == "Character" || hit.transform.tag == "Destructible") {
+                        
                         hit.transform.SendMessage("TakeDmg", 5f, SendMessageOptions.DontRequireReceiver);
                     }
                 }

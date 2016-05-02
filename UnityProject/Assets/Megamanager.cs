@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Megamanager : MonoBehaviour {
 
@@ -46,5 +47,37 @@ public class Megamanager : MonoBehaviour {
 
         roomTree[0].parents = null;
         //roomTree[1].parents = new int[] { 0 };
+    }
+
+    public static GameObject FindClosestAttackable(GameObject toMe, int passNum) {
+        SortedDictionary<float, GameObject> listOfThings = new SortedDictionary<float, GameObject>();
+        foreach (GameObject g in GameObject.FindGameObjectsWithTag("Character")) {
+            if (g != toMe) {
+                float newValue = Vector3.Distance(toMe.transform.position, g.transform.position);
+                if(!listOfThings.ContainsKey(newValue))
+                listOfThings.Add(newValue,g);
+            }
+        }
+        foreach (GameObject g in GameObject.FindGameObjectsWithTag("Player")) {
+            if (g != toMe) {
+                float newValue = Vector3.Distance(toMe.transform.position, g.transform.position);
+                if (!listOfThings.ContainsKey(newValue))
+                    listOfThings.Add(newValue, g);
+            }
+        }
+        foreach (GameObject g in GameObject.FindGameObjectsWithTag("Destructible")) {
+            if (g != toMe) {
+                float newValue = Vector3.Distance(toMe.transform.position, g.transform.position);
+                if (!listOfThings.ContainsKey(newValue))
+                    listOfThings.Add(newValue, g);
+            }
+        }
+        int passes = 1;
+        foreach (GameObject g in listOfThings.Values) {
+            if (passNum == passes)
+                return g;
+            passes++;
+        }
+        return null;
     }
 }

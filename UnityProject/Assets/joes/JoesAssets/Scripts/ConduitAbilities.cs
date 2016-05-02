@@ -1,10 +1,13 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
+using System.Collections.Generic;
 
 public class ConduitAbilities : NetworkBehaviour {
 
     public Transform graphicObj;
+    public float maxChargeLevel = 5.0f;
+    public float chainLightningRange = 5.0f;
 
     private bool isAxisInUse1 = false;
     private bool isAxisInUse2 = false;
@@ -78,6 +81,8 @@ public class ConduitAbilities : NetworkBehaviour {
             castingTimer = Mathf.Max(castingTimer - Time.deltaTime, 0);
         }
 
+        chargeLevel = Mathf.Min(chargeLevel + Time.deltaTime, maxChargeLevel);
+
         if (Input.GetButtonDown("Ability 1")) UseAbility(LightingPunch);
         if (GetAxisDown1("Ability 2")) UseAbility(StaticStomp);
         else if (Input.GetButtonDown("Ability 3")) UseAbility(Discharge);
@@ -116,7 +121,16 @@ public class ConduitAbilities : NetworkBehaviour {
         Ray ray = new Ray(transform.position+Vector3.up, transform.forward);
         RaycastHit hit;
         if(Physics.Raycast(ray, out hit, LightingPunch.range)) {
-            hit.transform.SendMessage("TakeDmg", LightingPunch.baseDmg, SendMessageOptions.DontRequireReceiver);
+            if (hit.transform.GetComponent<ConduitStacks>() != null) {
+                if (hit.transform.GetComponent<ConduitStacks>().Stacks > 0) {
+                    List<GameObject> alreadyHit = new List<GameObject>();
+                    alreadyHit.Add(hit.transform.gameObject);
+                    ChainLightning(alreadyHit, hit.transform.gameObject, 1);
+                }
+                Debug.Break();
+                hit.transform.GetComponent<ConduitStacks>().AddStack();
+                //hit.transform.SendMessage("TakeDmg", LightingPunch.baseDmg, SendMessageOptions.DontRequireReceiver);
+            }
         }
         graphicObj.GetComponent<MeshRenderer>().material.color = Color.blue;
     }
@@ -158,7 +172,39 @@ public class ConduitAbilities : NetworkBehaviour {
                 }
             }
         this.transform.position = telePos+Vector3.down;
+        chargeLevel = 0;
         graphicObj.GetComponent<MeshRenderer>().material.color = Color.yellow;
+    }
+
+    private void ChainLightning(List<GameObject> alreadyHit, GameObject justHit, int pass) {
+        GameObject candidate = Megamanager.FindClosestAttackable(justHit, pass);
+        if (candidate == null)
+            return;
+
+        bool invalidCandidate = false;
+        foreach (GameObject g in alreadyHit) {
+            if (candidate == g)
+                invalidCandidate = true;
+        }
+        if (candidate == this.gameObject || candidate.GetComponent<ConduitStacks>() == null)
+            invalidCandidate = true;
+
+        if (Vector3.Distance(candidate.transform.position, justHit.transform.position) > chainLightningRange)
+            return;
+        if (!invalidCandidate) {
+            if (candidate.GetComponent<ConduitStacks>().Stacks > 0) {
+                alreadyHit.Add(candidate);
+                ChainLightning(alreadyHit, candidate, 1);
+                Debug.DrawLine(justHit.transform.position, candidate.transform.position, Color.cyan);
+            }
+            candidate.GetComponent<ConduitStacks>().AddStack();
+            //justHit.SendMessage("TakeDmg", LightingPunch.baseDmg / 2, SendMessageOptions.DontRequireReceiver); 
+        } else {
+            if (pass > 5)
+                return;
+            else
+                ChainLightning(alreadyHit, justHit, pass + 1);
+        }
     }
 
     private bool GetAxisDown1(string axis)
