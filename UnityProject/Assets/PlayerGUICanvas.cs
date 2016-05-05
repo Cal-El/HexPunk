@@ -9,16 +9,18 @@ public class PlayerGUICanvas : MonoBehaviour {
     public Image healthBarStub;
     public Image energyBar;
     public Image energyBarStub;
-
     public Vector2 healthBarRange; //x value is minimum bar size, y is max
     public Vector2 energyBarRange; //x value is minimum bar size, y is max
 
+    private ClassAbilities playerStats;
     private bool isBetrayer = false;
-    private float health = 100;
-    private float energy = 100;
+    private float visHP;
+    private float visEP;
 
     // Use this for initialization
     void Start () {
+        playerStats = transform.parent.GetComponent<PlayerCamera>().myPlayer.GetComponent<ClassAbilities>();
+
         healthBar.color = Color.red;
         healthBarStub.color = Color.red;
         energyBar.color = Color.blue;
@@ -28,6 +30,8 @@ public class PlayerGUICanvas : MonoBehaviour {
         } else {
             icon.color = Color.blue;
         }
+        visHP = playerStats.Health;
+        visEP = playerStats.Energy;
     }
 
     // Update is called once per frame
@@ -35,23 +39,20 @@ public class PlayerGUICanvas : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.P)) {
             isBetrayer = !isBetrayer;
         }
-        if (Input.GetKey(KeyCode.O)) {
-            health = Mathf.Min(health + Time.deltaTime*10, 100);
+        if (Input.GetKeyDown(KeyCode.O)) {
+            playerStats.Health += 10;
         }
-        if (Input.GetKey(KeyCode.L)) {
-            health = Mathf.Max(health - Time.deltaTime * 10, 0);
-        }
-        if (Input.GetKey(KeyCode.I)) {
-            energy = Mathf.Min(energy + Time.deltaTime * 10, 100);
-        }
-        if (Input.GetKey(KeyCode.K)) {
-            energy = Mathf.Max(energy - Time.deltaTime * 10, 0);
+        if (Input.GetKeyDown(KeyCode.L)) {
+            playerStats.Health -= 10;
         }
 
-        healthBar.rectTransform.localScale = new Vector3(health/100, healthBar.rectTransform.localScale.y, healthBar.rectTransform.localScale.z);
-        healthBarStub.rectTransform.anchoredPosition = new Vector2(Mathf.Lerp(healthBarRange.x, healthBarRange.y, health/100), healthBarStub.rectTransform.anchoredPosition.y);
-        energyBar.rectTransform.localScale = new Vector3(energy / 100, energyBar.rectTransform.localScale.y, energyBar.rectTransform.localScale.z);
-        energyBarStub.rectTransform.anchoredPosition = new Vector2(Mathf.Lerp(energyBarRange.x, energyBarRange.y, energy / 100), energyBarStub.rectTransform.anchoredPosition.y);
+        visHP = Mathf.Lerp(visHP, playerStats.Health, Time.deltaTime * 10);
+        visEP = Mathf.Lerp(visEP, playerStats.Energy, Time.deltaTime * 10);
+
+        healthBar.rectTransform.localScale = new Vector3(visHP / 100, healthBar.rectTransform.localScale.y, healthBar.rectTransform.localScale.z);
+        healthBarStub.rectTransform.anchoredPosition = new Vector2(Mathf.Lerp(healthBarRange.x, healthBarRange.y, visHP / 100), healthBarStub.rectTransform.anchoredPosition.y);
+        energyBar.rectTransform.localScale = new Vector3(visEP / playerStats.energyMax, energyBar.rectTransform.localScale.y, energyBar.rectTransform.localScale.z);
+        energyBarStub.rectTransform.anchoredPosition = new Vector2(Mathf.Lerp(energyBarRange.x, energyBarRange.y, visEP / playerStats.energyMax), energyBarStub.rectTransform.anchoredPosition.y);
 
 
         if (isBetrayer) {

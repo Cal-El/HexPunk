@@ -3,37 +3,18 @@ using UnityEngine.Networking;
 using System.Collections;
 using System.Collections.Generic;
 
-public class ConduitAbilities : NetworkBehaviour {
+public class ConduitAbilities : ClassAbilities {
 
-    public Transform graphicObj;
-    public float maxChargeLevel = 5.0f;
     public float chainLightningRange = 5.0f;
-
-    private bool isAxisInUse1 = false;
-    private bool isAxisInUse2 = false;
-    private bool isAxisDown1 = false;
-    private bool isAxisDown2 = false;
-
-    private struct Ability {
-        public int abilityNum;
-        public float baseDmg;
-        public float castingTime;
-        public float cooldown;
-        public float range;
-    };
 
     private Ability LightingPunch;
     private Ability StaticStomp;
     private Ability Discharge;
     private Ability LightningDash;
 
-    private float chargeLevel = 5.0f;
-    private float currCooldown = 0.0f;
-    private float castingTimer = 0.0f;
-    private int waitingForAbility = 0; //0 means none
-
     // Use this for initialization
     void Start () {
+        base.Initialize();
         LightingPunch.abilityNum = 1;
         LightingPunch.baseDmg = 1;
         LightingPunch.castingTime = 0.25f;
@@ -67,8 +48,8 @@ public class ConduitAbilities : NetworkBehaviour {
             return;
         }
 
-        if (chargeLevel < 5) {
-            chargeLevel = Mathf.Clamp(chargeLevel + Time.deltaTime, 0, 5);
+        if (Energy < 5) {
+            Energy = Mathf.Clamp(Energy + Time.deltaTime, 0, 5);
         }
         if (currCooldown > 0) {
             currCooldown = Mathf.Max(currCooldown - Time.deltaTime, 0);
@@ -81,7 +62,7 @@ public class ConduitAbilities : NetworkBehaviour {
             castingTimer = Mathf.Max(castingTimer - Time.deltaTime, 0);
         }
 
-        chargeLevel = Mathf.Min(chargeLevel + Time.deltaTime, maxChargeLevel);
+        Energy = Energy + Time.deltaTime;
 
         if (Input.GetButtonDown("Ability 1")) UseAbility(LightingPunch);
         if (GetAxisDown1("Ability 2")) UseAbility(StaticStomp);
@@ -106,14 +87,6 @@ public class ConduitAbilities : NetworkBehaviour {
             waitingForAbility = 0;
         }
 
-    }
-
-    private void UseAbility(Ability a) {
-        if (currCooldown <= 0) {
-            castingTimer = a.castingTime;
-            waitingForAbility = a.abilityNum;
-            currCooldown = a.castingTime + a.cooldown;
-        }
     }
 
     private void Ability1()
@@ -150,8 +123,8 @@ public class ConduitAbilities : NetworkBehaviour {
     private void Ability4()
     {
         Ray ray = new Ray(transform.position + Vector3.up, transform.forward);
-        RaycastHit[] hit = Physics.RaycastAll(ray, LightningDash.range * chargeLevel);
-        Vector3 telePos = ray.origin + (ray.direction * LightningDash.range * chargeLevel);
+        RaycastHit[] hit = Physics.RaycastAll(ray, LightningDash.range * Energy);
+        Vector3 telePos = ray.origin + (ray.direction * LightningDash.range * Energy);
         if(hit.Length > 0)
             for (int i = 0; i < hit.Length; i++) {
                 if(hit[i].transform.tag != "Character" && hit[i].transform.tag != "Destructible") {
@@ -159,9 +132,9 @@ public class ConduitAbilities : NetworkBehaviour {
                     break;
                 } else {
     
-                    if(LightningDash.range * chargeLevel - hit[i].distance < 0.5f) {
+                    if(LightningDash.range * Energy - hit[i].distance < 0.5f) {
                         telePos = ray.origin + (ray.direction * (hit[i].distance - 0.5f));
-                    } else if (LightningDash.range * chargeLevel - hit[i].distance >= 0.5f && LightningDash.range * chargeLevel - hit[i].distance < 1.5f) {
+                    } else if (LightningDash.range * Energy - hit[i].distance >= 0.5f && LightningDash.range * Energy - hit[i].distance < 1.5f) {
                         telePos = ray.origin + (ray.direction * (hit[i].distance + 1.5f));
                         hit[i].transform.GetComponent<ConduitStacks>().AddStack();
                         hit[i].transform.SendMessage("TakeDmg", 0.1f, SendMessageOptions.DontRequireReceiver);
@@ -172,7 +145,7 @@ public class ConduitAbilities : NetworkBehaviour {
                 }
             }
         this.transform.position = telePos+Vector3.down;
-        chargeLevel = 0;
+        Energy = 0;
         graphicObj.GetComponent<MeshRenderer>().material.color = Color.yellow;
     }
 
@@ -205,48 +178,5 @@ public class ConduitAbilities : NetworkBehaviour {
             else
                 ChainLightning(alreadyHit, justHit, pass + 1);
         }
-    }
-
-    private bool GetAxisDown1(string axis)
-    {
-        if (Input.GetAxisRaw(axis) != 0)
-        {
-            if (isAxisInUse1 == false)
-            {
-                isAxisDown1 = true;
-                isAxisInUse1 = true;
-            } else
-            {
-                isAxisDown1 = false;
-            }
-        }
-        if (Input.GetAxisRaw(axis) == 0)
-        {
-            isAxisInUse1 = false;
-            isAxisDown1 = false;
-        }
-        return isAxisDown1;
-    }
-
-    private bool GetAxisDown2(string axis)
-    {
-        if (Input.GetAxisRaw(axis) != 0)
-        {
-            if (isAxisInUse2 == false)
-            {
-                isAxisDown2 = true;
-                isAxisInUse2 = true;
-            }
-            else
-            {
-                isAxisDown2 = false;
-            }
-        }
-        if (Input.GetAxisRaw(axis) == 0)
-        {
-            isAxisInUse2 = false;
-            isAxisDown2 = false;
-        }
-        return isAxisDown2;
     }
 }
