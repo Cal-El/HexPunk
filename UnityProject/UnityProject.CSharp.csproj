@@ -65,6 +65,7 @@
   <ItemGroup>
     <Compile Include="Assets\BinaryPad.cs" />
     <Compile Include="Assets\DoorScript.cs" />
+    <Compile Include="Assets\HealthPickup.cs" />
     <Compile Include="Assets\LittleTrapRoom.cs" />
     <Compile Include="Assets\Megamanager.cs" />
     <Compile Include="Assets\MeleeAIBehaviour.cs" />

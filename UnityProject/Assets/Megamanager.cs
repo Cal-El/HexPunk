@@ -15,13 +15,16 @@ public class Megamanager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+        MM = this;
         players = GameObject.FindGameObjectsWithTag("Player");
         RoomTreeSetup();
     }
 	
 	// Update is called once per frame
 	void Update () {
-	    foreach(RoomStruct r in roomTree) {
+        players = GameObject.FindGameObjectsWithTag("Player");
+
+        foreach (RoomStruct r in roomTree) {
             if(r.parents != null) {
                 r.room.roomUnlocked = IsRoomUnlocked(r);
             } else {
