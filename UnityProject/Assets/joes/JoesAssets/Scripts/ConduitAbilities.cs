@@ -6,6 +6,7 @@ using System.Collections.Generic;
 public class ConduitAbilities : ClassAbilities {
 
     public float chainLightningRange = 5.0f;
+    public GameObject lightningBoltPathPrefab;
 
     private Ability LightingPunch;
     private Ability StaticStomp;
@@ -98,9 +99,24 @@ public class ConduitAbilities : ClassAbilities {
                 if (hit.transform.GetComponent<ConduitStacks>().Stacks > 0) {
                     List<GameObject> alreadyHit = new List<GameObject>();
                     alreadyHit.Add(hit.transform.gameObject);
-                    ChainLightning(alreadyHit, hit.transform.gameObject, 1);
+                    List<GameObject> hits = ChainLightning(alreadyHit, hit.transform.gameObject, 1);
+                    List<Vector3> trHits = new List<Vector3>();
+                    for (int i = 1; i < hits.Count; i++) {
+                        if (i == 0) {
+
+                        } else {
+                            Debug.DrawLine(hits[i].transform.position, hits[i - 1].transform.position);
+                        }
+                        trHits.Add(hits[i].transform.position);
+                    }
+
+                    GameObject lightningBolts = Instantiate(lightningBoltPathPrefab);
+                    lightningBolts.GetComponent<DigitalRuby.ThunderAndLightning.LightningBoltPathScript>().LightningPath.List = hits;
+                    lightningBolts.GetComponent<DigitalRuby.ThunderAndLightning.LightningBoltPathScript>().AllowOrthographicMode = false;
+                    lightningBolts.GetComponent<DigitalRuby.ThunderAndLightning.LightningBoltPathScript>().Camera = null;
+
+                    //Destroy(lightningBolts, 1);
                 }
-                Debug.Break();
                 hit.transform.GetComponent<ConduitStacks>().AddStack();
                 //hit.transform.SendMessage("TakeDmg", LightingPunch.baseDmg, SendMessageOptions.DontRequireReceiver);
             }
@@ -149,10 +165,10 @@ public class ConduitAbilities : ClassAbilities {
         graphicObj.GetComponent<MeshRenderer>().material.color = Color.yellow;
     }
 
-    private void ChainLightning(List<GameObject> alreadyHit, GameObject justHit, int pass) {
+    private List<GameObject> ChainLightning(List<GameObject> alreadyHit, GameObject justHit, int pass) {
         GameObject candidate = Megamanager.FindClosestAttackable(justHit, pass);
         if (candidate == null)
-            return;
+            return alreadyHit;
 
         bool invalidCandidate = false;
         foreach (GameObject g in alreadyHit) {
@@ -163,20 +179,21 @@ public class ConduitAbilities : ClassAbilities {
             invalidCandidate = true;
 
         if (Vector3.Distance(candidate.transform.position, justHit.transform.position) > chainLightningRange)
-            return;
+            return alreadyHit;
         if (!invalidCandidate) {
             if (candidate.GetComponent<ConduitStacks>().Stacks > 0) {
                 alreadyHit.Add(candidate);
-                ChainLightning(alreadyHit, candidate, 1);
-                Debug.DrawLine(justHit.transform.position, candidate.transform.position, Color.cyan);
+                return ChainLightning(alreadyHit, candidate, 1);
             }
             candidate.GetComponent<ConduitStacks>().AddStack();
             //justHit.SendMessage("TakeDmg", LightingPunch.baseDmg / 2, SendMessageOptions.DontRequireReceiver); 
         } else {
             if (pass > 5)
-                return;
+                return alreadyHit;
             else
-                ChainLightning(alreadyHit, justHit, pass + 1);
+                return ChainLightning(alreadyHit, justHit, pass + 1);
         }
+
+        return alreadyHit;
     }
 }

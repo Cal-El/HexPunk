@@ -70,6 +70,28 @@
     <Compile Include="Assets\Megamanager.cs" />
     <Compile Include="Assets\MeleeAIBehaviour.cs" />
     <Compile Include="Assets\PlayerGUICanvas.cs" />
+    <Compile Include="Assets\ProceduralLightning\Prefab\Scripts\LightningBoltPathScript.cs" />
+    <Compile Include="Assets\ProceduralLightning\Prefab\Scripts\LightningBoltPrefabScript.cs" />
+    <Compile Include="Assets\ProceduralLightning\Prefab\Scripts\LightningBoltScript.cs" />
+    <Compile Include="Assets\ProceduralLightning\Prefab\Scripts\LightningBoltShapeConeScript.cs" />
+    <Compile Include="Assets\ProceduralLightning\Prefab\Scripts\LightningBoltShapeSphereScript.cs" />
+    <Compile Include="Assets\ProceduralLightning\Prefab\Scripts\LightningCameraScript.cs" />
+    <Compile Include="Assets\ProceduralLightning\Prefab\Scripts\LightningEditorUtilities.cs" />
+    <Compile Include="Assets\ProceduralLightning\Prefab\Scripts\LightningFieldScript.cs" />
+    <Compile Include="Assets\ProceduralLightning\Prefab\Scripts\LightningGenerator.cs" />
+    <Compile Include="Assets\ProceduralLightning\Prefab\Scripts\LightningGizmoScript.cs" />
+    <Compile Include="Assets\ProceduralLightning\Prefab\Scripts\LightningMeshSurfaceScript.cs" />
+    <Compile Include="Assets\ProceduralLightning\Prefab\Scripts\LightningSplineScript.cs" />
+    <Compile Include="Assets\ProceduralLightning\Prefab\Scripts\LightningSpriteSheetCreator.cs" />
+    <Compile Include="Assets\ProceduralLightning\Prefab\Scripts\LightningWhipScript.cs" />
+    <Compile Include="Assets\ProceduralLightning\Prefab\Scripts\MeshHelper.cs" />
+    <Compile Include="Assets\ProceduralLightning\Prefab\Scripts\PathGenerator.cs" />
+    <Compile Include="Assets\ProceduralLightning\Prefab\Scripts\Spells\LightningBeamSpellScript.cs" />
+    <Compile Include="Assets\ProceduralLightning\Prefab\Scripts\Spells\LightningParticleCollisionForwarder.cs" />
+    <Compile Include="Assets\ProceduralLightning\Prefab\Scripts\Spells\LightningParticleSpellScript.cs" />
+    <Compile Include="Assets\ProceduralLightning\Prefab\Scripts\Spells\LightningSpellScript.cs" />
+    <Compile Include="Assets\ProceduralLightning\Prefab\Scripts\Spells\LightningWhipSpell.cs" />
+    <Compile Include="Assets\ProceduralLightning\Prefab\Scripts\ThunderAndLightningScript.cs" />
     <Compile Include="Assets\Room.cs" />
     <Compile Include="Assets\Scripts\CharacterMotor.cs" />
     <Compile Include="Assets\Scripts\ConduitStacks.cs" />
@@ -89,6 +111,14 @@
     <Compile Include="Assets\joes\JoesAssets\Scripts\ConduitAbilities.cs" />
     <Compile Include="Assets\joes\JoesAssets\Scripts\PlayerCamera.cs" />
     <Compile Include="Assets\joes\JoesAssets\Scripts\PlayerMovement.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\ProceduralLightning\ChangeLog.txt" />
+    <None Include="Assets\ProceduralLightning\Prefab\Materials\AdditiveSoftTintableShader.shader" />
+    <None Include="Assets\ProceduralLightning\Prefab\Materials\DarkCloudShader.shader" />
+    <None Include="Assets\ProceduralLightning\Prefab\Materials\LightningBoltShaderMesh.shader" />
+    <None Include="Assets\ProceduralLightning\Prefab\Materials\LightningBoltShaderMeshNoGlow.shader" />
+    <None Include="Assets\ProceduralLightning\Readme.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>
