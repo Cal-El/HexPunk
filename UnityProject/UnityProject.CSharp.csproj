@@ -113,6 +113,7 @@
     <Compile Include="Assets\Scripts\PressurePadGraphic.cs" />
     <Compile Include="Assets\Scripts\RoomOnePuzzle.cs" />
     <Compile Include="Assets\Scripts\RoomTwoPuzzle.cs" />
+    <Compile Include="Assets\StaticStompVisual.cs" />
     <Compile Include="Assets\Trigger.cs" />
     <Compile Include="Assets\joes\JoesAssets\Scripts\ClassAbilities.cs" />
     <Compile Include="Assets\joes\JoesAssets\Scripts\ConduitAbilities.cs" />

@@ -7,11 +7,15 @@ public class ConduitAbilities : ClassAbilities {
 
     public float chainLightningRange = 5.0f;
     public GameObject lightningBoltPathPrefab;
+    public GameObject staticStompPrefab;
+    public GameObject dischargeLightningPathPrefab;
 
     private Ability LightingPunch;
     private Ability StaticStomp;
     private Ability Discharge;
     private Ability LightningDash;
+
+    private List<ConduitStacks> lightningLists;
 
     // Use this for initialization
     void Start () {
@@ -100,25 +104,29 @@ public class ConduitAbilities : ClassAbilities {
                     List<GameObject> alreadyHit = new List<GameObject>();
                     alreadyHit.Add(hit.transform.gameObject);
                     List<GameObject> hits = ChainLightning(alreadyHit, hit.transform.gameObject, 1);
-                    List<Vector3> trHits = new List<Vector3>();
-                    for (int i = 1; i < hits.Count; i++) {
-                        if (i == 0) {
-
-                        } else {
-                            Debug.DrawLine(hits[i].transform.position, hits[i - 1].transform.position);
-                        }
-                        trHits.Add(hits[i].transform.position);
-                    }
-
+                    List<GameObject> copies = new List<GameObject>();
                     GameObject lightningBolts = Instantiate(lightningBoltPathPrefab);
-                    lightningBolts.GetComponent<DigitalRuby.ThunderAndLightning.LightningBoltPathScript>().LightningPath.List = hits;
+                    for (int i = 0; i < hits.Count; i++) {
+                        hits[i].GetComponent<ConduitStacks>().AddStack();
+                        if (i>0)
+                            hits[i].transform.SendMessage("TakeDmg", LightingPunch.baseDmg/2, SendMessageOptions.DontRequireReceiver);
+                        if (hits[i] == null) {
+                            hits.Remove(hits[i]);
+                            continue;
+                        }
+                        GameObject g = new GameObject("Point");
+                        g.transform.position = hits[i].transform.position;
+                        g.transform.rotation = hits[i].transform.rotation;
+                        g.transform.parent = lightningBolts.transform;
+                        copies.Add(g);
+                    }
+                    lightningBolts.GetComponent<DigitalRuby.ThunderAndLightning.LightningBoltPathScript>().LightningPath.List = copies;
                     lightningBolts.GetComponent<DigitalRuby.ThunderAndLightning.LightningBoltPathScript>().AllowOrthographicMode = false;
                     lightningBolts.GetComponent<DigitalRuby.ThunderAndLightning.LightningBoltPathScript>().Camera = null;
-
-                    //Destroy(lightningBolts, 1);
+                } else {
+                    hit.transform.GetComponent<ConduitStacks>().AddStack();
                 }
-                hit.transform.GetComponent<ConduitStacks>().AddStack();
-                //hit.transform.SendMessage("TakeDmg", LightingPunch.baseDmg, SendMessageOptions.DontRequireReceiver);
+                hit.transform.SendMessage("TakeDmg", LightingPunch.baseDmg, SendMessageOptions.DontRequireReceiver);
             }
         }
         graphicObj.GetComponent<MeshRenderer>().material.color = Color.blue;
@@ -126,14 +134,24 @@ public class ConduitAbilities : ClassAbilities {
 
     private void Ability2()
     {
+        RaycastHit[] hits = Physics.SphereCastAll(this.transform.position, StaticStomp.range * Energy, transform.forward, 0.0f);
+        foreach(RaycastHit h in hits) {
+            if (h.transform.GetComponent<ConduitStacks>() != null)
+                h.transform.GetComponent<ConduitStacks>().AddStack();
+        }
+        GameObject blast = Instantiate(staticStompPrefab, this.transform.position, this.transform.rotation) as GameObject;
+        blast.GetComponent<StaticStompVisual>().lifeTime = Energy;
+        Energy = 0;
         graphicObj.GetComponent<MeshRenderer>().material.color = Color.green;
-        Debug.Log("Ability 2");
     }
 
     private void Ability3()
     {
+        if (lightningLists != null)
+        foreach(ConduitStacks c in lightningLists) {
+            c.Discharge();
+        }
         graphicObj.GetComponent<MeshRenderer>().material.color = Color.red;
-        Debug.Log("Ability 3");
     }
 
     private void Ability4()
@@ -165,6 +183,38 @@ public class ConduitAbilities : ClassAbilities {
         graphicObj.GetComponent<MeshRenderer>().material.color = Color.yellow;
     }
 
+    protected override void UseAbility(Ability a) {
+        if (currCooldown <= 0) {
+            base.UseAbility(a);
+            if (waitingForAbility == 3) {
+                StartAbility3();
+            }
+        }
+    }
+
+    private void StartAbility3() {
+        Debug.Log("Method Called");
+        GameObject lightningBolts = Instantiate(dischargeLightningPathPrefab);
+        ConduitStacks[] things = GameObject.FindObjectsOfType<ConduitStacks>();
+        List<GameObject> lightningList = new List<GameObject>();
+        lightningLists = new List<ConduitStacks>();
+        lightningList.Add(gameObject);
+        for (int i = 0; i < things.Length; i++) {
+            if (things[i].Stacks > 0) {
+                GameObject g = new GameObject("Point");
+                g.transform.position = things[i].transform.position;
+                g.transform.rotation = things[i].transform.rotation;
+                g.transform.parent = lightningBolts.transform;
+                lightningList.Add(g);
+                lightningLists.Add(things[i]);
+                lightningList.Add(gameObject);
+            }
+        }
+        lightningBolts.GetComponent<DigitalRuby.ThunderAndLightning.LightningBoltPathScript>().LightningPath.List = lightningList;
+        lightningBolts.GetComponent<DigitalRuby.ThunderAndLightning.LightningBoltPathScript>().AllowOrthographicMode = false;
+        lightningBolts.GetComponent<DigitalRuby.ThunderAndLightning.LightningBoltPathScript>().Camera = null;
+    }
+
     private List<GameObject> ChainLightning(List<GameObject> alreadyHit, GameObject justHit, int pass) {
         GameObject candidate = Megamanager.FindClosestAttackable(justHit, pass);
         if (candidate == null)
@@ -181,12 +231,10 @@ public class ConduitAbilities : ClassAbilities {
         if (Vector3.Distance(candidate.transform.position, justHit.transform.position) > chainLightningRange)
             return alreadyHit;
         if (!invalidCandidate) {
+            alreadyHit.Add(candidate);
             if (candidate.GetComponent<ConduitStacks>().Stacks > 0) {
-                alreadyHit.Add(candidate);
                 return ChainLightning(alreadyHit, candidate, 1);
             }
-            candidate.GetComponent<ConduitStacks>().AddStack();
-            //justHit.SendMessage("TakeDmg", LightingPunch.baseDmg / 2, SendMessageOptions.DontRequireReceiver); 
         } else {
             if (pass > 5)
                 return alreadyHit;

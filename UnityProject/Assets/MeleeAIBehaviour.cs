@@ -3,6 +3,8 @@ using System.Collections;
 
 public class MeleeAIBehaviour : MonoBehaviour {
 
+    private const float TIME_FOR_NAVMESH_UPDATE = 0.5f;
+
     //State machine variables
     enum STATES { Idle, Battlecry, Chasing, Attacking}
     STATES agentState = STATES.Idle;
@@ -27,32 +29,39 @@ public class MeleeAIBehaviour : MonoBehaviour {
     //Pathfinding Variables
     private GameObject target;
     private NavMeshAgent navAgent;
+    private NavMeshObstacle navObst;
+    private float inactiveTimer = 0.0f;
 
-	void Start () {
+    void Start () {
         navAgent = this.GetComponent<NavMeshAgent>();
+        navObst = this.GetComponent<NavMeshObstacle>();
         health = maxHealth;
 	}
 	
 	void Update () {
-        if (transform.parent.GetComponent<Room>().roomUnlocked) {
-            switch (agentState) {
-                case STATES.Idle:
-                GetComponent<Renderer>().material.color = Color.white;
-                    IdleBehaviour();
-                    break;
-                case STATES.Battlecry:
-                    GetComponent<Renderer>().material.color = Color.yellow;
-                    BattlecryBehaviour();
-                    break;
-                case STATES.Chasing:
-                    GetComponent<Renderer>().material.color = Color.blue;
-                    ChasingBehaviour();
-                    break;
-                case STATES.Attacking:
-                    GetComponent<Renderer>().material.color = Color.red;
-                    AttackingBehaviour();
-                    break;
+        if (inactiveTimer <= 0) {
+            if (transform.parent.GetComponent<Room>().roomUnlocked) {
+                switch (agentState) {
+                    case STATES.Idle:
+                        GetComponent<Renderer>().material.color = Color.white;
+                        IdleBehaviour();
+                        break;
+                    case STATES.Battlecry:
+                        GetComponent<Renderer>().material.color = Color.yellow;
+                        BattlecryBehaviour();
+                        break;
+                    case STATES.Chasing:
+                        GetComponent<Renderer>().material.color = Color.blue;
+                        ChasingBehaviour();
+                        break;
+                    case STATES.Attacking:
+                        GetComponent<Renderer>().material.color = Color.red;
+                        AttackingBehaviour();
+                        break;
+                }
             }
+        } else {
+            inactiveTimer -= Time.deltaTime;
         }
 	}
 
@@ -80,18 +89,22 @@ public class MeleeAIBehaviour : MonoBehaviour {
                 }
             }
             target = closest;
-            agentState = STATES.Chasing;
+            StartChase();
         }
     }
 
     private void ChasingBehaviour() {
-        /*
+        
         if (navAgent != null && target != null) {
-            navAgent.destination = target.transform.position + (this.transform.position-target.transform.position).normalized*2;
+            navAgent.enabled = true;
+            navObst.enabled = false;
+            navAgent.destination = target.transform.position + (this.transform.position-target.transform.position).normalized*range/2;
         }
         
-        */
+        
         if (Vector3.Distance(this.transform.position, target.transform.position) < range - 0.5f) {
+            navAgent.enabled = false;
+            navObst.enabled = true;
             agentState = STATES.Attacking;
         }
     }
@@ -111,7 +124,7 @@ public class MeleeAIBehaviour : MonoBehaviour {
             transform.LookAt(new Vector3(target.transform.position.x, this.transform.position.y, target.transform.position.z));
             attackTimer -= Time.deltaTime;
             if (Vector3.Distance(this.transform.position, target.transform.position) > range) {
-                agentState = STATES.Chasing;
+                StartChase();
                 return;
             }
             if(attackTimer <= 0) {              //Ready to attack again
@@ -123,6 +136,12 @@ public class MeleeAIBehaviour : MonoBehaviour {
     private void StartBattlecry() {
         battlecryTimer = battlecryTime;
         agentState = STATES.Battlecry;
+    }
+
+    private void StartChase() {
+        inactiveTimer = TIME_FOR_NAVMESH_UPDATE;
+        navObst.enabled = false;
+        agentState = STATES.Chasing;
     }
 
     public void ReceiveMessage(char a) {
@@ -143,6 +162,8 @@ public class MeleeAIBehaviour : MonoBehaviour {
 
     public void TakeDmg(float dmg) {
         health -= dmg;
+        if (agentState == STATES.Idle)
+            StartBattlecry();
         if (health <= 0) {
             GameObject.Destroy(this.gameObject);
         }

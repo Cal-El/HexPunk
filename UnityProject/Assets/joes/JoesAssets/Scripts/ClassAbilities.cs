@@ -60,7 +60,7 @@ public class ClassAbilities : NetworkBehaviour {
         Health += addedHP;
     }
 
-    protected void UseAbility(Ability a) {
+    protected virtual void UseAbility(Ability a) {
         if (currCooldown <= 0) {
             castingTimer = a.castingTime;
             waitingForAbility = a.abilityNum;
