@@ -20,7 +20,6 @@ public class CharacterMotor : MonoBehaviour {
 	// Update is called once per frame
 	void FixedUpdate () {
         Move();
-        Aim();
     }
 
     private void Move() {

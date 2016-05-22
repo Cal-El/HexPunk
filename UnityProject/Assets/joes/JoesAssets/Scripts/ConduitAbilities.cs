@@ -58,9 +58,9 @@ public class ConduitAbilities : ClassAbilities {
         }
         if (currCooldown > 0) {
             currCooldown = Mathf.Max(currCooldown - Time.deltaTime, 0);
-            this.GetComponent<PlayerMovement>().controlEnabled = false;
+            this.GetComponent<PlayerMovement>().ControlEnabled = false;
         } else {
-            this.GetComponent<PlayerMovement>().controlEnabled = true;
+            this.GetComponent<PlayerMovement>().ControlEnabled = true;
             graphicObj.GetComponent<MeshRenderer>().material.color = Color.white;
         }
         if (castingTimer > 0) {
@@ -92,6 +92,7 @@ public class ConduitAbilities : ClassAbilities {
             waitingForAbility = 0;
         }
 
+        base.BaseUpdate();
     }
 
     private void Ability1()
@@ -193,7 +194,6 @@ public class ConduitAbilities : ClassAbilities {
     }
 
     private void StartAbility3() {
-        Debug.Log("Method Called");
         GameObject lightningBolts = Instantiate(dischargeLightningPathPrefab);
         ConduitStacks[] things = GameObject.FindObjectsOfType<ConduitStacks>();
         List<GameObject> lightningList = new List<GameObject>();

@@ -5,6 +5,9 @@ using System.Collections.Generic;
 
 public class ClassAbilities : NetworkBehaviour {
 
+    public enum ANIMATIONSTATES { Idle, Running, Ability1, Ability2, Ability3, Ability4 };
+    public ANIMATIONSTATES currentState;
+
     public Transform graphicObj;
     protected PlayerMovement pm;
     public float healthMax = 100;
@@ -35,6 +38,21 @@ public class ClassAbilities : NetworkBehaviour {
         pm = GetComponent<PlayerMovement>();
     }
 
+    protected void BaseUpdate()
+    {
+        if(currCooldown <= 0)
+        {
+            if (pm.IsMoving)
+            {
+                currentState = ANIMATIONSTATES.Running;
+            }
+            else
+            {
+                currentState = ANIMATIONSTATES.Idle;
+            }
+        }
+    }
+
     public float Health {
         get {
             return health;
@@ -62,6 +80,7 @@ public class ClassAbilities : NetworkBehaviour {
 
     protected virtual void UseAbility(Ability a) {
         if (currCooldown <= 0) {
+            currentState = ANIMATIONSTATES.Running + a.abilityNum;
             castingTimer = a.castingTime;
             waitingForAbility = a.abilityNum;
             currCooldown = a.castingTime + a.cooldown;
