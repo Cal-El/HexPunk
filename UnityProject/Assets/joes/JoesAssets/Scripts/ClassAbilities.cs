@@ -15,8 +15,8 @@ public class ClassAbilities : NetworkBehaviour {
     public float energyMax = 100;
     private float energy;
 
-    protected bool canControl = true;
-    protected bool isReviving = false;
+    private bool isAlive = true;
+    public bool IsReviving { get; set; }
 
     protected bool isAxisInUse1 = false;
     protected bool isAxisInUse2 = false;
@@ -43,7 +43,17 @@ public class ClassAbilities : NetworkBehaviour {
 
     protected void BaseUpdate()
     {
-        if(currCooldown <= 0)
+        //Used for testing
+        if (Input.GetKeyDown(KeyCode.O))
+        {
+            CmdAddHealth(10);
+        }
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            CmdAddHealth(-10);
+        }
+
+        if (currCooldown <= 0)
         {
             if (pm.IsMoving)
             {
@@ -81,12 +91,40 @@ public class ClassAbilities : NetworkBehaviour {
         Health += addedHP;
     }
 
+    //Used for testing
+    [Command]
+    private void CmdAddHealth(float hp)
+    {
+        if (!isClient) Health += hp;
+        RpcAddHealth(hp);
+    }
+
+    [ClientRpc]
+    private void RpcAddHealth(float hp)
+    {
+        Health += hp;
+    }
+
     #region Death and Respawn
+
+    public bool IsAlive
+    {
+        get
+        {
+            return isAlive;
+        }
+
+        set
+        {
+            EnableCharacter(value);
+            isAlive = value;
+        }
+
+    }
 
     protected virtual void EnableCharacter(bool enabled)
     {
         if (enabled) Health = 80;
-        canControl = enabled;
         var cc = GetComponent<CharacterController>();
         if (cc != null) cc.enabled = enabled;
 
@@ -98,7 +136,7 @@ public class ClassAbilities : NetworkBehaviour {
     {
         if (!isClient)
         {
-            EnableCharacter(false);
+            IsAlive = false;
             //Put death animation and stuff here
         }
         RpcDeath();
@@ -107,7 +145,7 @@ public class ClassAbilities : NetworkBehaviour {
     [ClientRpc]
     protected void RpcDeath()
     {
-        EnableCharacter(false);
+        IsAlive = false;
         //Put death animation and stuff here
     }
 
@@ -117,7 +155,7 @@ public class ClassAbilities : NetworkBehaviour {
         if (!isClient)
         {
             var ca = o.GetComponent<ClassAbilities>();
-            ca.isReviving = true;
+            ca.IsReviving = true;
         }
         RpcCallRevive(o);
     }
@@ -126,7 +164,7 @@ public class ClassAbilities : NetworkBehaviour {
     protected void RpcCallRevive(GameObject o)
     {
         var ca = o.GetComponent<ClassAbilities>();
-        ca.isReviving = true;
+        ca.IsReviving = true;
         ca.Health = 80;
     }
 
@@ -135,7 +173,7 @@ public class ClassAbilities : NetworkBehaviour {
     {
         if (!isClient)
         {
-            EnableCharacter(true);
+            IsAlive = true;
         }
         RpcRevive();
     }
@@ -143,7 +181,7 @@ public class ClassAbilities : NetworkBehaviour {
     [ClientRpc]
     protected void RpcRevive()
     {
-        EnableCharacter(true);
+        IsAlive = true;
     }
 
     #endregion

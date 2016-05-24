@@ -7,7 +7,8 @@ public class PlayerMovement : NetworkBehaviour {
 	private CharacterController controller;
     public GameObject playerCamera;
     public Camera myCam;
-    private bool controlEnabled =true;
+    private bool isCasting = true;
+    private bool controlEnabled = true;
     
     private float xAxis = 0;
 	private float yAxis = 0;
@@ -27,7 +28,7 @@ public class PlayerMovement : NetworkBehaviour {
 	
 	void Update() {
 
-        if (!isLocalPlayer || !controlEnabled)
+        if (!isLocalPlayer || !controlEnabled || isCasting)
         {
             return;
         }
@@ -85,7 +86,19 @@ public class PlayerMovement : NetworkBehaviour {
         }
         set
         {
-            if (value != controlEnabled)
+            controlEnabled = value;
+        }
+    }
+
+    public bool IsCasting
+    {
+        get
+        {
+            return isCasting;
+        }
+        set
+        {
+            if (value != isCasting)
             {
                 if (myCam != null)
                 {
@@ -94,7 +107,7 @@ public class PlayerMovement : NetworkBehaviour {
                     Vector3 point = sh.origin + sh.direction * Mathf.Abs(sh.origin.y / sh.direction.y);
                     Aim(point);
                 }
-                controlEnabled = value;
+                isCasting = value;
             }
         }
     }

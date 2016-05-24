@@ -59,26 +59,16 @@ public class ConduitAbilities : ClassAbilities {
             return;
         }
 
-        //Used for testing
-        if (Input.GetKeyDown(KeyCode.O))
-        {
-            CmdAddHealth(10);
-        }
-        if (Input.GetKeyDown(KeyCode.L))
-        {
-            CmdAddHealth(-10);
-        }
-
         //Energy
         if (Energy < 5) {
             Energy = Mathf.Clamp(Energy + Time.deltaTime, 0, 5);
         }
         if (currCooldown > 0) {
             currCooldown = Mathf.Max(currCooldown - Time.deltaTime, 0);
-            this.GetComponent<PlayerMovement>().ControlEnabled = false;
+            this.GetComponent<PlayerMovement>().IsCasting = true;
         } else
         {
-            if (canControl) this.GetComponent<PlayerMovement>().ControlEnabled = true;
+            if (IsAlive) this.GetComponent<PlayerMovement>().IsCasting = false;
             CmdChangeGraphicColour(Color.white);
         }
         if (castingTimer > 0) {
@@ -90,10 +80,10 @@ public class ConduitAbilities : ClassAbilities {
         //Death
         if (Health <= 0) CmdDeath();
 
-        if (isReviving) CmdRevive();
+        if (IsReviving) CmdRevive();
 
         //Abilities
-        if (!canControl) return;
+        if (!IsAlive) return;
 
         if (Input.GetButtonDown("Ability 1")) UseAbility(LightingPunch);
         if (GetAxisDown1("Ability 2")) UseAbility(StaticStomp);
@@ -139,19 +129,6 @@ public class ConduitAbilities : ClassAbilities {
     }
 
     #region Networking Helpers
-
-    [Command]
-    private void CmdAddHealth(float hp)
-    {
-        if (!isClient) Health += hp;
-        RpcAddHealth(hp);
-    }
-
-    [ClientRpc]
-    private void RpcAddHealth(float hp)
-    {
-        Health += hp;
-    }
 
     [Command]
     private void CmdChangeGraphicColour(Color colour)
@@ -251,8 +228,11 @@ public class ConduitAbilities : ClassAbilities {
     [Command]
     private void CmdDischargeStacks(GameObject o)
     {
-        if (!isClient) o.SendMessage("Discharge", SendMessageOptions.DontRequireReceiver);
-        RpcDischargeStacks(o);
+        if (o != null)
+        {
+            if (!isClient) o.SendMessage("Discharge", SendMessageOptions.DontRequireReceiver);
+            RpcDischargeStacks(o);
+        }
     }
 
     [ClientRpc]

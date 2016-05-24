@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 
-public class ConduitAnimation : MonoBehaviour {
+public class ConduitAnimation : NetworkBehaviour {
 
     ConduitAbilities ca;
     ConduitAbilities.ANIMATIONSTATES previousState;
@@ -9,8 +10,8 @@ public class ConduitAnimation : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        ca = GetComponentInParent<ConduitAbilities>();
-        ani = GetComponent<Animator>();
+        ca = GetComponent<ConduitAbilities>();
+        ani = GetComponentInChildren<Animator>();
 	}
 	
 	// Update is called once per frame
@@ -20,26 +21,39 @@ public class ConduitAnimation : MonoBehaviour {
             switch (ca.currentState)
             {
                 case ClassAbilities.ANIMATIONSTATES.Idle:
-                    ani.Play("Armature|Idle");
+                    CmdPlay("Armature|Idle");
                     break;
                 case ClassAbilities.ANIMATIONSTATES.Running:
-                    ani.Play("Armature|Run Cycle");
+                    CmdPlay("Armature|Run Cycle");
                     break;
                 case ClassAbilities.ANIMATIONSTATES.Ability1:
-                    ani.Play("Armature|Punch 1");
+                    CmdPlay("Armature|Punch 1");
                     break;
                 case ClassAbilities.ANIMATIONSTATES.Ability2:
-                    ani.Play("Armature|Stomp");
+                    CmdPlay("Armature|Stomp");
                     break;
                 case ClassAbilities.ANIMATIONSTATES.Ability3:
-                    ani.Play("Armature|DrawPower");
+                    CmdPlay("Armature|DrawPower");
                     break;
                 case ClassAbilities.ANIMATIONSTATES.Ability4:
-                    ani.Play("Armature|Punch 2");
+                    CmdPlay("Armature|Punch 2");
                     break;
             }
         }
         
         previousState = ca.currentState;
+    }
+
+    [Command]
+    private void CmdPlay(string animation)
+    {
+        if (!isClient) ani.Play(animation);
+        RpcPlay(animation);
+    }
+
+    [ClientRpc]
+    private void RpcPlay(string animation)
+    {
+        ani.Play(animation);
     }
 }
