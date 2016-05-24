@@ -29,6 +29,8 @@ public class PlayerCamera : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        if (myPlayer == null) Destroy(gameObject);
+
         if (Input.GetKeyDown(KeyCode.UpArrow))
             useTopDown = true;
         else if (Input.GetKeyDown(KeyCode.DownArrow))

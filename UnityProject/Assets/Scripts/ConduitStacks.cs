@@ -23,8 +23,8 @@ public class ConduitStacks : MonoBehaviour {
         Stacks = Mathf.Clamp(Stacks + i, 0, 10);
     }
 
-    public void Discharge() {
-        this.SendMessage("TakeDmg", Stacks, SendMessageOptions.DontRequireReceiver);
+    public void Discharge()
+    {
         Stacks = 0;
     }
 
