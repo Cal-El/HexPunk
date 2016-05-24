@@ -15,6 +15,9 @@ public class ClassAbilities : NetworkBehaviour {
     public float energyMax = 100;
     private float energy;
 
+    protected bool canControl = true;
+    protected bool isReviving = false;
+
     protected bool isAxisInUse1 = false;
     protected bool isAxisInUse2 = false;
     protected bool isAxisDown1 = false;
@@ -77,6 +80,73 @@ public class ClassAbilities : NetworkBehaviour {
     public void Heal(float addedHP) {
         Health += addedHP;
     }
+
+    #region Death and Respawn
+
+    protected virtual void EnableCharacter(bool enabled)
+    {
+        if (enabled) Health = 80;
+        canControl = enabled;
+        var cc = GetComponent<CharacterController>();
+        if (cc != null) cc.enabled = enabled;
+
+        if (pm != null) pm.ControlEnabled = enabled;
+    }
+
+    [Command]
+    protected void CmdDeath()
+    {
+        if (!isClient)
+        {
+            EnableCharacter(false);
+            //Put death animation and stuff here
+        }
+        RpcDeath();
+    }
+
+    [ClientRpc]
+    protected void RpcDeath()
+    {
+        EnableCharacter(false);
+        //Put death animation and stuff here
+    }
+
+    [Command]
+    protected void CmdCallRevive(GameObject o)
+    {
+        if (!isClient)
+        {
+            var ca = o.GetComponent<ClassAbilities>();
+            ca.isReviving = true;
+        }
+        RpcCallRevive(o);
+    }
+
+    [ClientRpc]
+    protected void RpcCallRevive(GameObject o)
+    {
+        var ca = o.GetComponent<ClassAbilities>();
+        ca.isReviving = true;
+        ca.Health = 80;
+    }
+
+    [Command]
+    protected void CmdRevive()
+    {
+        if (!isClient)
+        {
+            EnableCharacter(true);
+        }
+        RpcRevive();
+    }
+
+    [ClientRpc]
+    protected void RpcRevive()
+    {
+        EnableCharacter(true);
+    }
+
+    #endregion
 
     protected virtual void UseAbility(Ability a) {
         if (currCooldown <= 0) {

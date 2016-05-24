@@ -87,10 +87,13 @@ public class PlayerMovement : NetworkBehaviour {
         {
             if (value != controlEnabled)
             {
-                Quaternion currRot = transform.rotation;
-                Ray sh = myCam.ScreenPointToRay(Input.mousePosition);
-                Vector3 point = sh.origin + sh.direction * Mathf.Abs(sh.origin.y / sh.direction.y);
-                Aim(point);
+                if (myCam != null)
+                {
+                    Quaternion currRot = transform.rotation;
+                    Ray sh = myCam.ScreenPointToRay(Input.mousePosition);
+                    Vector3 point = sh.origin + sh.direction * Mathf.Abs(sh.origin.y / sh.direction.y);
+                    Aim(point);
+                }
                 controlEnabled = value;
             }
         }

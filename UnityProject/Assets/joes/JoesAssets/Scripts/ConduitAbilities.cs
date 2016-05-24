@@ -14,6 +14,7 @@ public class ConduitAbilities : ClassAbilities {
     private Ability StaticStomp;
     private Ability Discharge;
     private Ability LightningDash;
+    private Ability Revive;
 
     private List<ConduitStacks> lightningLists;
 
@@ -43,6 +44,11 @@ public class ConduitAbilities : ClassAbilities {
         LightningDash.castingTime = 0.25f;
         LightningDash.cooldown = 0.25f;
         LightningDash.range = 1.0f;
+
+        Revive.abilityNum = 5;
+        Revive.castingTime = 1f;
+        Revive.cooldown = 0.25f;
+        Revive.range = 1.0f;
     }
 
     // Update is called once per frame
@@ -53,15 +59,27 @@ public class ConduitAbilities : ClassAbilities {
             return;
         }
 
+        //Used for testing
+        if (Input.GetKeyDown(KeyCode.O))
+        {
+            CmdAddHealth(10);
+        }
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            CmdAddHealth(-10);
+        }
+
+        //Energy
         if (Energy < 5) {
             Energy = Mathf.Clamp(Energy + Time.deltaTime, 0, 5);
         }
         if (currCooldown > 0) {
             currCooldown = Mathf.Max(currCooldown - Time.deltaTime, 0);
             this.GetComponent<PlayerMovement>().ControlEnabled = false;
-        } else {
-            this.GetComponent<PlayerMovement>().ControlEnabled = true;
-            graphicObj.GetComponent<MeshRenderer>().material.color = Color.white;
+        } else
+        {
+            if (canControl) this.GetComponent<PlayerMovement>().ControlEnabled = true;
+            CmdChangeGraphicColour(Color.white);
         }
         if (castingTimer > 0) {
             castingTimer = Mathf.Max(castingTimer - Time.deltaTime, 0);
@@ -69,12 +87,34 @@ public class ConduitAbilities : ClassAbilities {
 
         Energy = Energy + Time.deltaTime;
 
+        //Death
+        if (Health <= 0) CmdDeath();
+
+        if (isReviving) CmdRevive();
+
+        //Abilities
+        if (!canControl) return;
+
         if (Input.GetButtonDown("Ability 1")) UseAbility(LightingPunch);
         if (GetAxisDown1("Ability 2")) UseAbility(StaticStomp);
         else if (Input.GetButtonDown("Ability 3")) UseAbility(Discharge);
         else if (GetAxisDown2("Ability 4")) UseAbility(LightningDash);
 
-        if(waitingForAbility != 0 && castingTimer <= 0) {
+        //Revive
+        else if (Input.GetKeyDown(KeyCode.E))
+        {
+            Ray ray = new Ray(transform.position + Vector3.up, transform.forward);
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit, LightingPunch.range))
+            {
+                if (hit.transform.tag == "Player" && hit.transform.GetComponent<ClassAbilities>().Health <= 0)
+                {
+                    UseAbility(Revive);
+                }
+            }
+        }
+
+        if (waitingForAbility != 0 && castingTimer <= 0) {
             switch (waitingForAbility) {
                 case 1:
                     Ability1();
@@ -88,12 +128,53 @@ public class ConduitAbilities : ClassAbilities {
                 case 4:
                     Ability4();
                     break;
+                case 5:
+                    Ability5();
+                    break;
             }
             waitingForAbility = 0;
         }
 
         base.BaseUpdate();
     }
+
+    #region Networking Helpers
+
+    [Command]
+    private void CmdAddHealth(float hp)
+    {
+        if (!isClient) Health += hp;
+        RpcAddHealth(hp);
+    }
+
+    [ClientRpc]
+    private void RpcAddHealth(float hp)
+    {
+        Health += hp;
+    }
+
+    [Command]
+    private void CmdChangeGraphicColour(Color colour)
+    {
+        if (!isClient) graphicObj.GetComponent<MeshRenderer>().material.color = colour;
+        RpcChangeGraphicColour(colour);
+    }
+
+    [ClientRpc]
+    private void RpcChangeGraphicColour(Color colour)
+    {
+        graphicObj.GetComponent<MeshRenderer>().material.color = colour;
+    }
+
+    [Command]
+    private void CmdTakeDmg(GameObject o, float damage)
+    {
+        o.SendMessage("TakeDmg", damage, SendMessageOptions.DontRequireReceiver);
+    }
+
+    #endregion
+
+    #region Ability 1 (Lightning punch)
 
     private void Ability1()
     {
@@ -110,7 +191,7 @@ public class ConduitAbilities : ClassAbilities {
                     for (int i = 0; i < hits.Count; i++) {
                         hits[i].GetComponent<ConduitStacks>().AddStack();
                         if (i>0)
-                            hits[i].transform.SendMessage("TakeDmg", LightingPunch.baseDmg/2, SendMessageOptions.DontRequireReceiver);
+                            CmdTakeDmg(hit.transform.gameObject, LightingPunch.baseDmg / 2);
                         if (hits[i] == null) {
                             hits.Remove(hits[i]);
                             continue;
@@ -127,11 +208,15 @@ public class ConduitAbilities : ClassAbilities {
                 } else {
                     hit.transform.GetComponent<ConduitStacks>().AddStack();
                 }
-                hit.transform.SendMessage("TakeDmg", LightingPunch.baseDmg, SendMessageOptions.DontRequireReceiver);
+                CmdTakeDmg(hit.transform.gameObject, LightingPunch.baseDmg);
             }
         }
-        graphicObj.GetComponent<MeshRenderer>().material.color = Color.blue;
+        CmdChangeGraphicColour(Color.blue);
     }
+
+    #endregion
+
+    #region Ability 2 (Static stomp)
 
     private void Ability2()
     {
@@ -143,17 +228,67 @@ public class ConduitAbilities : ClassAbilities {
         GameObject blast = Instantiate(staticStompPrefab, this.transform.position, this.transform.rotation) as GameObject;
         blast.GetComponent<StaticStompVisual>().lifeTime = Energy;
         Energy = 0;
-        graphicObj.GetComponent<MeshRenderer>().material.color = Color.green;
+        CmdChangeGraphicColour(Color.green);
     }
+
+    #endregion
+
+    #region Ability 3 (Discharge)
 
     private void Ability3()
     {
         if (lightningLists != null)
         foreach(ConduitStacks c in lightningLists) {
-            c.Discharge();
-        }
-        graphicObj.GetComponent<MeshRenderer>().material.color = Color.red;
+                if (c != null)
+                {
+                    CmdTakeDmg(c.gameObject, LightingPunch.baseDmg);
+                    CmdDischargeStacks(c.gameObject);
+                }
+            }
+        CmdChangeGraphicColour(Color.red);
     }
+
+    [Command]
+    private void CmdDischargeStacks(GameObject o)
+    {
+        if (!isClient) o.SendMessage("Discharge", SendMessageOptions.DontRequireReceiver);
+        RpcDischargeStacks(o);
+    }
+
+    [ClientRpc]
+    private void RpcDischargeStacks(GameObject o)
+    {
+        o.SendMessage("Discharge", SendMessageOptions.DontRequireReceiver);
+    }
+
+    private void StartAbility3()
+    {
+        GameObject lightningBolts = Instantiate(dischargeLightningPathPrefab);
+        ConduitStacks[] things = GameObject.FindObjectsOfType<ConduitStacks>();
+        List<GameObject> lightningList = new List<GameObject>();
+        lightningLists = new List<ConduitStacks>();
+        lightningList.Add(gameObject);
+        for (int i = 0; i < things.Length; i++)
+        {
+            if (things[i].Stacks > 0)
+            {
+                GameObject g = new GameObject("Point");
+                g.transform.position = things[i].transform.position;
+                g.transform.rotation = things[i].transform.rotation;
+                g.transform.parent = lightningBolts.transform;
+                lightningList.Add(g);
+                lightningLists.Add(things[i]);
+                lightningList.Add(gameObject);
+            }
+        }
+        lightningBolts.GetComponent<DigitalRuby.ThunderAndLightning.LightningBoltPathScript>().LightningPath.List = lightningList;
+        lightningBolts.GetComponent<DigitalRuby.ThunderAndLightning.LightningBoltPathScript>().AllowOrthographicMode = false;
+        lightningBolts.GetComponent<DigitalRuby.ThunderAndLightning.LightningBoltPathScript>().Camera = null;
+    }
+
+    #endregion
+
+    #region Ability 4 (Lightning Dash)
 
     private void Ability4()
     {
@@ -172,17 +307,34 @@ public class ConduitAbilities : ClassAbilities {
                     } else if (LightningDash.range * Energy - hit[i].distance >= 0.5f && LightningDash.range * Energy - hit[i].distance < 1.5f) {
                         telePos = ray.origin + (ray.direction * (hit[i].distance + 1.5f));
                         hit[i].transform.GetComponent<ConduitStacks>().AddStack();
-                        hit[i].transform.SendMessage("TakeDmg", 0.1f, SendMessageOptions.DontRequireReceiver);
+                        CmdTakeDmg(hit[i].transform.gameObject, 0.1f);
                     } else {
                         hit[i].transform.GetComponent<ConduitStacks>().AddStack();
-                        hit[i].transform.SendMessage("TakeDmg", 0.1f, SendMessageOptions.DontRequireReceiver);
+                        CmdTakeDmg(hit[i].transform.gameObject, 0.1f);
                     }
                 }
             }
         this.transform.position = telePos+Vector3.down;
         Energy = 0;
-        graphicObj.GetComponent<MeshRenderer>().material.color = Color.yellow;
+        CmdChangeGraphicColour(Color.yellow);
     }
+
+    #endregion
+
+    #region Ability 5 (Revive)
+
+    private void Ability5()
+    {
+        Ray ray = new Ray(transform.position + Vector3.up, transform.forward);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit, LightingPunch.range))
+        {
+            CmdCallRevive(hit.transform.gameObject);
+            CmdChangeGraphicColour(Color.magenta);
+        }
+    }
+
+    #endregion
 
     protected override void UseAbility(Ability a) {
         if (currCooldown <= 0) {
@@ -191,28 +343,6 @@ public class ConduitAbilities : ClassAbilities {
                 StartAbility3();
             }
         }
-    }
-
-    private void StartAbility3() {
-        GameObject lightningBolts = Instantiate(dischargeLightningPathPrefab);
-        ConduitStacks[] things = GameObject.FindObjectsOfType<ConduitStacks>();
-        List<GameObject> lightningList = new List<GameObject>();
-        lightningLists = new List<ConduitStacks>();
-        lightningList.Add(gameObject);
-        for (int i = 0; i < things.Length; i++) {
-            if (things[i].Stacks > 0) {
-                GameObject g = new GameObject("Point");
-                g.transform.position = things[i].transform.position;
-                g.transform.rotation = things[i].transform.rotation;
-                g.transform.parent = lightningBolts.transform;
-                lightningList.Add(g);
-                lightningLists.Add(things[i]);
-                lightningList.Add(gameObject);
-            }
-        }
-        lightningBolts.GetComponent<DigitalRuby.ThunderAndLightning.LightningBoltPathScript>().LightningPath.List = lightningList;
-        lightningBolts.GetComponent<DigitalRuby.ThunderAndLightning.LightningBoltPathScript>().AllowOrthographicMode = false;
-        lightningBolts.GetComponent<DigitalRuby.ThunderAndLightning.LightningBoltPathScript>().Camera = null;
     }
 
     private List<GameObject> ChainLightning(List<GameObject> alreadyHit, GameObject justHit, int pass) {

@@ -39,12 +39,6 @@ public class PlayerGUICanvas : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.P)) {
             isBetrayer = !isBetrayer;
         }
-        if (Input.GetKeyDown(KeyCode.O)) {
-            playerStats.Health += 10;
-        }
-        if (Input.GetKeyDown(KeyCode.L)) {
-            playerStats.Health -= 10;
-        }
 
         visHP = Mathf.Lerp(visHP, playerStats.Health, Time.deltaTime * 10);
         visEP = Mathf.Lerp(visEP, playerStats.Energy, Time.deltaTime * 10);
