@@ -172,6 +172,7 @@
     <Compile Include="Assets\9_Standard_Assets\Effects\ImageEffects\Scripts\Vortex.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\0_Readme.txt" />
     <None Include="Assets\7_Procedural_Lightning\ChangeLog.txt" />
     <None Include="Assets\7_Procedural_Lightning\Prefab\Materials\AdditiveSoftTintableShader.shader" />
     <None Include="Assets\7_Procedural_Lightning\Prefab\Materials\DarkCloudShader.shader" />
