@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Joes.unity
+- path: Assets/1_Scenes/Intro_NightClub.unity
   isLoaded: 1
   isActive: 1
