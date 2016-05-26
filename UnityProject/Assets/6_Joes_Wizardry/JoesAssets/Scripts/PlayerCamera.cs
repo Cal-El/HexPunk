@@ -7,7 +7,7 @@ public class PlayerCamera : MonoBehaviour {
     public float timeToShift = 1;
     public Vector3[] viewAngle;
     public Camera cam;
-    private int viewAngleIndex = 0;
+    public int viewAngleIndex = 0;
     public bool useTopDown = false;
     private float lerpVal = 1;
 
