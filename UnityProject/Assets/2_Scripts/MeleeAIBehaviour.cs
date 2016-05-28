@@ -52,6 +52,7 @@ public class MeleeAIBehaviour : MonoBehaviour {
                         break;
                     case STATES.Chasing:
                         GetComponent<Renderer>().material.color = Color.blue;
+                        Retagetting();
                         ChasingBehaviour();
                         break;
                     case STATES.Attacking:
@@ -166,6 +167,17 @@ public class MeleeAIBehaviour : MonoBehaviour {
             StartBattlecry();
         if (health <= 0) {
             GameObject.Destroy(this.gameObject);
+        }
+    }
+
+    public void Retagetting()
+    {
+        float threshold = Vector3.Distance(this.transform.position, target.transform.position) * 0.8f;
+        foreach (GameObject p in Megamanager.MM.players)
+        {
+            if(Vector3.Distance(this.transform.position, p.transform.position) <= threshold){
+                target = p;
+            }
         }
     }
 }

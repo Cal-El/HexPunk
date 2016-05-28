@@ -24,13 +24,13 @@ public class Megamanager : MonoBehaviour {
 	void Update () {
         players = GameObject.FindGameObjectsWithTag("Player");
 
-        foreach (RoomStruct r in roomTree) {
+        /*foreach (RoomStruct r in roomTree) {
             if(r.parents != null) {
                 r.room.roomUnlocked = IsRoomUnlocked(r);
             } else {
                 r.room.roomUnlocked = true;
             }
-        }
+        }*/
 	}
 
     bool IsRoomUnlocked(RoomStruct r) {
@@ -48,7 +48,7 @@ public class Megamanager : MonoBehaviour {
             roomTree[r.ID].ID = r.ID;
         }
 
-        roomTree[0].parents = null;
+        //roomTree[0].parents = null;
         //roomTree[1].parents = new int[] { 0 };
     }
 

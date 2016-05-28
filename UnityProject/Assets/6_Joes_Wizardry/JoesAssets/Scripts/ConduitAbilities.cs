@@ -202,8 +202,10 @@ public class ConduitAbilities : ClassAbilities {
             if (h.transform.GetComponent<ConduitStacks>() != null)
                 h.transform.GetComponent<ConduitStacks>().AddStack();
         }
-        GameObject blast = Instantiate(staticStompPrefab, this.transform.position, this.transform.rotation) as GameObject;
-        blast.GetComponent<StaticStompVisual>().lifeTime = Energy;
+        if (staticStompPrefab != null){
+            GameObject blast = Instantiate(staticStompPrefab, this.transform.position, this.transform.rotation) as GameObject;
+            blast.GetComponent<StaticStompVisual>().lifeTime = Energy;
+        }
         Energy = 0;
         CmdChangeGraphicColour(Color.green);
     }
