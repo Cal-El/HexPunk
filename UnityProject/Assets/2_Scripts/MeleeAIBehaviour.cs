@@ -40,7 +40,7 @@ public class MeleeAIBehaviour : MonoBehaviour {
 	
 	void Update () {
         if (inactiveTimer <= 0) {
-            if (transform.parent.GetComponent<Room>().roomUnlocked) {
+            if (transform.parent == null || transform.parent.GetComponent<Room>().roomUnlocked) {
                 switch (agentState) {
                     case STATES.Idle:
                         GetComponent<Renderer>().material.color = Color.white;

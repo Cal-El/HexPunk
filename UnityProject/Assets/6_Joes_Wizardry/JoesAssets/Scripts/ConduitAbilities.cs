@@ -167,8 +167,9 @@ public class ConduitAbilities : ClassAbilities {
                     GameObject lightningBolts = Instantiate(lightningBoltPathPrefab);
                     for (int i = 0; i < hits.Count; i++) {
                         hits[i].GetComponent<ConduitStacks>().AddStack();
-                        if (i>0)
-                            CmdTakeDmg(hit.transform.gameObject, LightingPunch.baseDmg / 2);
+                        if (i > 0) {
+                            CmdTakeDmg(hits[i].transform.gameObject, LightingPunch.baseDmg / 2);
+                        }
                         if (hits[i] == null) {
                             hits.Remove(hits[i]);
                             continue;
@@ -198,9 +199,14 @@ public class ConduitAbilities : ClassAbilities {
     private void Ability2()
     {
         RaycastHit[] hits = Physics.SphereCastAll(this.transform.position, StaticStomp.range * Energy, transform.forward, 0.0f);
+        List<GameObject> alreadyHit = new List<GameObject>();
         foreach(RaycastHit h in hits) {
-            if (h.transform.GetComponent<ConduitStacks>() != null)
-                h.transform.GetComponent<ConduitStacks>().AddStack();
+            if (!alreadyHit.Contains(h.transform.gameObject))
+            {
+                if (h.transform.GetComponent<ConduitStacks>() != null && h.transform != transform)
+                    h.transform.GetComponent<ConduitStacks>().AddStack();
+                alreadyHit.Add(h.transform.gameObject);
+            }
         }
         if (staticStompPrefab != null){
             GameObject blast = Instantiate(staticStompPrefab, this.transform.position, this.transform.rotation) as GameObject;
@@ -220,8 +226,9 @@ public class ConduitAbilities : ClassAbilities {
         foreach(ConduitStacks c in lightningLists) {
                 if (c != null)
                 {
-                    CmdTakeDmg(c.gameObject, LightingPunch.baseDmg);
+                    float stks = c.Stacks;
                     CmdDischargeStacks(c.gameObject);
+                    CmdTakeDmg(c.gameObject, LightingPunch.baseDmg * stks);
                 }
             }
         CmdChangeGraphicColour(Color.red);
@@ -233,13 +240,14 @@ public class ConduitAbilities : ClassAbilities {
         if (o != null)
         {
             if (!isClient) o.SendMessage("Discharge", SendMessageOptions.DontRequireReceiver);
-            RpcDischargeStacks(o);
+            else RpcDischargeStacks(o);
         }
     }
 
     [ClientRpc]
     private void RpcDischargeStacks(GameObject o)
     {
+        if(o!=null)
         o.SendMessage("Discharge", SendMessageOptions.DontRequireReceiver);
     }
 
@@ -279,7 +287,8 @@ public class ConduitAbilities : ClassAbilities {
         Vector3 telePos = ray.origin + (ray.direction * LightningDash.range * Energy);
         if(hit.Length > 0)
             for (int i = 0; i < hit.Length; i++) {
-                if(hit[i].transform.tag != "Character" && hit[i].transform.tag != "Destructible") {
+                if(hit[i].transform.tag != "Character" && hit[i].transform.tag != "Destructible" && hit[i].transform.tag != "Player")
+                {
                     telePos = ray.origin + (ray.direction * (hit[i].distance - 0.5f));
                     break;
                 } else {
