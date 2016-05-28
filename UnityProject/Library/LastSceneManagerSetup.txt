@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/1_Scenes/Intro_NightClub.unity
+- path: Assets/1_Scenes/NightClub2_LargerRoom.unity
   isLoaded: 1
   isActive: 1

@@ -9,23 +9,27 @@ public class HealthPickup : MonoBehaviour {
     private const float ATTRACTIONRANGE = 4;
     private Vector3 velocity;
     private Transform target;
+    private Vector3 originalPos;
 
     // Use this for initialization
     void Start () {
-	
+        originalPos = transform.position;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        if(target != null) {
-            velocity += (target.position - transform.position).normalized*ATTRACTIONRANGE / Mathf.Pow((target.position - transform.position).magnitude,2)* Time.deltaTime;
+        transform.Rotate(0, Time.deltaTime * 180, 0);
+        if (target != null) {
+            velocity += (target.position + Vector3.up - transform.position).normalized * ATTRACTIONRANGE / Mathf.Pow((target.position+Vector3.up - transform.position).magnitude, 2) * Time.deltaTime;
             velocity = Vector3.ClampMagnitude(velocity, MAXSPEED);
             transform.position += velocity;
             if (Vector3.Distance(target.position, transform.position) < 1f)
                 TriggerPickup(target);
 
         } else {
+            transform.position = originalPos + Vector3.up * Mathf.Sin(Time.timeSinceLevelLoad*0.5f * Mathf.PI * 2)*0.1f;
             target = FindClosestPlayer();
+            
         }
 	}
 
