@@ -1,5 +1,8 @@
+#if UNITY_EDITOR 
 using UnityEditor;
 using UnityEditor.AnimatedValues;
+#endif
+
 using UnityEngine;
 
 namespace UnityStandardAssets.CinematicEffects

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 public class ClassAbilities : NetworkBehaviour {
 
-    public enum ANIMATIONSTATES { Idle, Running, Ability1, Ability2, Ability3, Ability4 };
+    public enum ANIMATIONSTATES { Idle, Running, Ability1, Ability2, Ability3, Ability4, Ability5, Dead, Revived };
     public ANIMATIONSTATES currentState;
 
     public Transform graphicObj;
@@ -55,7 +55,11 @@ public class ClassAbilities : NetworkBehaviour {
 
         if (currCooldown <= 0)
         {
-            if (pm.IsMoving)
+            if (!isAlive)
+            {
+                currentState = ANIMATIONSTATES.Dead;
+            }
+            else if (pm.IsMoving)
             {
                 currentState = ANIMATIONSTATES.Running;
             }
@@ -136,6 +140,7 @@ public class ClassAbilities : NetworkBehaviour {
     {
         if (!isClient)
         {
+            currentState = ANIMATIONSTATES.Dead;
             IsAlive = false;
             //Put death animation and stuff here
         }
@@ -145,6 +150,7 @@ public class ClassAbilities : NetworkBehaviour {
     [ClientRpc]
     protected void RpcDeath()
     {
+        currentState = ANIMATIONSTATES.Dead;
         IsAlive = false;
         //Put death animation and stuff here
     }
@@ -163,6 +169,7 @@ public class ClassAbilities : NetworkBehaviour {
     [ClientRpc]
     protected void RpcCallRevive(GameObject o)
     {
+
         var ca = o.GetComponent<ClassAbilities>();
         ca.IsReviving = true;
         ca.Health = 80;
@@ -189,6 +196,7 @@ public class ClassAbilities : NetworkBehaviour {
     protected virtual void UseAbility(Ability a) {
         if (currCooldown <= 0) {
             currentState = ANIMATIONSTATES.Running + a.abilityNum;
+            Debug.Log(a.abilityNum + " " + currentState);
             castingTimer = a.castingTime;
             waitingForAbility = a.abilityNum;
             currCooldown = a.castingTime + a.cooldown;

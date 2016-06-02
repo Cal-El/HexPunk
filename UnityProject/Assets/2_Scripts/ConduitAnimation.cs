@@ -36,7 +36,16 @@ public class ConduitAnimation : NetworkBehaviour {
                     CmdPlay("Armature|DrawPower");
                     break;
                 case ClassAbilities.ANIMATIONSTATES.Ability4:
-                    CmdPlay("Armature|Punch 2");
+                    CmdPlay("Armature|Dash");
+                    break;
+                case ClassAbilities.ANIMATIONSTATES.Ability5:
+                    CmdPlay("Armature|Res1");
+                    break;
+                case ClassAbilities.ANIMATIONSTATES.Dead:
+                    CmdPlay("Armature|Death");
+                    break;
+                case ClassAbilities.ANIMATIONSTATES.Revived:
+                    CmdPlay("Armature|GetRevd");
                     break;
             }
         }

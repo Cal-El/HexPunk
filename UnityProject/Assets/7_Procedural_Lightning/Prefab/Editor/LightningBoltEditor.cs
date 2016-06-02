@@ -12,9 +12,10 @@
 #endif
 
 using UnityEngine;
+#if UNITY_EDITOR 
 using UnityEditor;
 using UnityEditorInternal;
-
+#endif
 using System;
 using System.Reflection;
 

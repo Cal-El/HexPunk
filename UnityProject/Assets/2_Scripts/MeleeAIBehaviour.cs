@@ -9,6 +9,8 @@ public class MeleeAIBehaviour : MonoBehaviour {
     enum STATES { Idle, Battlecry, Chasing, Attacking}
     STATES agentState = STATES.Idle;
 
+    public MeshRenderer mr;
+
     //Health Values
     private float health;
     public float maxHealth = 5;
@@ -43,20 +45,20 @@ public class MeleeAIBehaviour : MonoBehaviour {
             if (transform.parent == null || transform.parent.GetComponent<Room>().roomUnlocked) {
                 switch (agentState) {
                     case STATES.Idle:
-                        GetComponent<Renderer>().material.color = Color.white;
+                        mr.GetComponent<Renderer>().material.SetColor("_EmissionColor", Color.green);
                         IdleBehaviour();
                         break;
                     case STATES.Battlecry:
-                        GetComponent<Renderer>().material.color = Color.yellow;
+                        mr.GetComponent<Renderer>().material.SetColor("_EmissionColor", Color.yellow);
                         BattlecryBehaviour();
                         break;
                     case STATES.Chasing:
-                        GetComponent<Renderer>().material.color = Color.blue;
+                        mr.GetComponent<Renderer>().material.SetColor("_EmissionColor", Color.red);
                         Retagetting();
                         ChasingBehaviour();
                         break;
                     case STATES.Attacking:
-                        GetComponent<Renderer>().material.color = Color.red;
+                        mr.GetComponent<Renderer>().material.SetColor("_EmissionColor", Color.white);
                         AttackingBehaviour();
                         break;
                 }

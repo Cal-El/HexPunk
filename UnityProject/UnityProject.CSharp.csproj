@@ -112,20 +112,6 @@
     <Compile Include="Assets\7_Procedural_Lightning\Prefab\Scripts\Spells\LightningSpellScript.cs" />
     <Compile Include="Assets\7_Procedural_Lightning\Prefab\Scripts\Spells\LightningWhipSpell.cs" />
     <Compile Include="Assets\7_Procedural_Lightning\Prefab\Scripts\ThunderAndLightningScript.cs" />
-    <Compile Include="Assets\8_Editor\ImageEffects\AntialiasingEditor.cs" />
-    <Compile Include="Assets\8_Editor\ImageEffects\BloomAndFlaresEditor.cs" />
-    <Compile Include="Assets\8_Editor\ImageEffects\BloomEditor.cs" />
-    <Compile Include="Assets\8_Editor\ImageEffects\CameraMotionBlurEditor.cs" />
-    <Compile Include="Assets\8_Editor\ImageEffects\ColorCorrectionCurvesEditor.cs" />
-    <Compile Include="Assets\8_Editor\ImageEffects\ColorCorrectionLookupEditor.cs" />
-    <Compile Include="Assets\8_Editor\ImageEffects\CreaseShadingEditor.cs" />
-    <Compile Include="Assets\8_Editor\ImageEffects\DepthOfFieldDeprecatedEditor.cs" />
-    <Compile Include="Assets\8_Editor\ImageEffects\DepthOfFieldEditor.cs" />
-    <Compile Include="Assets\8_Editor\ImageEffects\EdgeDetectionEditor.cs" />
-    <Compile Include="Assets\8_Editor\ImageEffects\NoiseAndGrainEditor.cs" />
-    <Compile Include="Assets\8_Editor\ImageEffects\SunShaftsEditor.cs" />
-    <Compile Include="Assets\8_Editor\ImageEffects\TonemappingEditor.cs" />
-    <Compile Include="Assets\8_Editor\ImageEffects\VignetteAndChromaticAberrationEditor.cs" />
     <Compile Include="Assets\9_Standard_Assets\Effects\CinematicEffects(ALPHA)\AntiAliasing\AntiAliasing.cs" />
     <Compile Include="Assets\9_Standard_Assets\Effects\CinematicEffects(BETA)\Common\ImageEffectHelper.cs" />
     <Compile Include="Assets\9_Standard_Assets\Effects\CinematicEffects(BETA)\Common\RenderTexureUtility.cs" />
@@ -170,6 +156,7 @@
     <Compile Include="Assets\9_Standard_Assets\Effects\ImageEffects\Scripts\Twirl.cs" />
     <Compile Include="Assets\9_Standard_Assets\Effects\ImageEffects\Scripts\VignetteAndChromaticAberration.cs" />
     <Compile Include="Assets\9_Standard_Assets\Effects\ImageEffects\Scripts\Vortex.cs" />
+    <Compile Include="Assets\DollyCam.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\0_Readme.txt" />

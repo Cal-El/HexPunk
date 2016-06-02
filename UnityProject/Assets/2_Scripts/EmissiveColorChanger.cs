@@ -4,13 +4,15 @@ using System.Collections;
 public class EmissiveColorChanger : MonoBehaviour {
 
     public Color targetColour = Color.black;
+    public float cycleOffset = 0;
+    public float speed = 1;
     private Color currentColour = Color.white;
     public Material[] targetMats;
 
 	// Use this for initialization
 	void Start () {
 	    if(targetMats.Length > 0) {
-            currentColour = targetMats[0].GetColor("_EmissionColor");
+            currentColour = this.GetComponent<Renderer>().material.GetColor("_EmissionColor");
         }
 	}
 	
@@ -19,17 +21,15 @@ public class EmissiveColorChanger : MonoBehaviour {
         if (targetMats.Length > 0) {
             if (targetColour != Color.black) {
                 currentColour = Color.Lerp(currentColour, targetColour, Time.deltaTime);
-                foreach (Material m in targetMats)
-                    m.SetColor("_EmissionColor", currentColour);
+                this.GetComponent<Renderer>().material.SetColor("_EmissionColor", currentColour);
             } else {
                 Color rainbow = new Color(
-                    Mathf.Sin(Time.timeSinceLevelLoad) / 2 + 0.5f,
-                    Mathf.Sin(Time.timeSinceLevelLoad + Mathf.PI * (2 / 3.0f)) / 2 + 0.5f,
-                    Mathf.Sin(Time.timeSinceLevelLoad + Mathf.PI * (4 / 3.0f)) / 2 + 0.5f
+                    Mathf.Sin(speed*Time.timeSinceLevelLoad + cycleOffset*Mathf.PI) / 2 + 0.5f,
+                    Mathf.Sin(speed * Time.timeSinceLevelLoad + Mathf.PI * (2 / 3.0f)+cycleOffset * Mathf.PI) / 2 + 0.5f,
+                    Mathf.Sin(speed * Time.timeSinceLevelLoad + Mathf.PI * (4 / 3.0f)+cycleOffset * Mathf.PI) / 2 + 0.5f
                     );
                 currentColour = Color.Lerp(currentColour, rainbow, Time.deltaTime * 10);
-                foreach(Material m in targetMats)
-                    m.SetColor("_EmissionColor", currentColour);
+                this.GetComponent<Renderer>().material.SetColor("_EmissionColor", currentColour);
             }
         }
         

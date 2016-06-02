@@ -7,6 +7,8 @@ public class ConduitAbilities : ClassAbilities {
 
     public float chainLightningRange = 5.0f;
     public GameObject lightningBoltPathPrefab;
+    public GameObject punchBang;
+    public Transform punchBangPoint;
     public GameObject staticStompPrefab;
     public GameObject dischargeLightningPathPrefab;
 
@@ -16,10 +18,12 @@ public class ConduitAbilities : ClassAbilities {
     private Ability LightningDash;
     private Ability Revive;
 
+    private int playerNum = 0;
+
     private List<ConduitStacks> lightningLists;
 
     // Use this for initialization
-    void Start () {
+    void Start() {
         base.Initialize();
         LightingPunch.abilityNum = 1;
         LightingPunch.baseDmg = 1;
@@ -59,6 +63,16 @@ public class ConduitAbilities : ClassAbilities {
             return;
         }
 
+        //FAKE IT TIL WE MAKE IT
+        if (Input.GetKeyDown(KeyCode.Keypad1))
+            CmdChangeGraphicColour(Color.cyan);
+        if (Input.GetKeyDown(KeyCode.Keypad2))
+            CmdChangeGraphicColour(Color.yellow);
+        if (Input.GetKeyDown(KeyCode.Keypad3))
+            CmdChangeGraphicColour(Color.red);
+        if (Input.GetKeyDown(KeyCode.Keypad4))
+            CmdChangeGraphicColour(Color.green);
+
         //Energy
         if (Energy < 5) {
             Energy = Mathf.Clamp(Energy + Time.deltaTime, 0, 5);
@@ -69,7 +83,7 @@ public class ConduitAbilities : ClassAbilities {
         } else
         {
             if (IsAlive) this.GetComponent<PlayerMovement>().IsCasting = false;
-            CmdChangeGraphicColour(Color.white);
+            
         }
         if (castingTimer > 0) {
             castingTimer = Mathf.Max(castingTimer - Time.deltaTime, 0);
@@ -83,7 +97,7 @@ public class ConduitAbilities : ClassAbilities {
         if (IsReviving) CmdRevive();
 
         //Abilities
-        if (!IsAlive) return;
+        if (!IsAlive) {  return; }
 
         if (Input.GetButtonDown("Ability 1")) UseAbility(LightingPunch);
         if (GetAxisDown1("Ability 2")) UseAbility(StaticStomp);
@@ -93,15 +107,7 @@ public class ConduitAbilities : ClassAbilities {
         //Revive
         else if (Input.GetKeyDown(KeyCode.E))
         {
-            Ray ray = new Ray(transform.position + Vector3.up, transform.forward);
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, LightingPunch.range))
-            {
-                if (hit.transform.tag == "Player" && hit.transform.GetComponent<ClassAbilities>().Health <= 0)
-                {
-                    UseAbility(Revive);
-                }
-            }
+            UseAbility(Revive);
         }
 
         if (waitingForAbility != 0 && castingTimer <= 0) {
@@ -133,14 +139,14 @@ public class ConduitAbilities : ClassAbilities {
     [Command]
     private void CmdChangeGraphicColour(Color colour)
     {
-        if (!isClient) graphicObj.GetComponent<MeshRenderer>().material.color = colour;
+        if (!isClient) graphicObj.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", colour);
         RpcChangeGraphicColour(colour);
     }
 
     [ClientRpc]
     private void RpcChangeGraphicColour(Color colour)
     {
-        graphicObj.GetComponent<MeshRenderer>().material.color = colour;
+        graphicObj.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", colour);
     }
 
     [Command]
@@ -159,6 +165,7 @@ public class ConduitAbilities : ClassAbilities {
         RaycastHit hit;
         if(Physics.Raycast(ray, out hit, LightingPunch.range)) {
             if (hit.transform.GetComponent<ConduitStacks>() != null) {
+                Instantiate(punchBang, punchBangPoint.position, punchBangPoint.rotation);
                 if (hit.transform.GetComponent<ConduitStacks>().Stacks > 0) {
                     List<GameObject> alreadyHit = new List<GameObject>();
                     alreadyHit.Add(hit.transform.gameObject);
@@ -189,7 +196,6 @@ public class ConduitAbilities : ClassAbilities {
                 CmdTakeDmg(hit.transform.gameObject, LightingPunch.baseDmg);
             }
         }
-        CmdChangeGraphicColour(Color.blue);
     }
 
     #endregion
@@ -209,11 +215,9 @@ public class ConduitAbilities : ClassAbilities {
             }
         }
         if (staticStompPrefab != null){
-            GameObject blast = Instantiate(staticStompPrefab, this.transform.position, this.transform.rotation) as GameObject;
-            blast.GetComponent<StaticStompVisual>().lifeTime = Energy;
+            GameObject blast = Instantiate(staticStompPrefab, this.transform.position, staticStompPrefab.transform.rotation) as GameObject;
         }
         Energy = 0;
-        CmdChangeGraphicColour(Color.green);
     }
 
     #endregion
@@ -231,7 +235,6 @@ public class ConduitAbilities : ClassAbilities {
                     CmdTakeDmg(c.gameObject, LightingPunch.baseDmg * stks);
                 }
             }
-        CmdChangeGraphicColour(Color.red);
     }
 
     [Command]
@@ -307,7 +310,6 @@ public class ConduitAbilities : ClassAbilities {
             }
         this.transform.position = telePos+Vector3.down;
         Energy = 0;
-        CmdChangeGraphicColour(Color.yellow);
     }
 
     #endregion
@@ -320,9 +322,12 @@ public class ConduitAbilities : ClassAbilities {
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, LightingPunch.range))
         {
-            CmdCallRevive(hit.transform.gameObject);
-            CmdChangeGraphicColour(Color.magenta);
+            if (hit.transform.tag == "Player" && hit.transform.GetComponent<ClassAbilities>().Health <= 0)
+            {
+                CmdCallRevive(hit.transform.gameObject);
+            }
         }
+        
     }
 
     #endregion

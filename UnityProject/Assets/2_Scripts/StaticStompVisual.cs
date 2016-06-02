@@ -13,9 +13,9 @@ public class StaticStompVisual : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        lifeTimer += Time.deltaTime*50;
-        transform.localScale = new Vector3(lifeTimer, 1, lifeTimer);
-        if(lifeTimer >= lifeTime) {
+        lifeTimer += Time.deltaTime;
+        //transform.localScale = new Vector3(lifeTimer, lifeTimer, lifeTimer);
+        if (lifeTimer >= lifeTime) {
             Destroy(this.gameObject);
         }
 	}
