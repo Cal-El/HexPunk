@@ -11,9 +11,11 @@ public class ClassAbilities : NetworkBehaviour {
     public Transform graphicObj;
     protected PlayerMovement pm;
     public float healthMax = 100;
-    private float health;
+    [SyncVar]
+    public float health;
     public float energyMax = 100;
-    private float energy;
+    [SyncVar]
+    public float energy;
 
     private bool isAlive = true;
     public bool IsReviving { get; set; }
@@ -43,6 +45,9 @@ public class ClassAbilities : NetworkBehaviour {
 
     protected void BaseUpdate()
     {
+        health = Mathf.Max(Mathf.Min(health, healthMax), 0f);
+        energy = Mathf.Max(Mathf.Min(energy, energyMax), 0f);
+
         //Used for testing
         if (Input.GetKeyDown(KeyCode.O))
         {
@@ -70,43 +75,26 @@ public class ClassAbilities : NetworkBehaviour {
         }
     }
 
-    public float Health {
-        get {
-            return health;
-        } set {
-            health = Mathf.Max(Mathf.Min(value, healthMax), 0f);
-        }
-    }
-
-    public float Energy {
-        get {
-            return energy;
-        }
-        set {
-            energy = Mathf.Max(Mathf.Min(value, energyMax), 0f);
-        }
-    }
-
     public void TakeDmg(float dmg) {
-        Health -= dmg;
+        health -= dmg;
     }
 
     public void Heal(float addedHP) {
-        Health += addedHP;
+        health += addedHP;
     }
 
     //Used for testing
     [Command]
     private void CmdAddHealth(float hp)
     {
-        if (!isClient) Health += hp;
+        if (!isClient) health += hp;
         RpcAddHealth(hp);
     }
 
     [ClientRpc]
     private void RpcAddHealth(float hp)
     {
-        Health += hp;
+        health += hp;
     }
 
     #region Death and Respawn
@@ -128,7 +116,7 @@ public class ClassAbilities : NetworkBehaviour {
 
     protected virtual void EnableCharacter(bool enabled)
     {
-        if (enabled) Health = 80;
+        if (enabled) health = 80;
         var cc = GetComponent<CharacterController>();
         if (cc != null) cc.enabled = enabled;
 
@@ -172,7 +160,7 @@ public class ClassAbilities : NetworkBehaviour {
 
         var ca = o.GetComponent<ClassAbilities>();
         ca.IsReviving = true;
-        ca.Health = 80;
+        ca.health = 80;
     }
 
     [Command]

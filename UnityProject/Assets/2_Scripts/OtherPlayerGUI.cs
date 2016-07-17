@@ -23,14 +23,14 @@ public class OtherPlayerGUI : MonoBehaviour
 
         if (player == null) return;
         playerStats = player.GetComponent<ClassAbilities>();
-        visHP = playerStats.Health;
+        visHP = playerStats.health;
     }
 
     // Update is called once per frame
     void Update()
     {
         if (player == null) return;
-        visHP = Mathf.Lerp(visHP, playerStats.Health, Time.deltaTime * 10);
+        visHP = Mathf.Lerp(visHP, playerStats.health, Time.deltaTime * 10);
 
         healthBar.rectTransform.localScale = new Vector3(visHP / 100, healthBar.rectTransform.localScale.y, healthBar.rectTransform.localScale.z);
         healthBarStub.rectTransform.anchoredPosition = new Vector2(Mathf.Lerp(healthBarRange.x, healthBarRange.y, visHP / 100), healthBarStub.rectTransform.anchoredPosition.y);

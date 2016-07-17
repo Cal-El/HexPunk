@@ -74,8 +74,8 @@ public class ConduitAbilities : ClassAbilities {
             CmdChangeGraphicColour(Color.green);
 
         //Energy
-        if (Energy < 5) {
-            Energy = Mathf.Clamp(Energy + Time.deltaTime, 0, 5);
+        if (energy < 5) {
+            energy = Mathf.Clamp(energy + Time.deltaTime, 0, 5);
         }
         if (currCooldown > 0) {
             currCooldown = Mathf.Max(currCooldown - Time.deltaTime, 0);
@@ -89,10 +89,10 @@ public class ConduitAbilities : ClassAbilities {
             castingTimer = Mathf.Max(castingTimer - Time.deltaTime, 0);
         }
 
-        Energy = Energy + Time.deltaTime;
+        energy = energy + Time.deltaTime;
 
         //Death
-        if (Health <= 0) CmdDeath();
+        if (health <= 0) CmdDeath();
 
         if (IsReviving) CmdRevive();
 
@@ -204,7 +204,7 @@ public class ConduitAbilities : ClassAbilities {
 
     private void Ability2()
     {
-        RaycastHit[] hits = Physics.SphereCastAll(this.transform.position, StaticStomp.range * Energy, transform.forward, 0.0f);
+        RaycastHit[] hits = Physics.SphereCastAll(this.transform.position, StaticStomp.range * energy, transform.forward, 0.0f);
         List<GameObject> alreadyHit = new List<GameObject>();
         foreach(RaycastHit h in hits) {
             if (!alreadyHit.Contains(h.transform.gameObject))
@@ -217,7 +217,7 @@ public class ConduitAbilities : ClassAbilities {
         if (staticStompPrefab != null){
             GameObject blast = Instantiate(staticStompPrefab, this.transform.position, staticStompPrefab.transform.rotation) as GameObject;
         }
-        Energy = 0;
+        energy = 0;
     }
 
     #endregion
@@ -286,8 +286,8 @@ public class ConduitAbilities : ClassAbilities {
     private void Ability4()
     {
         Ray ray = new Ray(transform.position + Vector3.up, transform.forward);
-        RaycastHit[] hit = Physics.RaycastAll(ray, LightningDash.range * Energy);
-        Vector3 telePos = ray.origin + (ray.direction * LightningDash.range * Energy);
+        RaycastHit[] hit = Physics.RaycastAll(ray, LightningDash.range * energy);
+        Vector3 telePos = ray.origin + (ray.direction * LightningDash.range * energy);
         if(hit.Length > 0)
             for (int i = 0; i < hit.Length; i++) {
                 if(hit[i].transform.tag != "Character" && hit[i].transform.tag != "Destructible" && hit[i].transform.tag != "Player")
@@ -296,9 +296,9 @@ public class ConduitAbilities : ClassAbilities {
                     break;
                 } else {
     
-                    if(LightningDash.range * Energy - hit[i].distance < 0.5f) {
+                    if(LightningDash.range * energy - hit[i].distance < 0.5f) {
                         telePos = ray.origin + (ray.direction * (hit[i].distance - 0.5f));
-                    } else if (LightningDash.range * Energy - hit[i].distance >= 0.5f && LightningDash.range * Energy - hit[i].distance < 1.5f) {
+                    } else if (LightningDash.range * energy - hit[i].distance >= 0.5f && LightningDash.range * energy - hit[i].distance < 1.5f) {
                         telePos = ray.origin + (ray.direction * (hit[i].distance + 1.5f));
                         hit[i].transform.GetComponent<ConduitStacks>().AddStack();
                         CmdTakeDmg(hit[i].transform.gameObject, 0.1f);
@@ -309,7 +309,7 @@ public class ConduitAbilities : ClassAbilities {
                 }
             }
         this.transform.position = telePos+Vector3.down;
-        Energy = 0;
+        energy = 0;
     }
 
     #endregion
@@ -322,7 +322,7 @@ public class ConduitAbilities : ClassAbilities {
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, LightingPunch.range))
         {
-            if (hit.transform.tag == "Player" && hit.transform.GetComponent<ClassAbilities>().Health <= 0)
+            if (hit.transform.tag == "Player" && hit.transform.GetComponent<ClassAbilities>().health <= 0)
             {
                 CmdCallRevive(hit.transform.gameObject);
             }
