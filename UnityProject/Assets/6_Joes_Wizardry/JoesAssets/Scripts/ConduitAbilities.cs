@@ -155,6 +155,38 @@ public class ConduitAbilities : ClassAbilities {
         o.SendMessage("TakeDmg", damage, SendMessageOptions.DontRequireReceiver);
     }
 
+    [Command]
+    private void CmdSpawnPunchEffect(Vector3 pos, Quaternion rot)
+    {
+        if (!isClient)
+        {
+            Instantiate(punchBang, pos, rot);
+        }
+        RpcSpawnPunchEffect(pos, rot);
+    }
+
+    [ClientRpc]
+    private void RpcSpawnPunchEffect(Vector3 pos, Quaternion rot)
+    {
+        Instantiate(punchBang, pos, rot);
+    }
+
+    [Command]
+    private void CmdSpawnStompEffect(Vector3 pos, Quaternion rot)
+    {
+        if (!isClient)
+        {
+            Instantiate(staticStompPrefab, pos, rot);
+        }
+        RpcSpawnStompEffect(pos, rot);
+    }
+
+    [ClientRpc]
+    private void RpcSpawnStompEffect(Vector3 pos, Quaternion rot)
+    {
+        Instantiate(staticStompPrefab, pos, rot);
+    }
+
     #endregion
 
     #region Ability 1 (Lightning punch)
@@ -165,7 +197,7 @@ public class ConduitAbilities : ClassAbilities {
         RaycastHit hit;
         if(Physics.Raycast(ray, out hit, LightingPunch.range)) {
             if (hit.transform.GetComponent<ConduitStacks>() != null) {
-                Instantiate(punchBang, punchBangPoint.position, punchBangPoint.rotation);
+                CmdSpawnPunchEffect(punchBangPoint.position, punchBangPoint.rotation);
                 if (hit.transform.GetComponent<ConduitStacks>().Stacks > 0) {
                     List<GameObject> alreadyHit = new List<GameObject>();
                     alreadyHit.Add(hit.transform.gameObject);
@@ -215,7 +247,7 @@ public class ConduitAbilities : ClassAbilities {
             }
         }
         if (staticStompPrefab != null){
-            GameObject blast = Instantiate(staticStompPrefab, this.transform.position, staticStompPrefab.transform.rotation) as GameObject;
+            CmdSpawnStompEffect(this.transform.position, staticStompPrefab.transform.rotation);
         }
         energy = 0;
     }
