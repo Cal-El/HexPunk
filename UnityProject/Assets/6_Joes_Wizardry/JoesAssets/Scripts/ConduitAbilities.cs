@@ -113,16 +113,16 @@ public class ConduitAbilities : ClassAbilities {
         if (waitingForAbility != 0 && castingTimer <= 0) {
             switch (waitingForAbility) {
                 case 1:
-                    Ability1();
+                    CmdAbility1();
                     break;
                 case 2:
-                    Ability2();
+                    CmdAbility2();
                     break;
                 case 3:
-                    Ability3();
+                    CmdAbility3();
                     break;
                 case 4:
-                    Ability4();
+                    CmdAbility4();
                     break;
                 case 5:
                     Ability5();
@@ -149,43 +149,79 @@ public class ConduitAbilities : ClassAbilities {
         graphicObj.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", colour);
     }
 
-    [Command]
-    private void CmdTakeDmg(GameObject o, float damage)
-    {
-        o.SendMessage("TakeDmg", damage, SendMessageOptions.DontRequireReceiver);
-    }
+    //[Command]
+    //private void CmdTakeDmg(GameObject o, float damage)
+    //{
+    //    o.SendMessage("TakeDmg", damage, SendMessageOptions.DontRequireReceiver);
+    //}
+
+    #region Ability Commands
 
     [Command]
-    private void CmdSpawnPunchEffect(Vector3 pos, Quaternion rot)
+    private void CmdAbility1()
     {
         if (!isClient)
         {
-            Instantiate(punchBang, pos, rot);
+            Ability1();
         }
-        RpcSpawnPunchEffect(pos, rot);
+        RpcAbility1();
     }
 
     [ClientRpc]
-    private void RpcSpawnPunchEffect(Vector3 pos, Quaternion rot)
+    private void RpcAbility1()
     {
-        Instantiate(punchBang, pos, rot);
+        Ability1();
     }
 
     [Command]
-    private void CmdSpawnStompEffect(Vector3 pos, Quaternion rot)
+    private void CmdAbility2()
     {
         if (!isClient)
         {
-            Instantiate(staticStompPrefab, pos, rot);
+            Ability2();
         }
-        RpcSpawnStompEffect(pos, rot);
+        RpcAbility2();
     }
 
     [ClientRpc]
-    private void RpcSpawnStompEffect(Vector3 pos, Quaternion rot)
+    private void RpcAbility2()
     {
-        Instantiate(staticStompPrefab, pos, rot);
+        Ability2();
     }
+
+    [Command]
+    private void CmdAbility3()
+    {
+        if (!isClient)
+        {
+            Ability3();
+        }
+        RpcAbility3();
+    }
+
+    [ClientRpc]
+    private void RpcAbility3()
+    {
+        Ability3();
+    }
+
+    [Command]
+    private void CmdAbility4()
+    {
+        if (!isClient)
+        {
+            Ability4();
+        }
+        RpcAbility4();
+    }
+
+    [ClientRpc]
+    private void RpcAbility4()
+    {
+        Ability4();
+    }
+
+    #endregion
 
     #endregion
 
@@ -197,19 +233,22 @@ public class ConduitAbilities : ClassAbilities {
         RaycastHit hit;
         if(Physics.Raycast(ray, out hit, LightingPunch.range)) {
             if (hit.transform.GetComponent<ConduitStacks>() != null) {
-                CmdSpawnPunchEffect(punchBangPoint.position, punchBangPoint.rotation);
+                Instantiate(punchBang, punchBangPoint.position, punchBangPoint.rotation);
                 if (hit.transform.GetComponent<ConduitStacks>().Stacks > 0) {
                     List<GameObject> alreadyHit = new List<GameObject>();
                     alreadyHit.Add(hit.transform.gameObject);
                     List<GameObject> hits = ChainLightning(alreadyHit, hit.transform.gameObject, 1);
                     List<GameObject> copies = new List<GameObject>();
                     GameObject lightningBolts = Instantiate(lightningBoltPathPrefab);
-                    for (int i = 0; i < hits.Count; i++) {
+                    for (int i = 0; i < hits.Count; i++)
+                    {
                         hits[i].GetComponent<ConduitStacks>().AddStack();
-                        if (i > 0) {
-                            CmdTakeDmg(hits[i].transform.gameObject, LightingPunch.baseDmg / 2);
+                        if (i > 0)
+                        {
+                            hit.transform.gameObject.SendMessage("TakeDmg", LightingPunch.baseDmg / 2, SendMessageOptions.DontRequireReceiver);
                         }
-                        if (hits[i] == null) {
+                        if (hits[i] == null)
+                        {
                             hits.Remove(hits[i]);
                             continue;
                         }
@@ -225,7 +264,7 @@ public class ConduitAbilities : ClassAbilities {
                 } else {
                     hit.transform.GetComponent<ConduitStacks>().AddStack();
                 }
-                CmdTakeDmg(hit.transform.gameObject, LightingPunch.baseDmg);
+                hit.transform.gameObject.SendMessage("TakeDmg", LightingPunch.baseDmg, SendMessageOptions.DontRequireReceiver);
             }
         }
     }
@@ -247,7 +286,7 @@ public class ConduitAbilities : ClassAbilities {
             }
         }
         if (staticStompPrefab != null){
-            CmdSpawnStompEffect(this.transform.position, staticStompPrefab.transform.rotation);
+            Instantiate(staticStompPrefab, this.transform.position, staticStompPrefab.transform.rotation);
         }
         energy = 0;
     }
@@ -264,7 +303,7 @@ public class ConduitAbilities : ClassAbilities {
                 {
                     float stks = c.Stacks;
                     CmdDischargeStacks(c.gameObject);
-                    CmdTakeDmg(c.gameObject, LightingPunch.baseDmg * stks);
+                    c.gameObject.SendMessage("TakeDmg", LightingPunch.baseDmg * stks, SendMessageOptions.DontRequireReceiver);
                 }
             }
     }
@@ -311,6 +350,22 @@ public class ConduitAbilities : ClassAbilities {
         lightningBolts.GetComponent<DigitalRuby.ThunderAndLightning.LightningBoltPathScript>().Camera = null;
     }
 
+    [Command]
+    private void CmdStartAbility3()
+    {
+        if (!isClient)
+        {
+            StartAbility3();
+        }
+        RpcStartAbility3();
+    }
+
+    [ClientRpc]
+    private void RpcStartAbility3()
+    {
+        StartAbility3();
+    }
+
     #endregion
 
     #region Ability 4 (Lightning Dash)
@@ -333,10 +388,10 @@ public class ConduitAbilities : ClassAbilities {
                     } else if (LightningDash.range * energy - hit[i].distance >= 0.5f && LightningDash.range * energy - hit[i].distance < 1.5f) {
                         telePos = ray.origin + (ray.direction * (hit[i].distance + 1.5f));
                         hit[i].transform.GetComponent<ConduitStacks>().AddStack();
-                        CmdTakeDmg(hit[i].transform.gameObject, 0.1f);
+                        hit[i].transform.gameObject.SendMessage("TakeDmg", 0.1f, SendMessageOptions.DontRequireReceiver);
                     } else {
                         hit[i].transform.GetComponent<ConduitStacks>().AddStack();
-                        CmdTakeDmg(hit[i].transform.gameObject, 0.1f);
+                        hit[i].transform.gameObject.SendMessage("TakeDmg", 0.1f, SendMessageOptions.DontRequireReceiver);
                     }
                 }
             }
@@ -368,7 +423,7 @@ public class ConduitAbilities : ClassAbilities {
         if (currCooldown <= 0) {
             base.UseAbility(a);
             if (waitingForAbility == 3) {
-                StartAbility3();
+                CmdStartAbility3();
             }
         }
     }
