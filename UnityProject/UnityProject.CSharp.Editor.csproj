@@ -211,8 +211,8 @@
     <None Include="Assets\9_Standard_Assets\Effects\ToonShading\Shaders\ToonBasicOutline.shader" />
     <None Include="Assets\9_Standard_Assets\Effects\ToonShading\Shaders\ToonLit.shader" />
     <None Include="Assets\9_Standard_Assets\Effects\ToonShading\Shaders\ToonLitOutline.shader" />
-    <None Include="Assets\Lobby Assets\Fonts\OpenSans\License!.txt" />
-    <None Include="Assets\Lobby Assets\Network\Instruction.txt" />
+    <None Include="Assets\Lobby Assets\Standard Assets\Fonts\OpenSans\License!.txt" />
+    <None Include="Assets\Lobby Assets\Standard Assets\Network\Instruction.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>

@@ -161,17 +161,17 @@
     <Compile Include="Assets\9_Standard_Assets\Effects\ImageEffects\Scripts\VignetteAndChromaticAberration.cs" />
     <Compile Include="Assets\9_Standard_Assets\Effects\ImageEffects\Scripts\Vortex.cs" />
     <Compile Include="Assets\DollyCam.cs" />
-    <Compile Include="Assets\Lobby Assets\Network\Scripts\DraggablePanel.cs" />
-    <Compile Include="Assets\Lobby Assets\Network\Scripts\Lobby\LobbyCountdownPanel.cs" />
-    <Compile Include="Assets\Lobby Assets\Network\Scripts\Lobby\LobbyHook.cs" />
-    <Compile Include="Assets\Lobby Assets\Network\Scripts\Lobby\LobbyInfoPanel.cs" />
-    <Compile Include="Assets\Lobby Assets\Network\Scripts\Lobby\LobbyMainMenu.cs" />
-    <Compile Include="Assets\Lobby Assets\Network\Scripts\Lobby\LobbyManager.cs" />
-    <Compile Include="Assets\Lobby Assets\Network\Scripts\Lobby\LobbyPlayer.cs" />
-    <Compile Include="Assets\Lobby Assets\Network\Scripts\Lobby\LobbyPlayerList.cs" />
-    <Compile Include="Assets\Lobby Assets\Network\Scripts\Lobby\LobbyServerEntry.cs" />
-    <Compile Include="Assets\Lobby Assets\Network\Scripts\Lobby\LobbyServerList.cs" />
-    <Compile Include="Assets\Lobby Assets\Network\Scripts\Lobby\LobbyTopPanel.cs" />
+    <Compile Include="Assets\Lobby Assets\Standard Assets\Network\Scripts\DraggablePanel.cs" />
+    <Compile Include="Assets\Lobby Assets\Standard Assets\Network\Scripts\Lobby\LobbyCountdownPanel.cs" />
+    <Compile Include="Assets\Lobby Assets\Standard Assets\Network\Scripts\Lobby\LobbyHook.cs" />
+    <Compile Include="Assets\Lobby Assets\Standard Assets\Network\Scripts\Lobby\LobbyInfoPanel.cs" />
+    <Compile Include="Assets\Lobby Assets\Standard Assets\Network\Scripts\Lobby\LobbyMainMenu.cs" />
+    <Compile Include="Assets\Lobby Assets\Standard Assets\Network\Scripts\Lobby\LobbyManager.cs" />
+    <Compile Include="Assets\Lobby Assets\Standard Assets\Network\Scripts\Lobby\LobbyPlayer.cs" />
+    <Compile Include="Assets\Lobby Assets\Standard Assets\Network\Scripts\Lobby\LobbyPlayerList.cs" />
+    <Compile Include="Assets\Lobby Assets\Standard Assets\Network\Scripts\Lobby\LobbyServerEntry.cs" />
+    <Compile Include="Assets\Lobby Assets\Standard Assets\Network\Scripts\Lobby\LobbyServerList.cs" />
+    <Compile Include="Assets\Lobby Assets\Standard Assets\Network\Scripts\Lobby\LobbyTopPanel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\0_Readme.txt" />
@@ -268,8 +268,8 @@
     <None Include="Assets\9_Standard_Assets\Effects\ToonShading\Shaders\ToonBasicOutline.shader" />
     <None Include="Assets\9_Standard_Assets\Effects\ToonShading\Shaders\ToonLit.shader" />
     <None Include="Assets\9_Standard_Assets\Effects\ToonShading\Shaders\ToonLitOutline.shader" />
-    <None Include="Assets\Lobby Assets\Fonts\OpenSans\License!.txt" />
-    <None Include="Assets\Lobby Assets\Network\Instruction.txt" />
+    <None Include="Assets\Lobby Assets\Standard Assets\Fonts\OpenSans\License!.txt" />
+    <None Include="Assets\Lobby Assets\Standard Assets\Network\Instruction.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>

@@ -97,38 +97,41 @@ public class ConduitAbilities : ClassAbilities {
         if (IsReviving) CmdRevive();
 
         //Abilities
-        if (!IsAlive) {  return; }
-
-        if (Input.GetButtonDown("Ability 1")) UseAbility(LightingPunch);
-        if (GetAxisDown1("Ability 2")) UseAbility(StaticStomp);
-        else if (Input.GetButtonDown("Ability 3")) UseAbility(Discharge);
-        else if (GetAxisDown2("Ability 4")) UseAbility(LightningDash);
-
-        //Revive
-        else if (Input.GetKeyDown(KeyCode.E))
+        if (IsAlive)
         {
-            UseAbility(Revive);
-        }
+            if (Input.GetButtonDown("Ability 1")) UseAbility(LightingPunch);
+            if (GetAxisDown1("Ability 2")) UseAbility(StaticStomp);
+            else if (Input.GetButtonDown("Ability 3")) UseAbility(Discharge);
+            else if (GetAxisDown2("Ability 4")) UseAbility(LightningDash);
 
-        if (waitingForAbility != 0 && castingTimer <= 0) {
-            switch (waitingForAbility) {
-                case 1:
-                    CmdAbility1();
-                    break;
-                case 2:
-                    CmdAbility2();
-                    break;
-                case 3:
-                    CmdAbility3();
-                    break;
-                case 4:
-                    CmdAbility4();
-                    break;
-                case 5:
-                    Ability5();
-                    break;
+            //Revive
+            else if (Input.GetKeyDown(KeyCode.E))
+            {
+                UseAbility(Revive);
             }
-            waitingForAbility = 0;
+
+            if (waitingForAbility != 0 && castingTimer <= 0)
+            {
+                switch (waitingForAbility)
+                {
+                    case 1:
+                        CmdAbility1();
+                        break;
+                    case 2:
+                        CmdAbility2();
+                        break;
+                    case 3:
+                        CmdAbility3();
+                        break;
+                    case 4:
+                        CmdAbility4();
+                        break;
+                    case 5:
+                        Ability5();
+                        break;
+                }
+                waitingForAbility = 0;
+            }
         }
 
         base.BaseUpdate();
