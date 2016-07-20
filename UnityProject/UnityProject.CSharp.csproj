@@ -66,7 +66,6 @@
     <Compile Include="Assets\2_Scripts\BetrayerBehaviour.cs" />
     <Compile Include="Assets\2_Scripts\BetrayerSetup.cs" />
     <Compile Include="Assets\2_Scripts\CharacterMotor.cs" />
-    <Compile Include="Assets\2_Scripts\ConduitAnimation.cs" />
     <Compile Include="Assets\2_Scripts\ConduitStacks.cs" />
     <Compile Include="Assets\2_Scripts\DestructibleObject.cs" />
     <Compile Include="Assets\2_Scripts\DoorScript.cs" />
@@ -81,6 +80,7 @@
     <Compile Include="Assets\2_Scripts\NetworkSyncRotation.cs" />
     <Compile Include="Assets\2_Scripts\OtherPlayerGUI.cs" />
     <Compile Include="Assets\2_Scripts\Pad.cs" />
+    <Compile Include="Assets\2_Scripts\PlayerAnimations.cs" />
     <Compile Include="Assets\2_Scripts\PlayerCommands.cs" />
     <Compile Include="Assets\2_Scripts\PlayerGUICanvas.cs" />
     <Compile Include="Assets\2_Scripts\PlayerImage.cs" />

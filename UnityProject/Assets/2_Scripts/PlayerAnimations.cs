@@ -1,55 +1,61 @@
 ﻿using UnityEngine;
-using UnityEngine.Networking;
 using System.Collections;
+using UnityEngine.Networking;
 
-public class ConduitAnimation : NetworkBehaviour {
+public class PlayerAnimations : NetworkBehaviour
+{
+    public string idle, running, ability1, ability2, ability3, ability4, ability5, dead, revived;
 
-    ConduitAbilities ca;
-    ConduitAbilities.ANIMATIONSTATES previousState;
-    Animator ani;
+    private ClassAbilities ca;
+    private ClassAbilities.ANIMATIONSTATES previousState;
+    private Animator ani;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start()
+    {
         ca = GetComponent<ConduitAbilities>();
         ani = GetComponentInChildren<Animator>();
-	}
-	
-	// Update is called once per frame
-	void Update () {
-        if(previousState != ca.currentState)
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (!isLocalPlayer) return;
+
+        if (previousState != ca.currentState)
         {
             switch (ca.currentState)
             {
                 case ClassAbilities.ANIMATIONSTATES.Idle:
-                    CmdPlay("Armature|Idle");
+                    CmdPlay(idle);
                     break;
                 case ClassAbilities.ANIMATIONSTATES.Running:
-                    CmdPlay("Armature|Run Cycle");
+                    CmdPlay(running);
                     break;
                 case ClassAbilities.ANIMATIONSTATES.Ability1:
-                    CmdPlay("Armature|Punch 1");
+                    CmdPlay(ability1);
                     break;
                 case ClassAbilities.ANIMATIONSTATES.Ability2:
-                    CmdPlay("Armature|Stomp");
+                    CmdPlay(ability2);
                     break;
                 case ClassAbilities.ANIMATIONSTATES.Ability3:
-                    CmdPlay("Armature|DrawPower");
+                    CmdPlay(ability3);
                     break;
                 case ClassAbilities.ANIMATIONSTATES.Ability4:
-                    CmdPlay("Armature|Dash");
+                    CmdPlay(ability4);
                     break;
                 case ClassAbilities.ANIMATIONSTATES.Ability5:
-                    CmdPlay("Armature|Res1");
+                    CmdPlay(ability5);
                     break;
                 case ClassAbilities.ANIMATIONSTATES.Dead:
-                    CmdPlay("Armature|Death");
+                    CmdPlay(dead);
                     break;
                 case ClassAbilities.ANIMATIONSTATES.Revived:
-                    CmdPlay("Armature|GetRevd");
+                    CmdPlay(revived);
                     break;
             }
         }
-        
+
         previousState = ca.currentState;
     }
 
