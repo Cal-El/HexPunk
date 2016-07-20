@@ -77,6 +77,8 @@
     <Compile Include="Assets\2_Scripts\HealthPickup.cs" />
     <Compile Include="Assets\2_Scripts\Megamanager.cs" />
     <Compile Include="Assets\2_Scripts\MeleeAIBehaviour.cs" />
+    <Compile Include="Assets\2_Scripts\NetworkSyncPosition.cs" />
+    <Compile Include="Assets\2_Scripts\NetworkSyncRotation.cs" />
     <Compile Include="Assets\2_Scripts\OtherPlayerGUI.cs" />
     <Compile Include="Assets\2_Scripts\Pad.cs" />
     <Compile Include="Assets\2_Scripts\PlayerCommands.cs" />

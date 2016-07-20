@@ -398,7 +398,9 @@ public class ConduitAbilities : ClassAbilities {
                     }
                 }
             }
-        this.transform.position = telePos+Vector3.down;
+        Vector3 newPos = telePos + Vector3.down;
+        this.transform.position = newPos;
+        GetComponent<NetworkSyncPosition>().syncPos = newPos;
         energy = 0;
     }
 
