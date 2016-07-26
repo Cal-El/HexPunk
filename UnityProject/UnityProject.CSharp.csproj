@@ -97,6 +97,7 @@
     <Compile Include="Assets\2_Scripts\HealthPickup.cs" />
     <Compile Include="Assets\2_Scripts\Megamanager.cs" />
     <Compile Include="Assets\2_Scripts\MeleeAIBehaviour.cs" />
+    <Compile Include="Assets\2_Scripts\MeleeEnemyAnimations.cs" />
     <Compile Include="Assets\2_Scripts\NetworkSyncPosition.cs" />
     <Compile Include="Assets\2_Scripts\NetworkSyncRotation.cs" />
     <Compile Include="Assets\2_Scripts\OtherPlayerGUI.cs" />
@@ -195,6 +196,7 @@
     <Compile Include="Assets\Lobby Assets\Standard Assets\Network\Scripts\Lobby\LobbyServerEntry.cs" />
     <Compile Include="Assets\Lobby Assets\Standard Assets\Network\Scripts\Lobby\LobbyServerList.cs" />
     <Compile Include="Assets\Lobby Assets\Standard Assets\Network\Scripts\Lobby\LobbyTopPanel.cs" />
+    <Compile Include="Assets\MainMenuManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\0_Readme.txt" />

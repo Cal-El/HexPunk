@@ -6,10 +6,11 @@ public class MeleeAIBehaviour : MonoBehaviour {
     private const float TIME_FOR_NAVMESH_UPDATE = 0.5f;
 
     //State machine variables
-    enum STATES { Idle, Battlecry, Chasing, Attacking}
-    STATES agentState = STATES.Idle;
+    public enum STATES { Idle, Battlecry, Chasing, Attacking, Dead}
+    [HideInInspector]public STATES agentState = STATES.Idle;
+    [HideInInspector]public STATES animationState = STATES.Idle;
 
-    public MeshRenderer mr;
+    public SkinnedMeshRenderer mr;
 
     //Health Values
     private float health;
@@ -22,7 +23,7 @@ public class MeleeAIBehaviour : MonoBehaviour {
     private float attackTimer = 0;
     public float range = 2;                     //Range/Reach of the attack
 
-    //Battlecry Variables
+    //Battlecry Variable
     public char[] battleTriggers;           //The char triggers that can override this AI to begin attacking
     public float battlecryTime = 1.5f;      //Time it takes to complete a battlecry
     private float battlecryTimer = 0.0f;    //Timer for use while battlecry is triggering
@@ -30,7 +31,7 @@ public class MeleeAIBehaviour : MonoBehaviour {
 
     //Pathfinding Variables
     private GameObject target;
-    private NavMeshAgent navAgent;
+    [HideInInspector]public NavMeshAgent navAgent;
     private NavMeshObstacle navObst;
     private float inactiveTimer = 0.0f;
 
@@ -41,35 +42,44 @@ public class MeleeAIBehaviour : MonoBehaviour {
 	}
 	
 	void Update () {
-        if (inactiveTimer <= 0) {
-            if (transform.parent == null || transform.parent.GetComponent<Room>().roomUnlocked) {
-                switch (agentState) {
-                    case STATES.Idle:
-                        mr.GetComponent<Renderer>().material.SetColor("_EmissionColor", Color.green);
-                        IdleBehaviour();
-                        break;
-                    case STATES.Battlecry:
-                        mr.GetComponent<Renderer>().material.SetColor("_EmissionColor", Color.yellow);
-                        BattlecryBehaviour();
-                        break;
-                    case STATES.Chasing:
-                        mr.GetComponent<Renderer>().material.SetColor("_EmissionColor", Color.red);
-                        Retagetting();
-                        ChasingBehaviour();
-                        break;
-                    case STATES.Attacking:
-                        mr.GetComponent<Renderer>().material.SetColor("_EmissionColor", Color.white);
-                        AttackingBehaviour();
-                        break;
+        if (agentState != STATES.Dead) {
+            Vector3 prePos = transform.position;
+            if (inactiveTimer <= 0) {
+                if (transform.parent == null || transform.parent.GetComponent<Room>().roomUnlocked) {
+                    switch (agentState) {
+                        case STATES.Idle:
+                            mr.material.SetColor("_EmissionColor", Color.green);
+                            animationState = STATES.Idle;
+                            IdleBehaviour();
+                            break;
+                        case STATES.Battlecry:
+                            mr.material.SetColor("_EmissionColor", Color.yellow);
+                            animationState = STATES.Battlecry;
+                            BattlecryBehaviour();
+                            break;
+                        case STATES.Chasing:
+                            mr.material.SetColor("_EmissionColor", Color.red);
+                            Retagetting();
+                            animationState = STATES.Chasing;
+                            ChasingBehaviour();
+                            break;
+                        case STATES.Attacking:
+                            mr.material.SetColor("_EmissionColor", Color.white);
+                            AttackingBehaviour();
+                            break;
+                    }
                 }
+                if (navAgent.enabled && navAgent.pathStatus == NavMeshPathStatus.PathComplete) {
+                    animationState = STATES.Chasing;
+                }
+            } else {
+                inactiveTimer -= Time.deltaTime;
+                
             }
-        } else {
-            inactiveTimer -= Time.deltaTime;
         }
 	}
 
     private void IdleBehaviour() {
-
     }
 
     private void BattlecryBehaviour() {
@@ -94,10 +104,10 @@ public class MeleeAIBehaviour : MonoBehaviour {
             target = closest;
             StartChase();
         }
+        
     }
 
     private void ChasingBehaviour() {
-        
         if (navAgent != null && target != null) {
             navAgent.enabled = true;
             navObst.enabled = false;
@@ -114,6 +124,7 @@ public class MeleeAIBehaviour : MonoBehaviour {
 
     private void AttackingBehaviour() {
         if(attackTimer > cooldown) {            //Attacking
+            animationState = STATES.Attacking;
             attackTimer -= Time.deltaTime;
             if (attackTimer <= cooldown) {      //Theshold crossed. Time to attack
                 RaycastHit hit;
@@ -124,6 +135,7 @@ public class MeleeAIBehaviour : MonoBehaviour {
                 }
             }
         } else {                                //Not Attacking
+            animationState = STATES.Idle;
             transform.LookAt(new Vector3(target.transform.position.x, this.transform.position.y, target.transform.position.z));
             attackTimer -= Time.deltaTime;
             if (Vector3.Distance(this.transform.position, target.transform.position) > range) {
@@ -175,9 +187,10 @@ public class MeleeAIBehaviour : MonoBehaviour {
     public void Retagetting()
     {
         float threshold = Vector3.Distance(this.transform.position, target.transform.position) * 0.8f;
+        if (target.GetComponent<ClassAbilities>().currentState == ClassAbilities.ANIMATIONSTATES.Dead) threshold = 1000;
         foreach (GameObject p in Megamanager.MM.players)
         {
-            if(Vector3.Distance(this.transform.position, p.transform.position) <= threshold){
+            if (Vector3.Distance(this.transform.position, p.transform.position) <= threshold && p.GetComponent <ClassAbilities>().currentState != ClassAbilities.ANIMATIONSTATES.Dead){
                 target = p;
             }
         }
