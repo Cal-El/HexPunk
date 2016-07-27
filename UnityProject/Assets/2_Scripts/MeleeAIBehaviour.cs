@@ -38,6 +38,9 @@ public class MeleeAIBehaviour : MonoBehaviour {
     void Start () {
         navAgent = this.GetComponent<NavMeshAgent>();
         navObst = this.GetComponent<NavMeshObstacle>();
+
+        navAgent.speed = navAgent.speed * Random.Range(0.5f, 1.0f);
+        navAgent.avoidancePriority = Random.Range(1,99);
         health = maxHealth;
 	}
 	

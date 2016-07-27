@@ -15,6 +15,7 @@ public class MeleeEnemyAnimations : NetworkBehaviour
     {
         ai = GetComponent<MeleeAIBehaviour>();
         ani = GetComponentInChildren<Animator>();
+        
     }
 
     // Update is called once per frame
@@ -44,7 +45,8 @@ public class MeleeEnemyAnimations : NetworkBehaviour
 
         if (ai.animationState != MeleeAIBehaviour.STATES.Dead) {
             ani.SetLayerWeight(0, 1 - ai.navAgent.velocity.magnitude / ai.navAgent.speed);
-            ani.SetLayerWeight(1, ai.navAgent.velocity.magnitude / ai.navAgent.speed);
+            ani.SetLayerWeight(1, Mathf.Lerp(ani.GetLayerWeight(1), ai.navAgent.velocity.magnitude / ai.navAgent.speed, Time.deltaTime*10));
+            ani.SetFloat("Random Offset", Mathf.Max(Mathf.Lerp(ani.GetFloat("Random Offset"), ai.navAgent.velocity.magnitude / ai.navAgent.speed, Time.deltaTime*10), 0.001f));
         } else {
             ani.SetLayerWeight(0, 1);
             ani.SetLayerWeight(1, 0);
