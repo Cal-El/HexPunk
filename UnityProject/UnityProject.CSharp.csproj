@@ -86,7 +86,10 @@
   <ItemGroup>
     <Compile Include="Assets\2_Scripts\BetrayerBehaviour.cs" />
     <Compile Include="Assets\2_Scripts\BetrayerSetup.cs" />
+    <Compile Include="Assets\2_Scripts\CalderaAbilities.cs" />
     <Compile Include="Assets\2_Scripts\CharacterMotor.cs" />
+    <Compile Include="Assets\2_Scripts\ClassAbilities.cs" />
+    <Compile Include="Assets\2_Scripts\ConduitAbilities.cs" />
     <Compile Include="Assets\2_Scripts\ConduitStacks.cs" />
     <Compile Include="Assets\2_Scripts\DefeatGUI.cs" />
     <Compile Include="Assets\2_Scripts\DestructibleObject.cs" />
@@ -104,9 +107,11 @@
     <Compile Include="Assets\2_Scripts\OtherPlayerGUI.cs" />
     <Compile Include="Assets\2_Scripts\Pad.cs" />
     <Compile Include="Assets\2_Scripts\PlayerAnimations.cs" />
+    <Compile Include="Assets\2_Scripts\PlayerCamera.cs" />
     <Compile Include="Assets\2_Scripts\PlayerCommands.cs" />
     <Compile Include="Assets\2_Scripts\PlayerGUICanvas.cs" />
     <Compile Include="Assets\2_Scripts\PlayerImage.cs" />
+    <Compile Include="Assets\2_Scripts\PlayerMovement.cs" />
     <Compile Include="Assets\2_Scripts\PowerWire.cs" />
     <Compile Include="Assets\2_Scripts\PressurePad.cs" />
     <Compile Include="Assets\2_Scripts\PressurePadGraphic.cs" />
@@ -116,10 +121,6 @@
     <Compile Include="Assets\2_Scripts\StaticStompVisual.cs" />
     <Compile Include="Assets\2_Scripts\Trigger.cs" />
     <Compile Include="Assets\2_Scripts\VictoryGUI.cs" />
-    <Compile Include="Assets\6_Joes_Wizardry\JoesAssets\Scripts\ClassAbilities.cs" />
-    <Compile Include="Assets\6_Joes_Wizardry\JoesAssets\Scripts\ConduitAbilities.cs" />
-    <Compile Include="Assets\6_Joes_Wizardry\JoesAssets\Scripts\PlayerCamera.cs" />
-    <Compile Include="Assets\6_Joes_Wizardry\JoesAssets\Scripts\PlayerMovement.cs" />
     <Compile Include="Assets\7_Procedural_Lightning\Prefab\Scripts\LightningBoltPathScript.cs" />
     <Compile Include="Assets\7_Procedural_Lightning\Prefab\Scripts\LightningBoltPrefabScript.cs" />
     <Compile Include="Assets\7_Procedural_Lightning\Prefab\Scripts\LightningBoltScript.cs" />
