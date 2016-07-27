@@ -21,6 +21,11 @@ public class PlayerGUICanvas : MonoBehaviour
     private bool isBetrayer = false;
     private OtherPlayerGUI[] guiList;
 
+    public GameObject victoryGUI;
+    private bool victory = false;
+    public GameObject defeatGUI;
+    private bool defeat = false;
+
     private float visHP;
     private float visEP;
 
@@ -107,5 +112,32 @@ public class PlayerGUICanvas : MonoBehaviour
             }
         }
     }
+    
+    public bool Victory
+    {
+        get
+        {
+            return victory;
+        }
 
+        set
+        {
+            victoryGUI.SetActive(value);
+            victory = value;
+        }
+    }
+
+    public bool Defeat
+    {
+        get
+        {
+            return defeat;
+        }
+
+        set
+        {
+            defeatGUI.SetActive(value);
+            defeat = value;
+        }
+    }
 }

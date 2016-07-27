@@ -88,6 +88,7 @@
     <Compile Include="Assets\2_Scripts\BetrayerSetup.cs" />
     <Compile Include="Assets\2_Scripts\CharacterMotor.cs" />
     <Compile Include="Assets\2_Scripts\ConduitStacks.cs" />
+    <Compile Include="Assets\2_Scripts\DefeatGUI.cs" />
     <Compile Include="Assets\2_Scripts\DestructibleObject.cs" />
     <Compile Include="Assets\2_Scripts\DoorScript.cs" />
     <Compile Include="Assets\2_Scripts\EmissiveColorChanger.cs" />
@@ -114,6 +115,7 @@
     <Compile Include="Assets\2_Scripts\RoomTwoPuzzle.cs" />
     <Compile Include="Assets\2_Scripts\StaticStompVisual.cs" />
     <Compile Include="Assets\2_Scripts\Trigger.cs" />
+    <Compile Include="Assets\2_Scripts\VictoryGUI.cs" />
     <Compile Include="Assets\6_Joes_Wizardry\JoesAssets\Scripts\ClassAbilities.cs" />
     <Compile Include="Assets\6_Joes_Wizardry\JoesAssets\Scripts\ConduitAbilities.cs" />
     <Compile Include="Assets\6_Joes_Wizardry\JoesAssets\Scripts\PlayerCamera.cs" />
