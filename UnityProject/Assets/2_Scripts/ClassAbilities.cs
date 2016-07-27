@@ -19,6 +19,7 @@ public class ClassAbilities : NetworkBehaviour {
 
     private bool isAlive = true;
     public bool IsReviving { get; set; }
+    protected Ability Revive;
 
     protected bool isAxisInUse1 = false;
     protected bool isAxisInUse2 = false;
@@ -41,6 +42,12 @@ public class ClassAbilities : NetworkBehaviour {
         health = healthMax;
         energy = energyMax;
         pm = GetComponent<PlayerMovement>();
+
+        //Setup revive ability which is used by all classes
+        Revive.abilityNum = 5;
+        Revive.castingTime = 1f;
+        Revive.cooldown = 0.25f;
+        Revive.range = 1.0f;
     }
 
     protected void BaseUpdate()
@@ -57,6 +64,16 @@ public class ClassAbilities : NetworkBehaviour {
         {
             CmdAddHealth(-10);
         }
+
+        //FAKE IT TIL WE MAKE IT
+        if (Input.GetKeyDown(KeyCode.Keypad1))
+            CmdChangeGraphicColour(Color.cyan);
+        if (Input.GetKeyDown(KeyCode.Keypad2))
+            CmdChangeGraphicColour(Color.yellow);
+        if (Input.GetKeyDown(KeyCode.Keypad3))
+            CmdChangeGraphicColour(Color.red);
+        if (Input.GetKeyDown(KeyCode.Keypad4))
+            CmdChangeGraphicColour(Color.green);
 
         if (currCooldown <= 0)
         {
@@ -95,6 +112,19 @@ public class ClassAbilities : NetworkBehaviour {
     private void RpcAddHealth(float hp)
     {
         health += hp;
+    }
+
+    [Command]
+    private void CmdChangeGraphicColour(Color colour)
+    {
+        if (!isClient) graphicObj.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", colour);
+        RpcChangeGraphicColour(colour);
+    }
+
+    [ClientRpc]
+    private void RpcChangeGraphicColour(Color colour)
+    {
+        graphicObj.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", colour);
     }
 
     #region Death and Respawn

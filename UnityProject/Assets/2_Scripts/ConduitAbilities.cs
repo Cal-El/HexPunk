@@ -16,7 +16,6 @@ public class ConduitAbilities : ClassAbilities {
     private Ability StaticStomp;
     private Ability Discharge;
     private Ability LightningDash;
-    private Ability Revive;
 
     private int playerNum = 0;
 
@@ -48,11 +47,6 @@ public class ConduitAbilities : ClassAbilities {
         LightningDash.castingTime = 0.25f;
         LightningDash.cooldown = 0.25f;
         LightningDash.range = 1.0f;
-
-        Revive.abilityNum = 5;
-        Revive.castingTime = 1f;
-        Revive.cooldown = 0.25f;
-        Revive.range = 1.0f;
     }
 
     // Update is called once per frame
@@ -62,16 +56,6 @@ public class ConduitAbilities : ClassAbilities {
         {
             return;
         }
-
-        //FAKE IT TIL WE MAKE IT
-        if (Input.GetKeyDown(KeyCode.Keypad1))
-            CmdChangeGraphicColour(Color.cyan);
-        if (Input.GetKeyDown(KeyCode.Keypad2))
-            CmdChangeGraphicColour(Color.yellow);
-        if (Input.GetKeyDown(KeyCode.Keypad3))
-            CmdChangeGraphicColour(Color.red);
-        if (Input.GetKeyDown(KeyCode.Keypad4))
-            CmdChangeGraphicColour(Color.green);
 
         //Energy
         if (energy < 5) {
@@ -138,19 +122,6 @@ public class ConduitAbilities : ClassAbilities {
     }
 
     #region Networking Helpers
-
-    [Command]
-    private void CmdChangeGraphicColour(Color colour)
-    {
-        if (!isClient) graphicObj.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", colour);
-        RpcChangeGraphicColour(colour);
-    }
-
-    [ClientRpc]
-    private void RpcChangeGraphicColour(Color colour)
-    {
-        graphicObj.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", colour);
-    }
 
     //[Command]
     //private void CmdTakeDmg(GameObject o, float damage)
@@ -412,7 +383,7 @@ public class ConduitAbilities : ClassAbilities {
     {
         Ray ray = new Ray(transform.position + Vector3.up, transform.forward);
         RaycastHit hit;
-        if (Physics.Raycast(ray, out hit, LightingPunch.range))
+        if (Physics.Raycast(ray, out hit, Revive.range))
         {
             if (hit.transform.tag == "Player" && hit.transform.GetComponent<ClassAbilities>().health <= 0)
             {

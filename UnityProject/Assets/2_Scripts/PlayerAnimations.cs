@@ -13,7 +13,7 @@ public class PlayerAnimations : NetworkBehaviour
     // Use this for initialization
     void Start()
     {
-        ca = GetComponent<ConduitAbilities>();
+        ca = GetComponent<ClassAbilities>();
         ani = GetComponentInChildren<Animator>();
     }
 
