@@ -32,6 +32,7 @@ public class ClassAbilities : NetworkBehaviour {
         public float castingTime;
         public float cooldown;
         public float range;
+        public float energyCost;
     };
 
     protected float currCooldown = 0.0f;
@@ -92,7 +93,7 @@ public class ClassAbilities : NetworkBehaviour {
         }
     }
 
-    public void TakeDmg(float dmg) {
+    public virtual void TakeDmg(float dmg) {
         health -= dmg;
     }
 

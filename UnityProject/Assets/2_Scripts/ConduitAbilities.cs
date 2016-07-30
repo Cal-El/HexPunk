@@ -29,24 +29,28 @@ public class ConduitAbilities : ClassAbilities {
         LightingPunch.castingTime = 0.25f;
         LightingPunch.cooldown = 0.25f;
         LightingPunch.range = 2;
+        LightingPunch.energyCost = 0;
 
         StaticStomp.abilityNum = 2;
         StaticStomp.baseDmg = 0;
         StaticStomp.castingTime = 0.5f;
         StaticStomp.cooldown = 0.25f;
         StaticStomp.range = 1;
+        StaticStomp.energyCost = 2;
 
         Discharge.abilityNum = 3;
         Discharge.baseDmg = 0;
         Discharge.castingTime = 1;
         Discharge.cooldown = 0.5f;
         Discharge.range = 1000;
+        Discharge.energyCost = 0;
 
         LightningDash.abilityNum = 4;
         LightningDash.baseDmg = 0;
         LightningDash.castingTime = 0.25f;
         LightningDash.cooldown = 0.25f;
         LightningDash.range = 1.0f;
+        LightningDash.energyCost = 4;
     }
 
     // Update is called once per frame
@@ -61,6 +65,8 @@ public class ConduitAbilities : ClassAbilities {
         if (energy < 5) {
             energy = Mathf.Clamp(energy + Time.deltaTime, 0, 5);
         }
+
+        //Cooldown
         if (currCooldown > 0) {
             currCooldown = Mathf.Max(currCooldown - Time.deltaTime, 0);
             this.GetComponent<PlayerMovement>().IsCasting = true;
@@ -72,8 +78,6 @@ public class ConduitAbilities : ClassAbilities {
         if (castingTimer > 0) {
             castingTimer = Mathf.Max(castingTimer - Time.deltaTime, 0);
         }
-
-        energy = energy + Time.deltaTime;
 
         //Death
         if (health <= 0) CmdDeath();
@@ -396,7 +400,7 @@ public class ConduitAbilities : ClassAbilities {
     #endregion
 
     protected override void UseAbility(Ability a) {
-        if (currCooldown <= 0) {
+        if (currCooldown <= 0 && energy >= a.energyCost) {
             base.UseAbility(a);
             if (waitingForAbility == 3) {
                 CmdStartAbility3();

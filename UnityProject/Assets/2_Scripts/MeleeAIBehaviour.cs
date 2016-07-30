@@ -35,7 +35,7 @@ public class MeleeAIBehaviour : MonoBehaviour {
     private NavMeshObstacle navObst;
     private float inactiveTimer = 0.0f;
 
-    void Start () {
+    void Awake () {
         navAgent = this.GetComponent<NavMeshAgent>();
         navObst = this.GetComponent<NavMeshObstacle>();
 
