@@ -11,15 +11,22 @@ namespace UnityStandardAssets.Network
     //Any LobbyHook can then grab it and pass those value to the game player prefab (see the Pong Example in the Samples Scenes)
     public class LobbyPlayer : NetworkLobbyPlayer
     {
-        static Color[] Colors = new Color[] { Color.magenta, Color.red, Color.cyan, Color.blue, Color.green, Color.yellow };
+        static Color[] Colors = new Color[] { Color.blue, Color.red, Color.yellow, Color.green };
         //used on server to avoid assigning the same color to two player
         static List<int> _colorInUse = new List<int>();
 
-        public Button colorButton;
+        public Image colorImage;
         public InputField nameInput;
         public Button readyButton;
         public Button waitingPlayerButton;
         public Button removePlayerButton;
+        public Button conduitButton;
+        public Button aethersmithButton;
+        public Button calderaButton;
+        public Button shardButton;
+        [SyncVar(hook = "OnClassChanged")]
+        public string selectedClass;
+
 
         public GameObject localIcone;
         public GameObject remoteIcone;
@@ -37,10 +44,15 @@ namespace UnityStandardAssets.Network
         static Color NotReadyColor = new Color(34.0f / 255.0f, 44 / 255.0f, 55.0f / 255.0f, 1.0f);
         static Color ReadyColor = new Color(0.0f, 204.0f / 255.0f, 204.0f / 255.0f, 1.0f);
         static Color TransparentColor = new Color(0, 0, 0, 0);
+        static Color UnselectedClass = new Color(160, 160, 160, 1);
 
         //static Color OddRowColor = new Color(250.0f / 255.0f, 250.0f / 255.0f, 250.0f / 255.0f, 1.0f);
         //static Color EvenRowColor = new Color(180.0f / 255.0f, 180.0f / 255.0f, 180.0f / 255.0f, 1.0f);
 
+        void Awake()
+        {
+            DontDestroyOnLoad(transform.gameObject);
+        }
 
         public override void OnClientEnterLobby()
         {
@@ -90,6 +102,13 @@ namespace UnityStandardAssets.Network
         {
             nameInput.interactable = false;
             removePlayerButton.interactable = NetworkServer.active;
+            
+            conduitButton.interactable = false;
+            aethersmithButton.interactable = false;
+            calderaButton.interactable = false;
+            shardButton.interactable = false;
+            //Show previously highlighted
+            UpdateSelectedClass(selectedClass);
 
             ChangeReadyButtonColor(NotReadyColor);
 
@@ -120,14 +139,15 @@ namespace UnityStandardAssets.Network
                 CmdNameChanged("Player" + (LobbyPlayerList._instance.playerListContentTransform.childCount-1));
 
             //we switch from simple name display to name input
-            colorButton.interactable = true;
             nameInput.interactable = true;
 
             nameInput.onEndEdit.RemoveAllListeners();
             nameInput.onEndEdit.AddListener(OnNameChanged);
 
-            colorButton.onClick.RemoveAllListeners();
-            colorButton.onClick.AddListener(OnColorClicked);
+            conduitButton.interactable = true;
+            aethersmithButton.interactable = true;
+            calderaButton.interactable = true;
+            shardButton.interactable = true;
 
             readyButton.onClick.RemoveAllListeners();
             readyButton.onClick.AddListener(OnReadyClicked);
@@ -160,7 +180,6 @@ namespace UnityStandardAssets.Network
                 textComponent.text = "READY";
                 textComponent.color = ReadyColor;
                 readyButton.interactable = false;
-                colorButton.interactable = false;
                 nameInput.interactable = false;
             }
             else
@@ -171,7 +190,6 @@ namespace UnityStandardAssets.Network
                 textComponent.text = isLocalPlayer ? "JOIN" : "...";
                 textComponent.color = Color.white;
                 readyButton.interactable = isLocalPlayer;
-                colorButton.interactable = isLocalPlayer;
                 nameInput.interactable = isLocalPlayer;
             }
         }
@@ -192,26 +210,64 @@ namespace UnityStandardAssets.Network
         public void OnMyColor(Color newColor)
         {
             playerColor = newColor;
-            colorButton.GetComponent<Image>().color = newColor;
+            colorImage.color = newColor;
+        }
+        
+        //Takes the string sent to the server and updates the class buttons
+        public void OnClassChanged(string newClass)
+        {
+            selectedClass = newClass;
+            UpdateSelectedClass(newClass);
         }
 
         //===== UI Handler
 
         //Note that those handler use Command function, as we need to change the value on the server not locally
         //so that all client get the new value throught syncvar
-        public void OnColorClicked()
-        {
-            CmdColorChange();
-        }
-
         public void OnReadyClicked()
         {
             SendReadyToBeginMessage();
         }
 
         public void OnNameChanged(string str)
-        {
+        { 
             CmdNameChanged(str);
+        }
+
+        //Function for button that sends button string to the server
+        public void OnClassSelected(Button button)
+        {
+            CmdClassChanged(button.gameObject.name);
+        }
+
+        [Command]
+        void CmdClassChanged(string newClass)
+        {
+            selectedClass = newClass;
+        }
+
+        void UpdateSelectedClass(string buttonName)
+        {
+            conduitButton.GetComponent<Image>().color = UnselectedClass;
+            aethersmithButton.GetComponent<Image>().color = UnselectedClass;
+            calderaButton.GetComponent<Image>().color = UnselectedClass;
+            shardButton.GetComponent<Image>().color = UnselectedClass;
+
+            switch (buttonName)
+            {
+                case "ConduitTile":
+                    conduitButton.GetComponent<Image>().color = Color.black;
+                    break;
+                case "AethersmithTile":
+                    aethersmithButton.GetComponent<Image>().color = Color.black;
+                    break;
+                case "CalderaTile":
+                    calderaButton.GetComponent<Image>().color = Color.black;
+                    break;
+                case "ShardTile":
+                    shardButton.GetComponent<Image>().color = Color.black;
+                    break;
+            }
         }
 
         public void OnRemovePlayerClick()
