@@ -334,31 +334,6 @@ namespace UnityStandardAssets.Network
             return true;
         }
 
-//        Story world high concept:
-
-//    Hot cold planet:
-//		A disected planet with three biomes due to the planet's rotation matching the orbit causing one side to always be faceing the sun.
-
-//        The three biomes are:
-
-//            The light side:
-//				A super heated desert biome
-//            The dark side:
-
-//                A frozen biome
-//            The median:
-//				The small strip of inhabitable land that is stretched across the equator.This strip is where intellegent beings have evoled.Due to dying reasources these beings are now forced to discover new reasources from the other deadly biomes.
-
-//Story world themes:
-
-//  The main theme of this world is survival through discovery and exploration.
-
-//Major world events:
-
-//  Reasources are running out and forcing the beings to find new reasources.
-
-//Potential
-
         public override GameObject OnLobbyServerCreateGamePlayer(NetworkConnection conn, short playerControllerId)
         {
             foreach(var slot in lobbySlots)
