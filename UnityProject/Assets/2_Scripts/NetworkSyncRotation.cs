@@ -5,28 +5,41 @@ using UnityEngine.Networking;
 public class NetworkSyncRotation : NetworkBehaviour {
 
     [SyncVar]
-    private Quaternion syncPlayerRotation;
+    private float syncPlayerRotation;
 
     [SerializeField]
     private Transform playerTransform;
     [SerializeField]
-    private float lerpRate = 15;
+    private float lerpRate = 25;
+
+    private float lastRot;
+    private float threshold = 1;
+
+    void Update()
+    {
+        LerpRotation();
+    }
 
 	void FixedUpdate () {
         TransmitRotations();
-        LerpRotation();
 	}
 
     void LerpRotation()
     {
         if (!isLocalPlayer)
         {
-            playerTransform.rotation = Quaternion.Lerp(playerTransform.rotation, syncPlayerRotation, Time.deltaTime * lerpRate);
+            LerpPlayerRotation(syncPlayerRotation);
         }
     }
 
+    void LerpPlayerRotation(float rotAngle)
+    {
+        Vector3 playerNewRot = new Vector3(0, rotAngle, 0);
+        playerTransform.rotation = Quaternion.Lerp(playerTransform.rotation, Quaternion.Euler(playerNewRot), lerpRate * Time.deltaTime);
+    }
+
     [Command]
-    void CmdProvideRotationToServer(Quaternion playerRot)
+    void CmdProvideRotationToServer(float playerRot)
     {
         syncPlayerRotation = playerRot;
     }
@@ -36,7 +49,29 @@ public class NetworkSyncRotation : NetworkBehaviour {
     {
         if (isLocalPlayer)
         {
-            CmdProvideRotationToServer(playerTransform.rotation);
+            if (CheckIfBeyondThreshold(playerTransform.localEulerAngles.y, lastRot))
+            {
+                lastRot = playerTransform.localEulerAngles.y;
+                CmdProvideRotationToServer(lastRot);
+            }
         }
+    }
+
+    bool CheckIfBeyondThreshold (float rot1, float rot2)
+    {
+        if(Mathf.Abs(rot1 - rot2) > threshold)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    [Client]
+    void OnPlayerRotSync(float latestPlayerRot)
+    {
+        syncPlayerRotation = latestPlayerRot;
     }
 }
