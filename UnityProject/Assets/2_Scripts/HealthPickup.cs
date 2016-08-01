@@ -50,7 +50,7 @@ public class HealthPickup : MonoBehaviour {
     private Transform FindClosestPlayer() {
         Transform returnVal = null;
         if (Megamanager.MM.players != null) {
-            foreach (GameObject g in Megamanager.MM.players) {
+            foreach (ClassAbilities g in Megamanager.MM.players) {
                 if (Vector3.Distance(g.transform.position, transform.position) < ATTRACTIONRANGE) {
                     if (returnVal == null) {
                         returnVal = g.transform;

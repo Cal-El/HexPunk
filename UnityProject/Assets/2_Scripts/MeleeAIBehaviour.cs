@@ -30,7 +30,7 @@ public class MeleeAIBehaviour : MonoBehaviour {
     public float battlecryRange = 2.0f;     //Range in which the battlecry triggers others around it
 
     //Pathfinding Variables
-    private GameObject target;
+    private ClassAbilities target;
     [HideInInspector]public NavMeshAgent navAgent;
     private NavMeshObstacle navObst;
     private float inactiveTimer = 0.0f;
@@ -70,6 +70,9 @@ public class MeleeAIBehaviour : MonoBehaviour {
                             mr.material.SetColor("_EmissionColor", Color.white);
                             AttackingBehaviour();
                             break;
+                        case STATES.Dead:
+                            
+                            break;
                     }
                 }
                 if (navAgent.enabled && navAgent.pathStatus == NavMeshPathStatus.PathComplete) {
@@ -79,6 +82,10 @@ public class MeleeAIBehaviour : MonoBehaviour {
                 inactiveTimer -= Time.deltaTime;
                 
             }
+        } else {
+            mr.material.SetColor("_EmissionColor", Color.black);
+            animationState = STATES.Dead;
+            DeadBehaviour();
         }
 	}
 
@@ -94,9 +101,9 @@ public class MeleeAIBehaviour : MonoBehaviour {
                     hit.transform.GetComponent<MeleeAIBehaviour>().HearBattlecry();
                 }
             }
-            GameObject[] pms = GameObject.FindGameObjectsWithTag("Player");
-            GameObject closest = null;
-            foreach(GameObject pm in pms) {
+            ClassAbilities[] pms = GameObject.FindObjectsOfType<ClassAbilities>();
+            ClassAbilities closest = null;
+            foreach(ClassAbilities pm in pms) {
                 if(closest == null) {
                     closest = pm;
                 }
@@ -145,10 +152,17 @@ public class MeleeAIBehaviour : MonoBehaviour {
                 StartChase();
                 return;
             }
+            if (!target.IsAlive) {
+                Retagetting();
+            }
             if(attackTimer <= 0) {              //Ready to attack again
                 attackTimer = cooldown + castingTime;
             }
         }
+    }
+
+    private void DeadBehaviour() {
+        
     }
 
     private void StartBattlecry() {
@@ -160,6 +174,14 @@ public class MeleeAIBehaviour : MonoBehaviour {
         inactiveTimer = TIME_FOR_NAVMESH_UPDATE;
         navObst.enabled = false;
         agentState = STATES.Chasing;
+    }
+
+    private void StartDeath() {
+        navObst.enabled = false;
+        navAgent.enabled = false;
+        GetComponent<Collider>().enabled = false;
+        agentState = STATES.Dead;
+        Destroy(gameObject, 5);
     }
 
     public void ReceiveMessage(char a) {
@@ -183,17 +205,17 @@ public class MeleeAIBehaviour : MonoBehaviour {
         if (agentState == STATES.Idle)
             StartBattlecry();
         if (health <= 0) {
-            GameObject.Destroy(this.gameObject);
+            StartDeath();
         }
     }
 
     public void Retagetting()
     {
         float threshold = Vector3.Distance(this.transform.position, target.transform.position) * 0.8f;
-        if (target.GetComponent<ClassAbilities>().currentState == ClassAbilities.ANIMATIONSTATES.Dead) threshold = 1000;
-        foreach (GameObject p in Megamanager.MM.players)
+        if (target.currentState == ClassAbilities.ANIMATIONSTATES.Dead) threshold = 1000;
+        foreach (ClassAbilities p in Megamanager.MM.players)
         {
-            if (Vector3.Distance(this.transform.position, p.transform.position) <= threshold && p.GetComponent <ClassAbilities>().currentState != ClassAbilities.ANIMATIONSTATES.Dead){
+            if (Vector3.Distance(this.transform.position, p.transform.position) <= threshold && p.currentState != ClassAbilities.ANIMATIONSTATES.Dead){
                 target = p;
             }
         }

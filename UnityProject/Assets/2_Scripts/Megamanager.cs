@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class Megamanager : MonoBehaviour {
 
     public static Megamanager MM;
-    public GameObject[] players;
+    public ClassAbilities[] players;
     public GameObject[] enemies;
     public struct RoomStruct {
         public Room room;
@@ -17,22 +17,22 @@ public class Megamanager : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         MM = this;
-        players = GameObject.FindGameObjectsWithTag("Player");
+        players = FindObjectsOfType<ClassAbilities>();
         enemies = GameObject.FindGameObjectsWithTag("Character");
         RoomTreeSetup();
     }
 	
 	// Update is called once per frame
 	void Update () {
-        players = GameObject.FindGameObjectsWithTag("Player");
+        players = FindObjectsOfType<ClassAbilities>();
         enemies = GameObject.FindGameObjectsWithTag("Character");
 
         if (enemies.Length == 0) Victory();
 
         int deadPlayers = 0;
-        foreach (GameObject player in players)
+        foreach (ClassAbilities player in players)
         {
-            if (!player.GetComponent<ClassAbilities>().IsAlive) deadPlayers++;
+            if (!player.IsAlive) deadPlayers++;
         }
 
         if (deadPlayers == players.Length) Defeated();
@@ -48,7 +48,7 @@ public class Megamanager : MonoBehaviour {
     
     private void Defeated()
     {
-        foreach(GameObject player in players)
+        foreach(ClassAbilities player in players)
         {
             player.GetComponent<PlayerCommands>().Defeat = true;
         }
@@ -56,7 +56,7 @@ public class Megamanager : MonoBehaviour {
 
     private void Victory()
     {
-        foreach (GameObject player in players)
+        foreach (ClassAbilities player in players)
         {
             player.GetComponent<PlayerCommands>().Victory = true;
         }
@@ -111,5 +111,13 @@ public class Megamanager : MonoBehaviour {
             passes++;
         }
         return null;
+    }
+
+    public static GameObject[] GetAllCharacters() {
+        List<GameObject> characterList = new List<GameObject>();
+        characterList.AddRange(GameObject.FindGameObjectsWithTag("Character"));
+        characterList.AddRange(GameObject.FindGameObjectsWithTag("Player"));
+
+        return characterList.ToArray();
     }
 }

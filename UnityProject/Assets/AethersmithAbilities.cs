@@ -40,11 +40,13 @@ public class AethersmithAbilities : ClassAbilities {
         BubbleShield.energyCost = 30;
 
         Maelstrom.abilityNum = 4;
-        Maelstrom.baseDmg = 0.5f;
+        Maelstrom.baseDmg = 5f;
         Maelstrom.castingTime = 1f;
         Maelstrom.cooldown = 0.25f;
         Maelstrom.range = 10f;
         Maelstrom.energyCost = 50;
+
+        energy = 0;
     }
 	
 	// Update is called once per frame

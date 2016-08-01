@@ -23,6 +23,7 @@ public class MeleeEnemyAnimations : NetworkBehaviour
     {
         if (previousState != ai.animationState)
         {
+            
             switch (ai.agentState)
             {
                 case MeleeAIBehaviour.STATES.Idle:
