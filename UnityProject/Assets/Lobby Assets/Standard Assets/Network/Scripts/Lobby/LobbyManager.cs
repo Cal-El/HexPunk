@@ -277,6 +277,7 @@ namespace UnityStandardAssets.Network
 
             LobbyPlayer newPlayer = obj.GetComponent<LobbyPlayer>();
             newPlayer.ToggleJoinButton(numPlayers + 1 >= minPlayers);
+            newPlayer.connectionId = conn.connectionId;
 
 
             for (int i = 0; i < lobbySlots.Length; ++i)
@@ -331,6 +332,64 @@ namespace UnityStandardAssets.Network
                 _lobbyHooks.OnLobbyServerSceneLoadedForPlayer(this, lobbyPlayer, gamePlayer);
 
             return true;
+        }
+
+//        Story world high concept:
+
+//    Hot cold planet:
+//		A disected planet with three biomes due to the planet's rotation matching the orbit causing one side to always be faceing the sun.
+
+//        The three biomes are:
+
+//            The light side:
+//				A super heated desert biome
+//            The dark side:
+
+//                A frozen biome
+//            The median:
+//				The small strip of inhabitable land that is stretched across the equator.This strip is where intellegent beings have evoled.Due to dying reasources these beings are now forced to discover new reasources from the other deadly biomes.
+
+//Story world themes:
+
+//  The main theme of this world is survival through discovery and exploration.
+
+//Major world events:
+
+//  Reasources are running out and forcing the beings to find new reasources.
+
+//Potential
+
+        public override GameObject OnLobbyServerCreateGamePlayer(NetworkConnection conn, short playerControllerId)
+        {
+            foreach(var slot in lobbySlots)
+            {
+                LobbyPlayer lobbyPlayer = slot.GetComponent<LobbyPlayer>();
+                if (lobbyPlayer.connectionId == conn.connectionId)
+                {
+                    GameObject prefab;
+                    switch (lobbyPlayer.selectedClass)
+                    {
+                        case "ConduitTile":
+                            prefab = Instantiate(lobbyPlayer.conduitPrefab);
+                            Debug.Log("Method Id: " + conn.connectionId + ", Lobby player ID: " + lobbyPlayer.playerControllerId + ", spawned: " + prefab.name);
+                            return prefab;
+                        case "AethersmithTile":
+                            prefab = Instantiate(lobbyPlayer.aethersmithPrefab);
+                            Debug.Log("Method Id: " + conn.connectionId + ", Lobby player ID: " + lobbyPlayer.playerControllerId + ", spawned: " + prefab.name);
+                            return prefab;
+                        case "CalderaTile":
+                            prefab = Instantiate(lobbyPlayer.calderaPrefab);
+                            Debug.Log("Method Id: " + conn.connectionId + ", Lobby player ID: " + lobbyPlayer.playerControllerId + ", spawned: " + prefab.name);
+                            return prefab;
+                        case "ShardTile":
+                            prefab = Instantiate(lobbyPlayer.shardPrefab);
+                            Debug.Log("Method Id: " + conn.connectionId + ", Lobby player ID: " + lobbyPlayer.playerControllerId + ", spawned: " + prefab.name);
+                            return prefab;
+                    }
+                }
+            }            
+
+            return base.OnLobbyServerCreateGamePlayer(conn, playerControllerId);
         }
 
         // --- Countdown management

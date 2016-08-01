@@ -24,8 +24,13 @@ namespace UnityStandardAssets.Network
         public Button aethersmithButton;
         public Button calderaButton;
         public Button shardButton;
+        public int connectionId;
         [SyncVar(hook = "OnClassChanged")]
         public string selectedClass;
+        public GameObject conduitPrefab;
+        public GameObject aethersmithPrefab;
+        public GameObject calderaPrefab;
+        public GameObject shardPrefab;
 
 
         public GameObject localIcone;
@@ -48,11 +53,6 @@ namespace UnityStandardAssets.Network
 
         //static Color OddRowColor = new Color(250.0f / 255.0f, 250.0f / 255.0f, 250.0f / 255.0f, 1.0f);
         //static Color EvenRowColor = new Color(180.0f / 255.0f, 180.0f / 255.0f, 180.0f / 255.0f, 1.0f);
-
-        void Awake()
-        {
-            DontDestroyOnLoad(transform.gameObject);
-        }
 
         public override void OnClientEnterLobby()
         {
