@@ -21,7 +21,7 @@ public class AethersmithAbilities : ClassAbilities {
         HammerSwing.abilityNum = 1;
         HammerSwing.baseDmg = 3;
         HammerSwing.castingTime = 0.5f;
-        HammerSwing.cooldown = 0.25f;
+        HammerSwing.cooldown = 0;
         HammerSwing.range = 2f;
         HammerSwing.energyCost = 0;
 
@@ -34,8 +34,8 @@ public class AethersmithAbilities : ClassAbilities {
 
         BubbleShield.abilityNum = 3;
         BubbleShield.baseDmg = 5;
-        BubbleShield.castingTime = 0.25f;
-        BubbleShield.cooldown = 0.1f;
+        BubbleShield.castingTime = 1f;
+        BubbleShield.cooldown = 0.5f;
         BubbleShield.range = 10f;
         BubbleShield.energyCost = 30;
 
