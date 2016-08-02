@@ -24,6 +24,8 @@ public class ConduitAbilities : ClassAbilities {
     // Use this for initialization
     void Start() {
         base.Initialize();
+        energy = energyMax;
+
         LightingPunch.abilityNum = 1;
         LightingPunch.baseDmg = 1;
         LightingPunch.castingTime = 0.25f;
@@ -126,12 +128,6 @@ public class ConduitAbilities : ClassAbilities {
     }
 
     #region Networking Helpers
-
-    //[Command]
-    //private void CmdTakeDmg(GameObject o, float damage)
-    //{
-    //    o.SendMessage("TakeDmg", damage, SendMessageOptions.DontRequireReceiver);
-    //}
 
     #region Ability Commands
 

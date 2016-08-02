@@ -42,7 +42,7 @@ public class ClassAbilities : NetworkBehaviour {
 
     protected void Initialize() {
         health = healthMax;
-        energy = energyMax;
+
         pm = GetComponent<PlayerMovement>();
 
         //Setup revive ability which is used by all classes

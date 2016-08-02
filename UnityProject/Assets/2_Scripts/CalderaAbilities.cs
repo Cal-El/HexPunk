@@ -5,17 +5,19 @@ using System.Collections.Generic;
 
 public class CalderaAbilities : ClassAbilities {
 
+    public float energyDecay = 5;
+
     public float chainLightningRange = 5.0f;
-    public GameObject lightningBoltPathPrefab;
-    public GameObject punchBang;
-    public Transform punchBangPoint;
+    public GameObject fireballPrefab;
+    public GameObject lavaballPrefab;
+    public Transform projectileCastPoint;
     public GameObject staticStompPrefab;
     public GameObject dischargeLightningPathPrefab;
 
     private Ability Fireball;
     private Ability Lavaball;
     private Ability Eruption;
-    private Ability Afterburners;
+    private Ability Afterburner;
 
     private int playerNum = 0;
 
@@ -25,29 +27,34 @@ public class CalderaAbilities : ClassAbilities {
     void Start()
     {
         base.Initialize();
+
         Fireball.abilityNum = 1;
         Fireball.baseDmg = 1;
         Fireball.castingTime = 0.25f;
-        Fireball.cooldown = 0.25f;
+        Fireball.cooldown = 0.01f;
         Fireball.range = 2;
+        Fireball.energyCost = 0;
 
         Lavaball.abilityNum = 2;
         Lavaball.baseDmg = 0;
         Lavaball.castingTime = 0.5f;
         Lavaball.cooldown = 0.25f;
         Lavaball.range = 1;
+        Lavaball.energyCost = 0;
 
         Eruption.abilityNum = 3;
         Eruption.baseDmg = 0;
         Eruption.castingTime = 1;
         Eruption.cooldown = 0.5f;
         Eruption.range = 1000;
+        Eruption.energyCost = 98;
 
-        Afterburners.abilityNum = 4;
-        Afterburners.baseDmg = 0;
-        Afterburners.castingTime = 0.25f;
-        Afterburners.cooldown = 0.25f;
-        Afterburners.range = 1.0f;
+        Afterburner.abilityNum = 4;
+        Afterburner.baseDmg = 0;
+        Afterburner.castingTime = 0.25f;
+        Afterburner.cooldown = 0.25f;
+        Afterburner.range = 1.0f;
+        Afterburner.energyCost = 0;
     }
 
     // Update is called once per frame
@@ -78,7 +85,10 @@ public class CalderaAbilities : ClassAbilities {
             castingTimer = Mathf.Max(castingTimer - Time.deltaTime, 0);
         }
 
-        energy = energy + Time.deltaTime;
+        if (energy < Eruption.energyCost)
+        {
+            energy = energy - Time.deltaTime * energyDecay;
+        }
 
         //Death
         if (health <= 0) CmdDeath();
@@ -91,7 +101,7 @@ public class CalderaAbilities : ClassAbilities {
             if (Input.GetButtonDown("Ability 1")) UseAbility(Fireball);
             if (GetAxisDown1("Ability 2")) UseAbility(Lavaball);
             else if (Input.GetButtonDown("Ability 3")) UseAbility(Eruption);
-            else if (GetAxisDown2("Ability 4")) UseAbility(Afterburners);
+            else if (GetAxisDown2("Ability 4")) UseAbility(Afterburner);
 
             //Revive
             else if (Input.GetKeyDown(KeyCode.E))
@@ -127,12 +137,6 @@ public class CalderaAbilities : ClassAbilities {
     }
 
     #region Networking Helpers
-    
-    //[Command]
-    //private void CmdTakeDmg(GameObject o, float damage)
-    //{
-    //    o.SendMessage("TakeDmg", damage, SendMessageOptions.DontRequireReceiver);
-    //}
 
     #region Ability Commands
 
@@ -204,77 +208,34 @@ public class CalderaAbilities : ClassAbilities {
 
     #endregion
 
-    #region Ability 1 (Lightning punch)
+    #region Ability 1 (Fireball)
 
     private void Ability1()
     {
-        Ray ray = new Ray(transform.position + Vector3.up, transform.forward);
-        RaycastHit hit;
-        if (Physics.Raycast(ray, out hit, Fireball.range))
+        if (fireballPrefab != null)
         {
-            if (hit.transform.GetComponent<ConduitStacks>() != null)
-            {
-                Instantiate(punchBang, punchBangPoint.position, punchBangPoint.rotation);
-                if (hit.transform.GetComponent<ConduitStacks>().Stacks > 0)
-                {
-                    List<GameObject> alreadyHit = new List<GameObject>();
-                    alreadyHit.Add(hit.transform.gameObject);
-                    List<GameObject> hits = ChainLightning(alreadyHit, hit.transform.gameObject, 1);
-                    List<GameObject> copies = new List<GameObject>();
-                    GameObject lightningBolts = Instantiate(lightningBoltPathPrefab);
-                    for (int i = 0; i < hits.Count; i++)
-                    {
-                        hits[i].GetComponent<ConduitStacks>().AddStack();
-                        if (i > 0)
-                        {
-                            hit.transform.gameObject.SendMessage("TakeDmg", Fireball.baseDmg / 2, SendMessageOptions.DontRequireReceiver);
-                        }
-                        if (hits[i] == null)
-                        {
-                            hits.Remove(hits[i]);
-                            continue;
-                        }
-                        GameObject g = new GameObject("Point");
-                        g.transform.position = hits[i].transform.position;
-                        g.transform.rotation = hits[i].transform.rotation;
-                        g.transform.parent = lightningBolts.transform;
-                        copies.Add(g);
-                    }
-                    lightningBolts.GetComponent<DigitalRuby.ThunderAndLightning.LightningBoltPathScript>().LightningPath.List = copies;
-                    lightningBolts.GetComponent<DigitalRuby.ThunderAndLightning.LightningBoltPathScript>().AllowOrthographicMode = false;
-                    lightningBolts.GetComponent<DigitalRuby.ThunderAndLightning.LightningBoltPathScript>().Camera = null;
-                }
-                else
-                {
-                    hit.transform.GetComponent<ConduitStacks>().AddStack();
-                }
-                hit.transform.gameObject.SendMessage("TakeDmg", Fireball.baseDmg, SendMessageOptions.DontRequireReceiver);
-            }
+            GameObject fireball = Instantiate(fireballPrefab, projectileCastPoint.position, transform.rotation) as GameObject;
+            Fireball fireBallScript = fireball.GetComponent<Fireball>();
+            fireBallScript.owner = gameObject;
+            fireBallScript.damage = Fireball.baseDmg;
         }
+        energy += 3;
     }
 
     #endregion
 
-    #region Ability 2 (Static stomp)
+    #region Ability 2 (Lavaball)
 
     private void Ability2()
     {
-        RaycastHit[] hits = Physics.SphereCastAll(this.transform.position, Lavaball.range * energy, transform.forward, 0.0f);
-        List<GameObject> alreadyHit = new List<GameObject>();
-        foreach (RaycastHit h in hits)
+        if (lavaballPrefab != null)
         {
-            if (!alreadyHit.Contains(h.transform.gameObject))
-            {
-                if (h.transform.GetComponent<ConduitStacks>() != null && h.transform != transform)
-                    h.transform.GetComponent<ConduitStacks>().AddStack();
-                alreadyHit.Add(h.transform.gameObject);
-            }
+            GameObject lavaball = Instantiate(lavaballPrefab, projectileCastPoint.position, transform.rotation) as GameObject;
+            Lavaball lavaballScript = lavaball.GetComponent<Lavaball>();
+            lavaballScript.owner = gameObject;
+            lavaballScript.damage = Lavaball.baseDmg;
         }
-        if (staticStompPrefab != null)
-        {
-            Instantiate(staticStompPrefab, this.transform.position, staticStompPrefab.transform.rotation);
-        }
-        energy = 0;
+        energy += 20;
     }
 
     #endregion
@@ -283,117 +244,16 @@ public class CalderaAbilities : ClassAbilities {
 
     private void Ability3()
     {
-        if (lightningLists != null)
-            foreach (ConduitStacks c in lightningLists)
-            {
-                if (c != null)
-                {
-                    float stks = c.Stacks;
-                    CmdDischargeStacks(c.gameObject);
-                    c.gameObject.SendMessage("TakeDmg", Fireball.baseDmg * stks, SendMessageOptions.DontRequireReceiver);
-                }
-            }
-    }
-
-    [Command]
-    private void CmdDischargeStacks(GameObject o)
-    {
-        if (o != null)
-        {
-            if (!isClient) o.SendMessage("Discharge", SendMessageOptions.DontRequireReceiver);
-            else RpcDischargeStacks(o);
-        }
-    }
-
-    [ClientRpc]
-    private void RpcDischargeStacks(GameObject o)
-    {
-        if (o != null)
-            o.SendMessage("Discharge", SendMessageOptions.DontRequireReceiver);
-    }
-
-    private void StartAbility3()
-    {
-        GameObject lightningBolts = Instantiate(dischargeLightningPathPrefab);
-        ConduitStacks[] things = GameObject.FindObjectsOfType<ConduitStacks>();
-        List<GameObject> lightningList = new List<GameObject>();
-        lightningLists = new List<ConduitStacks>();
-        lightningList.Add(gameObject);
-        for (int i = 0; i < things.Length; i++)
-        {
-            if (things[i].Stacks > 0)
-            {
-                GameObject g = new GameObject("Point");
-                g.transform.position = things[i].transform.position;
-                g.transform.rotation = things[i].transform.rotation;
-                g.transform.parent = lightningBolts.transform;
-                lightningList.Add(g);
-                lightningLists.Add(things[i]);
-                lightningList.Add(gameObject);
-            }
-        }
-        lightningBolts.GetComponent<DigitalRuby.ThunderAndLightning.LightningBoltPathScript>().LightningPath.List = lightningList;
-        lightningBolts.GetComponent<DigitalRuby.ThunderAndLightning.LightningBoltPathScript>().AllowOrthographicMode = false;
-        lightningBolts.GetComponent<DigitalRuby.ThunderAndLightning.LightningBoltPathScript>().Camera = null;
-    }
-
-    [Command]
-    private void CmdStartAbility3()
-    {
-        if (!isClient)
-        {
-            StartAbility3();
-        }
-        RpcStartAbility3();
-    }
-
-    [ClientRpc]
-    private void RpcStartAbility3()
-    {
-        StartAbility3();
+        energy = 0;
     }
 
     #endregion
 
-    #region Ability 4 (Lightning Dash)
+    #region Ability 4 (Afterburner)
 
     private void Ability4()
     {
-        Ray ray = new Ray(transform.position + Vector3.up, transform.forward);
-        RaycastHit[] hit = Physics.RaycastAll(ray, Afterburners.range * energy);
-        Vector3 telePos = ray.origin + (ray.direction * Afterburners.range * energy);
-        if (hit.Length > 0)
-            for (int i = 0; i < hit.Length; i++)
-            {
-                if (hit[i].transform.tag != "Character" && hit[i].transform.tag != "Destructible" && hit[i].transform.tag != "Player")
-                {
-                    telePos = ray.origin + (ray.direction * (hit[i].distance - 0.5f));
-                    break;
-                }
-                else
-                {
-
-                    if (Afterburners.range * energy - hit[i].distance < 0.5f)
-                    {
-                        telePos = ray.origin + (ray.direction * (hit[i].distance - 0.5f));
-                    }
-                    else if (Afterburners.range * energy - hit[i].distance >= 0.5f && Afterburners.range * energy - hit[i].distance < 1.5f)
-                    {
-                        telePos = ray.origin + (ray.direction * (hit[i].distance + 1.5f));
-                        hit[i].transform.GetComponent<ConduitStacks>().AddStack();
-                        hit[i].transform.gameObject.SendMessage("TakeDmg", 0.1f, SendMessageOptions.DontRequireReceiver);
-                    }
-                    else
-                    {
-                        hit[i].transform.GetComponent<ConduitStacks>().AddStack();
-                        hit[i].transform.gameObject.SendMessage("TakeDmg", 0.1f, SendMessageOptions.DontRequireReceiver);
-                    }
-                }
-            }
-        Vector3 newPos = telePos + Vector3.down;
-        this.transform.position = newPos;
-        GetComponent<NetworkSyncPosition>().syncPos = newPos;
-        energy = 0;
+        energy += 30;
     }
 
     #endregion
@@ -411,56 +271,26 @@ public class CalderaAbilities : ClassAbilities {
                 CmdCallRevive(hit.transform.gameObject);
             }
         }
-
     }
 
     #endregion
 
     protected override void UseAbility(Ability a)
     {
-        if (currCooldown <= 0)
+        if (currCooldown <= 0 && energy >= a.energyCost)
         {
-            base.UseAbility(a);
-            if (waitingForAbility == 3)
+            //Can only use eruption if they are past the threshold
+            if (energy >= Eruption.energyCost)
             {
-                CmdStartAbility3();
+                if(a.abilityNum == Eruption.abilityNum)
+                {
+                    base.UseAbility(a);
+                }
             }
-        }
-    }
-
-    private List<GameObject> ChainLightning(List<GameObject> alreadyHit, GameObject justHit, int pass)
-    {
-        GameObject candidate = Megamanager.FindClosestAttackable(justHit, pass);
-        if (candidate == null)
-            return alreadyHit;
-
-        bool invalidCandidate = false;
-        foreach (GameObject g in alreadyHit)
-        {
-            if (candidate == g)
-                invalidCandidate = true;
-        }
-        if (candidate == this.gameObject || candidate.GetComponent<ConduitStacks>() == null)
-            invalidCandidate = true;
-
-        if (Vector3.Distance(candidate.transform.position, justHit.transform.position) > chainLightningRange)
-            return alreadyHit;
-        if (!invalidCandidate)
-        {
-            alreadyHit.Add(candidate);
-            if (candidate.GetComponent<ConduitStacks>().Stacks > 0)
-            {
-                return ChainLightning(alreadyHit, candidate, 1);
-            }
-        }
-        else
-        {
-            if (pass > 5)
-                return alreadyHit;
             else
-                return ChainLightning(alreadyHit, justHit, pass + 1);
+            {
+                base.UseAbility(a);
+            }
         }
-
-        return alreadyHit;
     }
 }
