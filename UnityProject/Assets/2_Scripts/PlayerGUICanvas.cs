@@ -9,6 +9,7 @@ public class PlayerGUICanvas : MonoBehaviour
     public Image icon;
     public Image healthBar;
     public Image energyBar;
+    public Image xpBar;
 
     private GameObject myPlayer;
     private ClassAbilities playerStats;
@@ -24,6 +25,8 @@ public class PlayerGUICanvas : MonoBehaviour
 
     private float visHP;
     private float visEP;
+    private float visXP;
+
 
     // Use this for initialization
     void Start()
@@ -58,9 +61,24 @@ public class PlayerGUICanvas : MonoBehaviour
 
         visHP = Mathf.Lerp(visHP, playerStats.health, Time.deltaTime * 10);
         visEP = Mathf.Lerp(visEP, playerStats.energy, Time.deltaTime * 10);
+        visXP = Mathf.Lerp(visXP, playerStats.GetLevel(), Time.deltaTime * 10);
 
         healthBar.fillAmount = visHP / 100;
         energyBar.fillAmount = visEP / playerStats.energyMax;
+
+        if (visXP < 1) {
+            xpBar.fillAmount = 0.175f * visXP;
+        } else if(visXP < 2) {
+            xpBar.fillAmount = 0.175f  + 0.15f * (visXP - 1);
+        } else if (visXP < 3) {
+            xpBar.fillAmount = 0.325f + 0.175f * (visXP - 2);
+        } else if (visXP < 4) {
+            xpBar.fillAmount = 0.5f + 0.175f * (visXP - 3);
+        } else if (visXP < 5) {
+            xpBar.fillAmount = 0.675f + 0.15f * (visXP - 4);
+        } else {
+            xpBar.fillAmount = 0.825f + 0.175f * (visXP - 5);
+        }
     }
 
     //Set up the betrayer GUI

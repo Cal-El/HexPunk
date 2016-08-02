@@ -3,8 +3,17 @@ using System.Collections;
 
 public class HealthPickup : MonoBehaviour {
 
+    public enum TYPE { Health, XP}
+    public TYPE pickupType = TYPE.Health;
+
     public GameObject particleEffect;
-    private const float HEALVAL = 5;
+
+    [SerializeField]
+    private float healVal = 5;
+
+    [SerializeField]
+    private float xpVal = 0.1f;
+
     private const float MAXSPEED = 5;
     private const float ATTRACTIONRANGE = 4;
     private Vector3 velocity;
@@ -40,7 +49,12 @@ public class HealthPickup : MonoBehaviour {
     }
 
     private void TriggerPickup(Transform e) {
-        e.GetComponent<ClassAbilities>().Heal(HEALVAL);
+        if(pickupType == TYPE.Health)
+            e.GetComponent<ClassAbilities>().Heal(healVal);
+        else
+            e.GetComponent<ClassAbilities>().GainXP(xpVal);
+        
+
         if (particleEffect != null) {
             Instantiate(particleEffect, this.transform.position, this.transform.rotation);
         }

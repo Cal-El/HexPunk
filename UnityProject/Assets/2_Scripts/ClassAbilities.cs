@@ -16,6 +16,7 @@ public class ClassAbilities : NetworkBehaviour {
     public float energyMax = 100;
     [SyncVar]
     public float energy;
+    protected float level = 0;
 
     private bool isAlive = true;
     public bool IsReviving { get; set; }
@@ -76,6 +77,9 @@ public class ClassAbilities : NetworkBehaviour {
         if (Input.GetKeyDown(KeyCode.Keypad4))
             CmdChangeGraphicColour(Color.green);
 
+        if (Input.GetKeyDown(KeyCode.I))
+            level += 0.1f;
+
         if (currCooldown <= 0)
         {
             if (!isAlive)
@@ -91,6 +95,14 @@ public class ClassAbilities : NetworkBehaviour {
                 currentState = ANIMATIONSTATES.Idle;
             }
         }
+    }
+
+    public void GainXP(float xp) {
+        level += xp;
+    }
+
+    public float GetLevel() {
+        return level;
     }
 
     public virtual void TakeDmg(float dmg) {
