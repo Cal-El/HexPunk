@@ -39,7 +39,7 @@ public class Fireball : MonoBehaviour {
         {
             if (Time.time > safeWindow)
             {
-                col.SendMessage("TakeDmg", damage);
+                col.SendMessage("TakeDmg", damage / 2);
                 Splash(col.transform.position);
                 Destroy(gameObject);
             }

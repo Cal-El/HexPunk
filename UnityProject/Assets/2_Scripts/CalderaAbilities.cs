@@ -32,14 +32,12 @@ public class CalderaAbilities : ClassAbilities {
         Fireball.baseDmg = 1;
         Fireball.castingTime = 0.25f;
         Fireball.cooldown = 0.01f;
-        Fireball.range = 2;
         Fireball.energyCost = -0.1f;
 
         Lavaball.abilityNum = 2;
-        Lavaball.baseDmg = 0;
-        Lavaball.castingTime = 0.5f;
-        Lavaball.cooldown = 0.25f;
-        Lavaball.range = 1;
+        Lavaball.baseDmg = 4;
+        Lavaball.castingTime = 1.5f;
+        Lavaball.cooldown = 0.2f;
         Lavaball.energyCost = -0.1f;
 
         Eruption.abilityNum = 3;
@@ -230,7 +228,7 @@ public class CalderaAbilities : ClassAbilities {
             lavaballScript.owner = gameObject;
             lavaballScript.damage = Lavaball.baseDmg;
         }
-        energy += 35;
+        energy += 40;
     }
 
     #endregion
