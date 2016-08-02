@@ -33,28 +33,28 @@ public class CalderaAbilities : ClassAbilities {
         Fireball.castingTime = 0.25f;
         Fireball.cooldown = 0.01f;
         Fireball.range = 2;
-        Fireball.energyCost = 0;
+        Fireball.energyCost = -0.1f;
 
         Lavaball.abilityNum = 2;
         Lavaball.baseDmg = 0;
         Lavaball.castingTime = 0.5f;
         Lavaball.cooldown = 0.25f;
         Lavaball.range = 1;
-        Lavaball.energyCost = 0;
+        Lavaball.energyCost = -0.1f;
 
         Eruption.abilityNum = 3;
         Eruption.baseDmg = 0;
         Eruption.castingTime = 1;
         Eruption.cooldown = 0.5f;
         Eruption.range = 1000;
-        Eruption.energyCost = 98;
+        Eruption.energyCost = 90;
 
         Afterburner.abilityNum = 4;
         Afterburner.baseDmg = 0;
         Afterburner.castingTime = 0.25f;
         Afterburner.cooldown = 0.25f;
         Afterburner.range = 1.0f;
-        Afterburner.energyCost = 0;
+        Afterburner.energyCost = -0.1f;
     }
 
     // Update is called once per frame
@@ -65,11 +65,6 @@ public class CalderaAbilities : ClassAbilities {
             return;
         }
 
-        //Energy
-        if (energy < 5)
-        {
-            energy = Mathf.Clamp(energy + Time.deltaTime, 0, 5);
-        }
         if (currCooldown > 0)
         {
             currCooldown = Mathf.Max(currCooldown - Time.deltaTime, 0);
@@ -219,7 +214,7 @@ public class CalderaAbilities : ClassAbilities {
             fireBallScript.owner = gameObject;
             fireBallScript.damage = Fireball.baseDmg;
         }
-        energy += 3;
+        energy += 4;
     }
 
     #endregion
@@ -235,7 +230,7 @@ public class CalderaAbilities : ClassAbilities {
             lavaballScript.owner = gameObject;
             lavaballScript.damage = Lavaball.baseDmg;
         }
-        energy += 20;
+        energy += 35;
     }
 
     #endregion
@@ -253,7 +248,7 @@ public class CalderaAbilities : ClassAbilities {
 
     private void Ability4()
     {
-        energy += 30;
+        energy += 25;
     }
 
     #endregion

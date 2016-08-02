@@ -64,8 +64,9 @@ public class ConduitAbilities : ClassAbilities {
         }
 
         //Energy
-        if (energy < 5) {
-            energy = Mathf.Clamp(energy + Time.deltaTime, 0, 5);
+        if (energy < energyMax)
+        {
+            energy = Mathf.Clamp(energy + Time.deltaTime, 0, energyMax);
         }
 
         //Cooldown
