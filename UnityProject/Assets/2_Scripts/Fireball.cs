@@ -18,7 +18,6 @@ public class Fireball : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        safeWindow += Time.deltaTime;
         transform.Translate(Vector3.forward * Time.deltaTime * speed);
     }
 
@@ -27,13 +26,15 @@ public class Fireball : MonoBehaviour {
         if (!col.isTrigger)
         {
             //Give the owner a safeWindow
-            if (col.gameObject != owner)
+            if (col.gameObject != owner && col != null)
             {
                 if (col.transform.tag == "Character" || col.transform.tag == "Player")
                 {
                     col.SendMessage("TakeDmg", damage);
+                    CalderaBurnDamage burn = col.GetComponent<CalderaBurnDamage>();
+                    if (burn != null) burn.IsBurning = true;
                 }
-                Splash(col.transform.position);
+                Splash(transform.position);
                 Destroy(gameObject);
             }
             //Damage owner if they run in to it
@@ -42,7 +43,7 @@ public class Fireball : MonoBehaviour {
                 if (Time.time > safeWindow)
                 {
                     col.SendMessage("TakeDmg", damage / 2);
-                    Splash(col.transform.position);
+                    Splash(transform.position);
                     Destroy(gameObject);
                 }
             }
@@ -56,15 +57,20 @@ public class Fireball : MonoBehaviour {
 
         foreach (var target in targets)
         {
-            if (target.transform.tag == "Character" || target.transform.tag == "Player")
+            if (target != null)
             {
-                if (target.gameObject == owner)
+                if (target.transform.tag == "Character" || target.transform.tag == "Player")
                 {
-                    target.SendMessage("TakeDmg", spashDamage / 2);
-                }
-                else
-                {
-                    target.SendMessage("TakeDmg", spashDamage);
+                    if (target.gameObject == owner)
+                    {
+                        target.SendMessage("TakeDmg", spashDamage / 2);
+                    }
+                    else
+                    {
+                        target.SendMessage("TakeDmg", spashDamage);
+                        CalderaBurnDamage burn = target.GetComponent<CalderaBurnDamage>();
+                        if(burn != null) burn.IsBurning = true;
+                    }
                 }
             }
         }

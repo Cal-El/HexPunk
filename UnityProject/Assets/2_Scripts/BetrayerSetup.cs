@@ -31,15 +31,18 @@ public class BetrayerSetup : NetworkBehaviour
 
     void OnTriggerStay(Collider col)
     {
-        if (col.gameObject != null && !playersOnTrigger.Contains(col.gameObject))
+        if (col.gameObject != null && col.gameObject.tag == "Player")
         {
-            playersOnTrigger.Add(col.gameObject);
+            if(!playersOnTrigger.Contains(col.gameObject)) playersOnTrigger.Add(col.gameObject);
         }
     }
 
     void OnTriggerExit(Collider col)
     {
-        if (col.gameObject != null && playersOnTrigger.Contains(col.gameObject)) playersOnTrigger.Remove(col.gameObject);
+        if (col.gameObject != null && col.gameObject.tag == "Player")
+        {
+            if(playersOnTrigger.Contains(col.gameObject)) playersOnTrigger.Remove(col.gameObject);
+        }
     }
     
     [ServerCallback]

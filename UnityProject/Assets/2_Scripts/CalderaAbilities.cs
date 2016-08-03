@@ -5,14 +5,11 @@ using System.Collections.Generic;
 
 public class CalderaAbilities : ClassAbilities {
 
-    public float energyDecay = 5;
-
-    public float chainLightningRange = 5.0f;
+    public float energyDecay = 6;
+    
     public GameObject fireballPrefab;
     public GameObject lavaballPrefab;
     public Transform projectileCastPoint;
-    public GameObject staticStompPrefab;
-    public GameObject dischargeLightningPathPrefab;
 
     private Ability Fireball;
     private Ability Lavaball;
@@ -20,8 +17,6 @@ public class CalderaAbilities : ClassAbilities {
     private Ability Afterburner;
 
     private int playerNum = 0;
-
-    private List<ConduitStacks> lightningLists;
 
     // Use this for initialization
     void Start()
@@ -81,6 +76,12 @@ public class CalderaAbilities : ClassAbilities {
         if (energy < Eruption.energyCost)
         {
             energy = energy - Time.deltaTime * energyDecay;
+        }
+
+        //Energy
+        if (energy < energyMax)
+        {
+            energy = Mathf.Clamp(energy, 0, energyMax);
         }
 
         //Death

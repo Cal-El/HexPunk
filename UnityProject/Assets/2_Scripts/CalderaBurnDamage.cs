@@ -9,12 +9,6 @@ public class CalderaBurnDamage : MonoBehaviour {
     public int numberOfTicks = 3;
     private int currentTick;
     public float tickDamage = 1;
-
-	// Use this for initialization
-	void Start ()
-    {
-
-	}
 	
 	// Update is called once per frame
 	void Update ()
@@ -23,6 +17,7 @@ public class CalderaBurnDamage : MonoBehaviour {
         {
             gameObject.SendMessage("TakeDmg", tickDamage);
             currentTick++;
+            if (currentTick >= numberOfTicks) isBurning = false;
             timer += dotTimer;
         }
 	}
