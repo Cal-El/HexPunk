@@ -9,6 +9,8 @@ public class MaelstromScript : MonoBehaviour {
     private float DoT = 5;
     [SerializeField]
     private float duration = 3;
+    [SerializeField]
+    private float spinSpeed = -360;
 
     // Use this for initialization
     void Start () {
@@ -17,7 +19,7 @@ public class MaelstromScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        transform.Rotate(0, Time.deltaTime * 720, 0);
+        transform.Rotate(0, Time.deltaTime * spinSpeed, 0);
 
         foreach (GameObject g in Megamanager.GetAllCharacters()) {
             if (g.transform != transform.parent && area.bounds.Contains(g.transform.position)) {
