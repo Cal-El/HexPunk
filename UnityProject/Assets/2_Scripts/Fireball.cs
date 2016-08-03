@@ -24,24 +24,27 @@ public class Fireball : MonoBehaviour {
 
     void OnTriggerEnter(Collider col)
     {
-        //Give the owner a safeWindow
-        if (col.gameObject != owner)
+        if (!col.isTrigger)
         {
-            if (col.transform.tag == "Character" || col.transform.tag == "Player")
+            //Give the owner a safeWindow
+            if (col.gameObject != owner)
             {
-                col.SendMessage("TakeDmg", damage);
-            }
-            Splash(col.transform.position);
-            Destroy(gameObject);
-        }
-        //Damage owner if they run in to it
-        else
-        {
-            if (Time.time > safeWindow)
-            {
-                col.SendMessage("TakeDmg", damage / 2);
+                if (col.transform.tag == "Character" || col.transform.tag == "Player")
+                {
+                    col.SendMessage("TakeDmg", damage);
+                }
                 Splash(col.transform.position);
                 Destroy(gameObject);
+            }
+            //Damage owner if they run in to it
+            else
+            {
+                if (Time.time > safeWindow)
+                {
+                    col.SendMessage("TakeDmg", damage / 2);
+                    Splash(col.transform.position);
+                    Destroy(gameObject);
+                }
             }
         }
     }

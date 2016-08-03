@@ -26,26 +26,29 @@ public class Lavaball : MonoBehaviour {
     }
     void OnTriggerStay(Collider col)
     {
-        if (col.transform.tag == "Character" || col.transform.tag == "Player")
+        if (!col.isTrigger)
         {
-            if (col.gameObject != owner)
+            if (col.transform.tag == "Character" || col.transform.tag == "Player")
             {
-                col.SendMessage("TakeDmg", damage * Time.deltaTime * damageModifyer);
-                Debug.Log(damage * Time.deltaTime * damageModifyer);
+                if (col.gameObject != owner)
+                {
+                    col.SendMessage("TakeDmg", damage * Time.deltaTime * damageModifyer);
+                    Debug.Log(damage * Time.deltaTime * damageModifyer);
+                }
+                else
+                {
+                    if (Time.time > safeWindow)
+                    {
+                        col.SendMessage("TakeDmg", damage * Time.deltaTime * damageModifyer / 2);
+                        Debug.Log(damage * Time.deltaTime * damageModifyer / 2);
+                    }
+                }
             }
             else
             {
-                if (Time.time > safeWindow)
-                {
-                    col.SendMessage("TakeDmg", damage * Time.deltaTime * damageModifyer / 2);
-                    Debug.Log(damage * Time.deltaTime * damageModifyer / 2);
-                }
+                Splash(col.transform.position);
+                Destroy(gameObject);
             }
-        }
-        else
-        {
-            Splash(col.transform.position);
-            Destroy(gameObject);
         }
     }
 

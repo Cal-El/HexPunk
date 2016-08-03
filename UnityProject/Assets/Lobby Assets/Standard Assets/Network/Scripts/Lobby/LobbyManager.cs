@@ -411,6 +411,18 @@ namespace UnityStandardAssets.Network
             ServerChangeScene(playScene);
         }
 
+        public override void OnLobbyServerSceneChanged(string sceneName)
+        {
+            Megamanager manager = GetComponent<Megamanager>();
+
+            if (!manager.isActiveAndEnabled)
+            {
+                manager.enabled = true;
+            }
+
+            base.OnLobbyServerSceneChanged(sceneName);
+        }
+
         // ----------------- Client callbacks ------------------
 
         public override void OnClientConnect(NetworkConnection conn)
