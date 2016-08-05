@@ -4,11 +4,11 @@ using System.Collections;
 
 public abstract class Character : NetworkBehaviour {
 
-    [HideInInspector]
+    //[HideInInspector]
     public ConduitStacks stacks;
-    [HideInInspector]
+    //[HideInInspector]
     public CalderaBurnDamage burn;
-    [HideInInspector]
+    //[HideInInspector]
     public Rigidbody rb;
 
     void Start() {
@@ -23,6 +23,6 @@ public abstract class Character : NetworkBehaviour {
 
     public abstract void TakeDmg(float dmg);
 
-    public abstract void Knockback(Vector3 force);
+    public abstract void Knockback(Vector3 force, float timer);
 
 }

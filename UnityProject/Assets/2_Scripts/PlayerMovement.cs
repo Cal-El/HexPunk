@@ -5,6 +5,7 @@ using System.Collections;
 public class PlayerMovement : NetworkBehaviour {
 
 	private CharacterController controller;
+    private ClassAbilities myPlayer;
     public GameObject playerCamera;
     public Camera myCam;
     private bool isCasting = true;
@@ -24,11 +25,14 @@ public class PlayerMovement : NetworkBehaviour {
         if(myCam == null) {
             myCam = Camera.main;
         }
+        myPlayer = GetComponent<ClassAbilities>();
     }
 	
-	void Update() {
 
-        if (!isLocalPlayer || !controlEnabled || isCasting)
+
+	void FixedUpdate() {
+
+        if (!isLocalPlayer || !controlEnabled || isCasting || !myPlayer.rb.isKinematic)
         {
             return;
         }
@@ -49,7 +53,8 @@ public class PlayerMovement : NetworkBehaviour {
         {
             direction = direction.normalized;
         }
-        controller.Move(direction * speed * Time.deltaTime);
+        
+        controller.Move(direction * speed * Time.fixedDeltaTime);
         
         //gameObject.transform.position = new Vector3(gameObject.transform.position.x, yStart, gameObject.transform.position.z);
         //Debug.Log("Input: " + direction + ", Position: " + transform.position);

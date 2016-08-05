@@ -217,7 +217,7 @@ public class MeleeAIBehaviour : Character {
         }
     }
 
-    public override void Knockback(Vector3 force) {
+    public override void Knockback(Vector3 force, float timer) {
 
     }
 

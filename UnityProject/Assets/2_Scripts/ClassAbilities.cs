@@ -22,6 +22,8 @@ public class ClassAbilities : Character {
     public bool IsReviving { get; set; }
     protected Ability Revive;
 
+    private float knockbackTimer = 0;
+
     protected bool isAxisInUse1 = false;
     protected bool isAxisInUse2 = false;
     protected bool isAxisDown1 = false;
@@ -49,10 +51,21 @@ public class ClassAbilities : Character {
         Revive.castingTime = 1f;
         Revive.cooldown = 0.25f;
         Revive.range = 1.0f;
+
+        stacks = GetComponent<ConduitStacks>();
+        burn = GetComponent<CalderaBurnDamage>();
+        rb = GetComponent<Rigidbody>();
     }
 
     protected void BaseUpdate()
     {
+        if(!rb.isKinematic) {
+            knockbackTimer -= Time.deltaTime;
+            if(knockbackTimer <= 0) {
+                rb.isKinematic = true;
+            }
+        }
+
         health = Mathf.Max(Mathf.Min(health, healthMax), 0f);
         energy = Mathf.Max(Mathf.Min(energy, energyMax), 0f);
 
@@ -84,6 +97,9 @@ public class ClassAbilities : Character {
 
         if (Input.GetKeyDown(KeyCode.I))
             level += 0.1f;
+
+        if (Input.GetKeyDown(KeyCode.K))
+            Knockback(-transform.forward *1000, 1);
 
         if (currCooldown <= 0)
         {
@@ -122,7 +138,18 @@ public class ClassAbilities : Character {
         health = Mathf.Clamp(health + addedHP, 0, healthMax);
     }
 
-    public override void Knockback(Vector3 force) {
+    public override void Knockback(Vector3 force, float timer) {
+        //
+        //  OH
+        //
+        //  GOD
+        //
+        //  WHY
+        //
+
+        rb.isKinematic = false;
+        rb.AddForce(force);
+        knockbackTimer = timer;
 
     }
 
