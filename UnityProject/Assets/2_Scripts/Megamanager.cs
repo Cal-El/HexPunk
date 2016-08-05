@@ -81,31 +81,18 @@ public class Megamanager : MonoBehaviour {
         //roomTree[1].parents = new int[] { 0 };
     }
 
-    public static GameObject FindClosestAttackable(GameObject toMe, int passNum) {
-        SortedDictionary<float, GameObject> listOfThings = new SortedDictionary<float, GameObject>();
-        foreach (GameObject g in GameObject.FindGameObjectsWithTag("Character")) {
+    public static Character FindClosestAttackable(Character toMe, int passNum) {
+        SortedDictionary<float, Character> listOfThings = new SortedDictionary<float, Character>();
+        foreach (Character g in GetAllCharacters()) {
             if (g != toMe) {
                 float newValue = Vector3.Distance(toMe.transform.position, g.transform.position);
                 if(!listOfThings.ContainsKey(newValue))
                 listOfThings.Add(newValue,g);
             }
         }
-        foreach (GameObject g in GameObject.FindGameObjectsWithTag("Player")) {
-            if (g != toMe) {
-                float newValue = Vector3.Distance(toMe.transform.position, g.transform.position);
-                if (!listOfThings.ContainsKey(newValue))
-                    listOfThings.Add(newValue, g);
-            }
-        }
-        foreach (GameObject g in GameObject.FindGameObjectsWithTag("Destructible")) {
-            if (g != toMe) {
-                float newValue = Vector3.Distance(toMe.transform.position, g.transform.position);
-                if (!listOfThings.ContainsKey(newValue))
-                    listOfThings.Add(newValue, g);
-            }
-        }
+       
         int passes = 1;
-        foreach (GameObject g in listOfThings.Values) {
+        foreach (Character g in listOfThings.Values) {
             if (passNum == passes)
                 return g;
             passes++;
@@ -113,11 +100,7 @@ public class Megamanager : MonoBehaviour {
         return null;
     }
 
-    public static GameObject[] GetAllCharacters() {
-        List<GameObject> characterList = new List<GameObject>();
-        characterList.AddRange(GameObject.FindGameObjectsWithTag("Character"));
-        characterList.AddRange(GameObject.FindGameObjectsWithTag("Player"));
-
-        return characterList.ToArray();
+    public static Character[] GetAllCharacters() {
+        return FindObjectsOfType<Character>();
     }
 }

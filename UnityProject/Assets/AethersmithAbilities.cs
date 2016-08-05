@@ -181,10 +181,12 @@ public class AethersmithAbilities : ClassAbilities {
         RaycastHit[] hits = Physics.SphereCastAll(transform.position, HammerSwing.range, transform.forward, 0);
         foreach(RaycastHit hit in hits) {
             if (Vector3.Angle(hit.transform.position-transform.position, transform.forward) < 60) {
-                if (hit.transform.tag == "Character" || hit.transform.tag == "Player") {
+                Character c = hit.transform.GetComponent<Character>();
+                if (c != null) {
                     energy += 5;
+                    c.TakeDmg(HammerSwing.baseDmg);
                 }
-                hit.transform.SendMessage("TakeDmg", HammerSwing.baseDmg, SendMessageOptions.DontRequireReceiver);
+                
             }
         }
         //60 degree cone of size HammerSwing.range
@@ -199,8 +201,9 @@ public class AethersmithAbilities : ClassAbilities {
     private void Ability2() {
         RaycastHit hit;
         if(Physics.SphereCast(transform.position, 0.5f, transform.forward, out hit)) {
-            if(hit.transform.tag == "Character" || hit.transform.tag == "Player" || hit.transform.tag == "Destructible") {
-                hit.transform.SendMessage("TakeDmg", SpectralSpear.baseDmg, SendMessageOptions.DontRequireReceiver);
+            Character c = hit.transform.GetComponent<Character>();
+            if(c != null) {
+                c.TakeDmg(SpectralSpear.baseDmg);
             }
         }
         energy -= 10;

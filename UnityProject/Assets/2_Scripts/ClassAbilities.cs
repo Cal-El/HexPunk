@@ -3,7 +3,7 @@ using UnityEngine.Networking;
 using System.Collections;
 using System.Collections.Generic;
 
-public class ClassAbilities : NetworkBehaviour {
+public class ClassAbilities : Character {
 
     public enum ANIMATIONSTATES { Idle, Running, Ability1, Ability2, Ability3, Ability4, Ability5, Dead, Revived };
     public ANIMATIONSTATES currentState;
@@ -104,12 +104,20 @@ public class ClassAbilities : NetworkBehaviour {
         return level;
     }
 
-    public virtual void TakeDmg(float dmg) {
-        health -= dmg;
+    public override float GetHealth() {
+        return health;
     }
 
-    public void Heal(float addedHP) {
-        health += addedHP;
+    public override void TakeDmg(float dmg) {
+        health = Mathf.Clamp(health - dmg, 0, healthMax);
+    }
+
+    public override void Heal(float addedHP) {
+        health = Mathf.Clamp(health + addedHP, 0, healthMax);
+    }
+
+    public override void Knockback(Vector3 force) {
+
     }
 
     //Used for testing

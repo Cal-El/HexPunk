@@ -20,9 +20,10 @@ public class Icicle : MonoBehaviour {
         {
             if (col.gameObject != owner && col != null)
             {
-                if (col.transform.tag == "Character" || col.transform.tag == "Player")
+                Character ch = col.GetComponent<Character>();
+                if (ch != null)
                 {
-                    col.SendMessage("TakeDmg", damage);
+                    ch.TakeDmg(damage);
                 }
                 Destroy(gameObject);
             }

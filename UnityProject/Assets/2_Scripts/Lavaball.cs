@@ -27,19 +27,19 @@ public class Lavaball : MonoBehaviour {
     {
         if (!col.isTrigger && col != null)
         {
-            if (col.transform.tag == "Character" || col.transform.tag == "Player")
+            Character ch = GetComponent<Character>();
+            if (ch != null)
             {
                 if (col.gameObject != owner)
                 {
-                    col.SendMessage("TakeDmg", damage * Time.deltaTime * damageModifyer);
-                    CalderaBurnDamage burn = col.GetComponent<CalderaBurnDamage>();
-                    if (burn != null) burn.IsBurning = true;
+                    ch.TakeDmg(damage * Time.deltaTime * damageModifyer);
+                    ch.burn.IsBurning = true;
                 }
                 else
                 {
                     if (Time.time > safeWindow)
                     {
-                        col.SendMessage("TakeDmg", damage * Time.deltaTime * damageModifyer / 2);
+                        ch.TakeDmg(damage * Time.deltaTime * damageModifyer / 2);
                     }
                 }
             }
@@ -60,17 +60,17 @@ public class Lavaball : MonoBehaviour {
         {
             if (target != null)
             {
-                if (target.transform.tag == "Character" || target.transform.tag == "Player")
+                Character ch = GetComponent<Character>();
+                if (ch != null)
                 {
                     if (target.gameObject == owner)
                     {
-                        target.SendMessage("TakeDmg", spashDamage / 2);
+                        ch.TakeDmg(spashDamage / 2);
                     }
                     else
                     {
-                        target.SendMessage("TakeDmg", spashDamage);
-                        CalderaBurnDamage burn = target.GetComponent<CalderaBurnDamage>();
-                        if (burn != null) burn.IsBurning = true;
+                        ch.TakeDmg(spashDamage);
+                        ch.burn.IsBurning = true;
                     }
                 }
             }

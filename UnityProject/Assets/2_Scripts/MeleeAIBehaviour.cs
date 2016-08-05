@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class MeleeAIBehaviour : MonoBehaviour {
+public class MeleeAIBehaviour : Character {
 
     private const float TIME_FOR_NAVMESH_UPDATE = 0.5f;
 
@@ -140,7 +140,7 @@ public class MeleeAIBehaviour : MonoBehaviour {
                 RaycastHit hit;
                 if (Physics.Raycast(new Ray(transform.position, transform.forward), out hit, range)) {
                     if(hit.transform.tag == "Player") {
-                        hit.transform.SendMessage("TakeDmg", baseDmg, SendMessageOptions.DontRequireReceiver);
+                        hit.transform.GetComponent<ClassAbilities>().TakeDmg(baseDmg);
                     }
                 }
             }
@@ -200,13 +200,25 @@ public class MeleeAIBehaviour : MonoBehaviour {
         }
     }
 
-    public void TakeDmg(float dmg) {
-        health -= dmg;
+    public override float GetHealth() {
+        return health;
+    }
+
+    public override void Heal(float healVal) {
+        health = Mathf.Clamp(health + healVal, 0, maxHealth);
+    }
+
+    public override void TakeDmg(float dmg) {
+        health = Mathf.Clamp(health - dmg, 0, maxHealth);
         if (agentState == STATES.Idle)
             StartBattlecry();
         if (health <= 0) {
             StartDeath();
         }
+    }
+
+    public override void Knockback(Vector3 force) {
+
     }
 
     public void Retagetting()

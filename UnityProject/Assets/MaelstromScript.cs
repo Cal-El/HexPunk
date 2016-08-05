@@ -21,9 +21,9 @@ public class MaelstromScript : MonoBehaviour {
 	void Update () {
         transform.Rotate(0, Time.deltaTime * spinSpeed, 0);
 
-        foreach (GameObject g in Megamanager.GetAllCharacters()) {
+        foreach (Character g in Megamanager.GetAllCharacters()) {
             if (g.transform != transform.parent && area.bounds.Contains(g.transform.position)) {
-                g.SendMessage("TakeDmg", DoT * Time.deltaTime, SendMessageOptions.DontRequireReceiver);
+                g.TakeDmg(DoT * Time.deltaTime);
             }
         }
 	}

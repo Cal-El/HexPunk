@@ -25,14 +25,14 @@ public class Fireball : MonoBehaviour {
     {
         if (!col.isTrigger)
         {
+            Character ch = col.GetComponent<Character>();
             //Give the owner a safeWindow
             if (col.gameObject != owner && col != null)
             {
-                if (col.transform.tag == "Character" || col.transform.tag == "Player")
+                if (ch != null)
                 {
-                    col.SendMessage("TakeDmg", damage);
-                    CalderaBurnDamage burn = col.GetComponent<CalderaBurnDamage>();
-                    if (burn != null) burn.IsBurning = true;
+                    ch.TakeDmg(damage);
+                    ch.burn.IsBurning = true;
                 }
                 Splash(transform.position);
                 Destroy(gameObject);
@@ -42,7 +42,7 @@ public class Fireball : MonoBehaviour {
             {
                 if (Time.time > safeWindow)
                 {
-                    col.SendMessage("TakeDmg", damage / 2);
+                    ch.TakeDmg(damage / 2);
                     Splash(transform.position);
                     Destroy(gameObject);
                 }
@@ -59,17 +59,17 @@ public class Fireball : MonoBehaviour {
         {
             if (target != null)
             {
-                if (target.transform.tag == "Character" || target.transform.tag == "Player")
+                Character ch = target.GetComponent<Character>();
+                if (ch != null)
                 {
                     if (target.gameObject == owner)
                     {
-                        target.SendMessage("TakeDmg", spashDamage / 2);
+                        ch.TakeDmg(spashDamage / 2);
                     }
                     else
                     {
-                        target.SendMessage("TakeDmg", spashDamage);
-                        CalderaBurnDamage burn = target.GetComponent<CalderaBurnDamage>();
-                        if(burn != null) burn.IsBurning = true;
+                        ch.TakeDmg(spashDamage);
+                        ch.burn.IsBurning = true;
                     }
                 }
             }
