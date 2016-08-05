@@ -75,6 +75,12 @@ public class ClassAbilities : Character {
             CmdChangeGraphicColour(Color.red);
         if (Input.GetKeyDown(KeyCode.Keypad4))
             CmdChangeGraphicColour(Color.green);
+        if (Input.GetKeyDown(KeyCode.Keypad5))
+            CmdChangeGraphicColour(Color.magenta);
+        if (Input.GetKeyDown(KeyCode.Keypad6))
+            CmdChangeGraphicColour(Color.blue);
+        if (Input.GetKeyDown(KeyCode.Keypad7))
+            CmdChangeGraphicColour(Color.black);
 
         if (Input.GetKeyDown(KeyCode.I))
             level += 0.1f;

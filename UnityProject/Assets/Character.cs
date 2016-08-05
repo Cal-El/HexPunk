@@ -8,10 +8,13 @@ public abstract class Character : NetworkBehaviour {
     public ConduitStacks stacks;
     [HideInInspector]
     public CalderaBurnDamage burn;
+    [HideInInspector]
+    public Rigidbody rb;
 
     void Start() {
         stacks = GetComponent<ConduitStacks>();
         burn = GetComponent<CalderaBurnDamage>();
+        rb = GetComponent<Rigidbody>();
     }
 
     public abstract float GetHealth();

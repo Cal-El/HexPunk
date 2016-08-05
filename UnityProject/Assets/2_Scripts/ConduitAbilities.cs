@@ -279,27 +279,27 @@ public class ConduitAbilities : ClassAbilities {
                 if (c != null)
                 {
                     float stks = c.stacks.Stacks;
-                    CmdDischargeStacks(c);
+                    CmdDischargeStacks(c.gameObject);
                     c.TakeDmg(LightingPunch.baseDmg * stks);
                 }
             }
     }
 
     [Command]
-    private void CmdDischargeStacks(Character o)
+    private void CmdDischargeStacks(GameObject o)
     {
         if (o != null)
         {
-            if (!isClient) o.stacks.Discharge();
+            if (!isClient) o.GetComponent<Character>().stacks.Discharge();
             else RpcDischargeStacks(o);
         }
     }
 
     [ClientRpc]
-    private void RpcDischargeStacks(Character o)
+    private void RpcDischargeStacks(GameObject o)
     {
         if(o!=null)
-            o.stacks.Discharge();
+            o.GetComponent<Character>().stacks.Discharge();
     }
 
     private void StartAbility3()
