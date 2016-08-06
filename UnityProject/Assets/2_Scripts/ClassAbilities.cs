@@ -147,9 +147,9 @@ public class ClassAbilities : Character {
         //  WHY
         //
 
-        rb.isKinematic = false;
-        rb.AddForce(force);
-        knockbackTimer = timer;
+        //rb.isKinematic = false;
+        //rb.AddForce(force);
+        //knockbackTimer = timer;
 
     }
 

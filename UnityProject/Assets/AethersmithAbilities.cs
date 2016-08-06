@@ -184,7 +184,9 @@ public class AethersmithAbilities : ClassAbilities {
                 Character c = hit.transform.GetComponent<Character>();
                 if (c != null) {
                     energy += 5;
+                    c.Knockback(transform.forward*200, 1);
                     c.TakeDmg(HammerSwing.baseDmg);
+                    
                 }
                 
             }
@@ -203,6 +205,7 @@ public class AethersmithAbilities : ClassAbilities {
         if(Physics.SphereCast(transform.position, 0.5f, transform.forward, out hit)) {
             Character c = hit.transform.GetComponent<Character>();
             if(c != null) {
+                c.Knockback(transform.forward * 1000, 1);
                 c.TakeDmg(SpectralSpear.baseDmg);
             }
         }

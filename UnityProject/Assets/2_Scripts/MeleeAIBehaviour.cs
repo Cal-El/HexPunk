@@ -6,7 +6,7 @@ public class MeleeAIBehaviour : Character {
     private const float TIME_FOR_NAVMESH_UPDATE = 0.5f;
 
     //State machine variables
-    public enum STATES { Idle, Battlecry, Chasing, Attacking, Dead}
+    public enum STATES { Idle, Battlecry, Chasing, Attacking, Knockback, Dead}
     [HideInInspector]public STATES agentState = STATES.Idle;
     [HideInInspector]public STATES animationState = STATES.Idle;
 
@@ -17,6 +17,7 @@ public class MeleeAIBehaviour : Character {
     public float maxHealth = 5;
 
     //Attack Statistics
+    [Header("Combat Statistics")]
     public float baseDmg = 5;                   //Base damage of the melee attack
     public float castingTime = 1;               //The time it takes from starting an attack to it actually connecting with a player
     public float cooldown = 1;                  //The time it between attacks
@@ -24,16 +25,19 @@ public class MeleeAIBehaviour : Character {
     public float range = 2;                     //Range/Reach of the attack
 
     //Battlecry Variable
+    [Header("Battlecry Attributes")]
     public char[] battleTriggers;           //The char triggers that can override this AI to begin attacking
     public float battlecryTime = 1.5f;      //Time it takes to complete a battlecry
     private float battlecryTimer = 0.0f;    //Timer for use while battlecry is triggering
     public float battlecryRange = 2.0f;     //Range in which the battlecry triggers others around it
+    public float playerPerceptionRange = 5.0f;
 
     //Pathfinding Variables
     private ClassAbilities target;
     [HideInInspector]public NavMeshAgent navAgent;
     private NavMeshObstacle navObst;
     private float inactiveTimer = 0.0f;
+    private float knockbackTimer = 0.0f;
 
     void Awake () {
         navAgent = this.GetComponent<NavMeshAgent>();
@@ -47,6 +51,12 @@ public class MeleeAIBehaviour : Character {
 	void Update () {
         if (agentState != STATES.Dead) {
             Vector3 prePos = transform.position;
+            if(knockbackTimer > 0) {
+                knockbackTimer -= Time.deltaTime;
+                if(knockbackTimer <= 0) {
+                    StartChase();
+                }
+            }
             if (inactiveTimer <= 0) {
                 if (transform.parent == null || transform.parent.GetComponent<Room>().roomUnlocked) {
                     switch (agentState) {
@@ -70,6 +80,9 @@ public class MeleeAIBehaviour : Character {
                             mr.material.SetColor("_EmissionColor", Color.white);
                             AttackingBehaviour();
                             break;
+                        case STATES.Knockback:
+                            mr.material.SetColor("_EmissionColor", Color.blue);
+                            break;
                         case STATES.Dead:
                             
                             break;
@@ -90,6 +103,9 @@ public class MeleeAIBehaviour : Character {
 	}
 
     private void IdleBehaviour() {
+        if(navAgent.avoidancePriority > 75) {
+            CheckForPlayers();
+        }
     }
 
     private void BattlecryBehaviour() {
@@ -101,17 +117,7 @@ public class MeleeAIBehaviour : Character {
                     hit.transform.GetComponent<MeleeAIBehaviour>().HearBattlecry();
                 }
             }
-            ClassAbilities[] pms = GameObject.FindObjectsOfType<ClassAbilities>();
-            ClassAbilities closest = null;
-            foreach(ClassAbilities pm in pms) {
-                if(closest == null) {
-                    closest = pm;
-                }
-                if(Vector3.Distance(this.transform.position, pm.transform.position) < Vector3.Distance(this.transform.position, closest.transform.position)) {
-                    closest = pm;
-                }
-            }
-            target = closest;
+            FindTarget();
             StartChase();
         }
         
@@ -125,7 +131,7 @@ public class MeleeAIBehaviour : Character {
         }
         
         
-        if (Vector3.Distance(this.transform.position, target.transform.position) < range - 0.5f) {
+        if (Vector3.Distance(this.transform.position, target.transform.position) < range - 0.5f && knockbackTimer <= 0) {
             navAgent.enabled = false;
             navObst.enabled = true;
             agentState = STATES.Attacking;
@@ -161,6 +167,13 @@ public class MeleeAIBehaviour : Character {
         }
     }
 
+    private void KnockbackBehaviour() {
+        knockbackTimer -= Time.deltaTime;
+        if(knockbackTimer <= 0) {
+            StartChase();
+        }
+    }
+
     private void DeadBehaviour() {
         
     }
@@ -173,13 +186,15 @@ public class MeleeAIBehaviour : Character {
     private void StartChase() {
         inactiveTimer = TIME_FOR_NAVMESH_UPDATE;
         navObst.enabled = false;
+        rb.isKinematic = true;
         agentState = STATES.Chasing;
     }
 
     private void StartDeath() {
         navObst.enabled = false;
         navAgent.enabled = false;
-        GetComponent<Collider>().enabled = false;
+        rb.isKinematic = false;
+        GetComponent<CapsuleCollider>().enabled = true;
         agentState = STATES.Dead;
         Destroy(gameObject, 5);
     }
@@ -218,7 +233,38 @@ public class MeleeAIBehaviour : Character {
     }
 
     public override void Knockback(Vector3 force, float timer) {
+        if(agentState == STATES.Idle) {
+            FindTarget();
+        }
+        agentState = STATES.Knockback;
+        transform.LookAt(transform.position - force, Vector3.up);
+        navAgent.enabled = false;
+        navObst.enabled = true;
+        rb.isKinematic = false;
+        rb.AddForce(force);
+        knockbackTimer = timer;
+    }
 
+    public void CheckForPlayers() {
+        foreach(ClassAbilities p in Megamanager.MM.players) {
+            if(Vector3.Distance(p.transform.position, transform.position) <= playerPerceptionRange) {
+                StartBattlecry();
+            }
+        }
+    }
+
+    public void FindTarget() {
+        ClassAbilities[] pms = GameObject.FindObjectsOfType<ClassAbilities>();
+        ClassAbilities closest = null;
+        foreach (ClassAbilities pm in pms) {
+            if (closest == null) {
+                closest = pm;
+            }
+            if (Vector3.Distance(this.transform.position, pm.transform.position) < Vector3.Distance(this.transform.position, closest.transform.position)) {
+                closest = pm;
+            }
+        }
+        target = closest;
     }
 
     public void Retagetting()
