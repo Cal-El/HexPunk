@@ -43,6 +43,7 @@ public class ClassAbilities : Character {
     protected int waitingForAbility = 0; //0 means none
 
     protected void Initialize() {
+        DontDestroyOnLoad(gameObject);
         health = healthMax;
         pm = GetComponent<PlayerMovement>();
 
