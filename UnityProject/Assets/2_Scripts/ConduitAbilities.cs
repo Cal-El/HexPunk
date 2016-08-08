@@ -41,7 +41,7 @@ public class ConduitAbilities : ClassAbilities {
         StaticStomp.energyCost = 2;
 
         Discharge.abilityNum = 3;
-        Discharge.baseDmg = 0;
+        Discharge.baseDmg = 1;
         Discharge.castingTime = 1;
         Discharge.cooldown = 0.5f;
         Discharge.range = 1000;
@@ -263,7 +263,8 @@ public class ConduitAbilities : ClassAbilities {
             }
         }
         if (staticStompPrefab != null){
-            Instantiate(staticStompPrefab, this.transform.position, staticStompPrefab.transform.rotation);
+            GameObject statStompBoom = Instantiate(staticStompPrefab, this.transform.position, staticStompPrefab.transform.rotation) as GameObject;
+            statStompBoom.transform.localScale *= StaticStomp.range * energy;
         }
         energy = 0;
     }
@@ -280,7 +281,7 @@ public class ConduitAbilities : ClassAbilities {
                 {
                     float stks = c.stacks.Stacks;
                     CmdDischargeStacks(c.gameObject);
-                    c.TakeDmg(LightingPunch.baseDmg * stks);
+                    c.TakeDmg(Discharge.baseDmg * stks);
                 }
             }
     }
@@ -366,10 +367,10 @@ public class ConduitAbilities : ClassAbilities {
                     } else if (LightningDash.range * energy - hit[i].distance >= 0.5f && LightningDash.range * energy - hit[i].distance < 1.5f) {
                         telePos = ray.origin + (ray.direction * (hit[i].distance + 1.5f));
                         ch.stacks.AddStack();
-                        ch.TakeDmg(0.1f);
+                        ch.TakeDmg(LightningDash.baseDmg);
                     } else {
                         ch.stacks.AddStack();
-                        ch.TakeDmg(0.1f);
+                        ch.TakeDmg(LightningDash.baseDmg);
                     }
                 }
             }
@@ -436,5 +437,21 @@ public class ConduitAbilities : ClassAbilities {
         }
 
         return alreadyHit;
+    }
+
+    public override void GainXP(float xp) {
+        float preLevel = level;
+        base.GainXP(xp);
+        if (preLevel < 1 && level >= 1) {
+            LightningDash.range *= 1.2f;
+        } else if (preLevel < 2 && level >= 2) {
+            LightningDash.baseDmg = 1f;
+        } else if (preLevel < 3 && level >= 3) {
+            LightingPunch.baseDmg = 3f;
+        } else if (preLevel < 4 && level >= 4) {
+            Discharge.baseDmg *= 2f;
+        } else if (preLevel < 5 && level >= 5) {
+            StaticStomp.range *= 1.5f;
+        }
     }
 }

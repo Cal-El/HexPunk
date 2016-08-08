@@ -118,7 +118,7 @@ public class ClassAbilities : Character {
         }
     }
 
-    public void GainXP(float xp) {
+    public virtual void GainXP(float xp) {
         level += xp;
     }
 
