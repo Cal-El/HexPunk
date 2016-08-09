@@ -13,7 +13,7 @@ public class Fireball : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        safeWindow += Time.time;
+        safeWindow = Time.time;
     }
 	
 	// Update is called once per frame

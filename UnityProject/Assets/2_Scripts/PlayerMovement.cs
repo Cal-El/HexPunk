@@ -13,6 +13,9 @@ public class PlayerMovement : NetworkBehaviour {
     
     private float xAxis = 0;
 	private float yAxis = 0;
+    public float baseSpeed = 6.0f;
+    [HideInInspector]
+    [SyncVar]
 	public float speed = 6.0f;
 	public float leftThumbstickAngle = 0;
 	private Vector3 direction = Vector3.zero;
@@ -20,7 +23,8 @@ public class PlayerMovement : NetworkBehaviour {
     //private float yStart;
 
     void Start () {
-		controller = GetComponent<CharacterController>();
+        speed = baseSpeed;
+        controller = GetComponent<CharacterController>();
         if(myCam == null) {
             myCam = Camera.main;
         }

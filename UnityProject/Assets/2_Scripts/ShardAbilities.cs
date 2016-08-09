@@ -19,7 +19,8 @@ public class ShardAbilities : ClassAbilities {
     public GameObject iceFieldPrefab;
     public GameObject waterspoutPrefab;
     public GameObject iceRamPrefab;
-    public GameObject mistCloudPrefab;
+    public MeshRenderer mistCloud;
+    private SkinnedMeshRenderer playerRenderer;
     public Transform projectileCastPoint;
 
     private Ability IceLance;
@@ -47,6 +48,7 @@ public class ShardAbilities : ClassAbilities {
     {
         base.Initialize();
         energySecondary = energyMax;
+        playerRenderer = graphicObj.gameObject.GetComponent<SkinnedMeshRenderer>();
 
         IceLance.abilityNum = 1;
         IceLance.baseDmg = 1;
@@ -86,10 +88,8 @@ public class ShardAbilities : ClassAbilities {
         IceRam.energyCost = -0.1f;
 
         MistCloud.abilityNum = 4;
-        MistCloud.baseDmg = 0;
-        MistCloud.castingTime = 0.25f;
-        MistCloud.cooldown = 0.25f;
-        MistCloud.range = 1.0f;
+        MistCloud.castingTime = -0.1f;
+        MistCloud.cooldown = -0.1f;
         MistCloud.energyCost = -0.1f;
     }
 
@@ -163,7 +163,8 @@ public class ShardAbilities : ClassAbilities {
                         UseAbility(Waterspray);
                     }
                     if (GetAxisDown1("Ability 2")) UseAbility(Waterspout);
-                    if (GetAxisDown2("Ability 4")) UseAbility(MistCloud);
+                    if (Input.GetButtonUp("Ability 4")) StopMistCloud();
+                    else if (Input.GetButton("Ability 4")) UseAbility(MistCloud);
                     break;
             }
 
@@ -361,7 +362,7 @@ public class ShardAbilities : ClassAbilities {
         }
         growthTimer = 0;
 
-        energy += 10;
+        energy += 3;
     }
 
     private void Ability1()
@@ -444,7 +445,7 @@ public class ShardAbilities : ClassAbilities {
             }
         }
 
-        energySecondary += 25;
+        energy += 10;
     }
 
     #endregion
@@ -511,6 +512,17 @@ public class ShardAbilities : ClassAbilities {
 
     private void Ability4b()
     {
+        if (!mistCloud.enabled)
+        {
+            mistCloud.enabled = true;
+            playerRenderer.enabled = false;
+        }
+    }
+
+    private void StopMistCloud()
+    {
+        playerRenderer.enabled = true;
+        mistCloud.enabled = false;
     }
 
     #endregion
