@@ -53,9 +53,7 @@ public class ClassAbilities : Character {
         Revive.cooldown = 0.25f;
         Revive.range = 1.0f;
 
-        stacks = GetComponent<ConduitStacks>();
-        burn = GetComponent<CalderaBurnDamage>();
-        rb = GetComponent<Rigidbody>();
+        base.Initialise();
     }
 
     protected void BaseUpdate()

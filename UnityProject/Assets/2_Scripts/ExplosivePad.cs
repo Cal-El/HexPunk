@@ -13,7 +13,7 @@ public class ExplosivePad : Pad {
 
     // Update is called once per frame
     void Update() {
-        if (transform.parent.GetComponent<Room>().RoomActive) {
+        if (transform.parent.GetComponent<Room>().roomActive) {
             activatedLast = Activate;
             ShouldBeActive();
             if (!activatedLast && Activate && !fake) {

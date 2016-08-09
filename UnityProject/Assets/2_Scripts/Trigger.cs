@@ -6,6 +6,7 @@ public class Trigger : MonoBehaviour {
     public char triggerMessage;
     public enum TYPES { Door, Aggro}
     public TYPES triggerType = TYPES.Aggro;
+    public int connectionID;
 
     void OnTriggerEnter(Collider e) {
         if (e.tag == "Player") {
@@ -13,8 +14,7 @@ public class Trigger : MonoBehaviour {
                 foreach (MeleeAIBehaviour enemy in FindObjectsOfType<MeleeAIBehaviour>())
                     enemy.ReceiveMessage(triggerMessage);
             else if (triggerType == TYPES.Door)
-                foreach (DoorScript door in FindObjectsOfType<DoorScript>())
-                    door.ReceiveMessage(triggerMessage);
+                Megamanager.MM.UnlockConnection(connectionID);
             Destroy(this.gameObject);
         }
     }
