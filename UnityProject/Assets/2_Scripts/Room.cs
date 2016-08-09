@@ -1,32 +1,29 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 
-public abstract class Room : MonoBehaviour {
+public class Room : MonoBehaviour {
 
     public int ID;
-    public bool doorOpen;
-    public bool RoomActive;
+    public bool roomActive;
     public bool roomUnlocked;
-    public PressurePad[] plates;
+    public enum ALIGNMENTS { Good, Neutral, Bad}
+    public ALIGNMENTS roomAlignment = ALIGNMENTS.Neutral;
+    public Action<ALIGNMENTS> activateSpawners; 
 
-    public struct Plate {
-        public PressurePad plate;
-        public int ID;
-        public int[] parents;
-    }
-    public Plate[] PowerTree;
+    void Start() {
 
-    public PressurePad GetPlateWithID(int u) {
-        foreach (PressurePad p in plates) {
-            if (p.ID == u) return p;
-        }
-        return null;
     }
 
-    public bool CheckParentsForPower(int p) {
-        foreach (int i in PowerTree[p].parents) {
-            if (!PowerTree[i].plate.Powered || !PowerTree[i].plate.Activate) return false;
+    void Update() {
+
+    }
+
+    public void UnlockRoom() {
+        if (!roomUnlocked) {
+            roomUnlocked = true;
+            roomActive = true;
+            activateSpawners(roomAlignment);
         }
-        return true;
     }
 }

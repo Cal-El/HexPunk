@@ -7,19 +7,29 @@ public class Megamanager : MonoBehaviour {
     public static Megamanager MM;
     public ClassAbilities[] players;
     public GameObject[] enemies;
-    public struct RoomStruct {
-        public Room room;
-        public int ID;
-        public int[] parents;
+    [System.Serializable]
+    public class RoomConnection {
+        public Room r1;
+        public Room r2;
+        public DoorScript door;
+
+        public void UnlockConnection() {
+            door.open = true;
+            r1.UnlockRoom();
+            r2.UnlockRoom();
+        }
     }
-    public RoomStruct[] roomTree;
+    public RoomConnection[] roomTree;
 
 	// Use this for initialization
 	void Start () {
-        MM = this;
+        if (MM != null) {
+            Destroy(this);
+        } else {
+            MM = this;
+        }
         players = FindObjectsOfType<ClassAbilities>();
         enemies = GameObject.FindGameObjectsWithTag("Character");
-        RoomTreeSetup();
     }
 	
 	// Update is called once per frame
@@ -37,13 +47,6 @@ public class Megamanager : MonoBehaviour {
 
         if (deadPlayers == players.Length) Defeated();
 
-        /*foreach (RoomStruct r in roomTree) {
-            if(r.parents != null) {
-                r.room.roomUnlocked = IsRoomUnlocked(r);
-            } else {
-                r.room.roomUnlocked = true;
-            }
-        }*/
     }
     
     private void Defeated()
@@ -62,23 +65,12 @@ public class Megamanager : MonoBehaviour {
         }
     }
 
-    bool IsRoomUnlocked(RoomStruct r) {
-        foreach(int i in r.parents) {
-            if (!roomTree[r.parents[i]].room.doorOpen) return false;
-        }
-        return true;
+    public void UnlockConnection(int ID) {
+        roomTree[ID].UnlockConnection();
     }
 
-    void RoomTreeSetup() {
-        Room[] rooms = FindObjectsOfType<Room>();
-        roomTree = new RoomStruct[rooms.Length];
-        foreach (Room r in rooms) {
-            roomTree[r.ID].room = r;
-            roomTree[r.ID].ID = r.ID;
-        }
-
-        //roomTree[0].parents = null;
-        //roomTree[1].parents = new int[] { 0 };
+    void OnDestroy() {
+        MM.roomTree = this.roomTree;
     }
 
     public static Character FindClosestAttackable(Character toMe, int passNum) {

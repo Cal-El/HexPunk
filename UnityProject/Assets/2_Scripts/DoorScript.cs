@@ -4,9 +4,6 @@ using System.Collections;
 public class DoorScript : MonoBehaviour {
 
     public bool open = false;
-    public bool triggeredDoor = false;
-    public char triggerMessage;
-    private bool triggered = false;
     public float timeToOpen = 2.0f;
     public Transform[] doors;
     private Vector3[] openedPositions = new Vector3[2] {
@@ -21,29 +18,12 @@ public class DoorScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (!triggeredDoor)
-        {
-            if (transform.parent.GetComponent<Room>().doorOpen)
-                openess = Mathf.Clamp(openess + Time.deltaTime / timeToOpen, 0, 1);
-            else
-                openess = Mathf.Clamp(openess - Time.deltaTime / timeToOpen, 0, 1);
-        }
+        if (open)
+            openess = Mathf.Clamp(openess + Time.deltaTime / timeToOpen, 0, 1);
         else
-        {
-            if (triggered)
-                openess = Mathf.Clamp(openess - Time.deltaTime / timeToOpen, 0, 1);
-            else
-                openess = Mathf.Clamp(openess + Time.deltaTime / timeToOpen, 0, 1);
-        }
+            openess = Mathf.Clamp(openess - Time.deltaTime / timeToOpen, 0, 1);
+
         for (int i = 0; i < doors.Length; i++)
             doors[i].transform.localPosition = Vector3.Lerp(closedPositions[i], openedPositions[i], openess);
 	}
-
-    public void ReceiveMessage(char message)
-    {
-        if (message == this.triggerMessage)
-        {
-            triggered = !triggered;
-        }
-    }
 }
