@@ -81,7 +81,7 @@ public class ShardAbilities : ClassAbilities {
         FormShift.energyCost = -0.1f;
 
         IceRam.abilityNum = 4;
-        IceRam.baseDmg = 0;
+        IceRam.baseDmg = 15;
         IceRam.castingTime = 0.25f;
         IceRam.cooldown = 0.25f;
         IceRam.range = 1.0f;
@@ -503,7 +503,13 @@ public class ShardAbilities : ClassAbilities {
 
     private void Ability4()
     {
-
+        if (iceRamPrefab != null)
+        {
+            GameObject iceRam = Instantiate(iceRamPrefab, projectileCastPoint.position, transform.rotation) as GameObject;
+            IceRam iceRamScript = iceRam.GetComponent<IceRam>();
+            iceRamScript.owner = gameObject;
+            iceRamScript.damage = IceRam.baseDmg;
+        }
     }
 
     #endregion
