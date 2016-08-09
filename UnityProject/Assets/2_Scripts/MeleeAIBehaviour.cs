@@ -40,6 +40,8 @@ public class MeleeAIBehaviour : Character {
     private float knockbackTimer = 0.0f;
 
     void Awake () {
+        base.Initialise();
+
         navAgent = this.GetComponent<NavMeshAgent>();
         navObst = this.GetComponent<NavMeshObstacle>();
 
@@ -195,6 +197,7 @@ public class MeleeAIBehaviour : Character {
         navAgent.enabled = false;
         rb.isKinematic = false;
         GetComponent<CapsuleCollider>().enabled = true;
+        base.Destroyed();
         agentState = STATES.Dead;
         Destroy(gameObject, 5);
     }

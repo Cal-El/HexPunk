@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Room : MonoBehaviour {
 
@@ -9,7 +10,7 @@ public class Room : MonoBehaviour {
     public bool roomUnlocked;
     public enum ALIGNMENTS { Good, Neutral, Bad}
     public ALIGNMENTS roomAlignment = ALIGNMENTS.Neutral;
-    public Action<ALIGNMENTS> activateSpawners; 
+    public List<Spawner> spawners; 
 
     void Start() {
 
@@ -23,7 +24,15 @@ public class Room : MonoBehaviour {
         if (!roomUnlocked) {
             roomUnlocked = true;
             roomActive = true;
-            activateSpawners(roomAlignment);
+            foreach (Spawner s in spawners)
+                s.ActivateSpawner(roomAlignment);
         }
+    }
+
+    public void AddSpawner(Spawner s) {
+        if(spawners == null) {
+            spawners = new List<Spawner>();
+        }
+        spawners.Add(s);
     }
 }

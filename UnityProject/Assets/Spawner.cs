@@ -13,10 +13,8 @@ public class Spawner : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        if (myRoom.activateSpawners == null) {
-            myRoom.activateSpawners += ActivateSpawner;
-        }
-            myRoom.activateSpawners += ActivateSpawner;
+        myRoom.AddSpawner(this);
+
     }
 	
 	public void ActivateSpawner(Room.ALIGNMENTS alignment) {

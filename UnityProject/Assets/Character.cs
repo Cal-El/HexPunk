@@ -11,10 +11,18 @@ public abstract class Character : NetworkBehaviour {
     //[HideInInspector]
     public Rigidbody rb;
 
-    void Start() {
+    /// <summary>
+    /// To be called by all start functions
+    /// </summary>
+    protected void Initialise() {
+        Megamanager.AddCharacterToList(this);
         stacks = GetComponent<ConduitStacks>();
         burn = GetComponent<CalderaBurnDamage>();
         rb = GetComponent<Rigidbody>();
+    }
+
+    protected void Destroyed() {
+        Megamanager.RemoveCharacterFromList(this);
     }
 
     public abstract float GetHealth();

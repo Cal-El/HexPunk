@@ -6,7 +6,7 @@ public class Megamanager : MonoBehaviour {
 
     public static Megamanager MM;
     public ClassAbilities[] players;
-    public GameObject[] enemies;
+    public List<Character> characters;
     [System.Serializable]
     public class RoomConnection {
         public Room r1;
@@ -29,15 +29,13 @@ public class Megamanager : MonoBehaviour {
             MM = this;
         }
         players = FindObjectsOfType<ClassAbilities>();
-        enemies = GameObject.FindGameObjectsWithTag("Character");
     }
 	
 	// Update is called once per frame
 	void Update () {
         players = FindObjectsOfType<ClassAbilities>();
-        enemies = GameObject.FindGameObjectsWithTag("Character");
 
-        if (enemies.Length == 0) Victory();
+        if (characters.Count == 0 && AllRoomsUnlocked()) Victory();
 
         int deadPlayers = 0;
         foreach (ClassAbilities player in players)
@@ -73,6 +71,10 @@ public class Megamanager : MonoBehaviour {
         MM.roomTree = this.roomTree;
     }
 
+    bool AllRoomsUnlocked() {
+        return false;
+    }
+
     public static Character FindClosestAttackable(Character toMe, int passNum) {
         SortedDictionary<float, Character> listOfThings = new SortedDictionary<float, Character>();
         foreach (Character g in GetAllCharacters()) {
@@ -92,7 +94,16 @@ public class Megamanager : MonoBehaviour {
         return null;
     }
 
+    public static void AddCharacterToList(Character c) {
+        if (MM.characters == null) MM.characters = new List<Character>();
+        MM.characters.Add(c);
+    }
+
+    public static void RemoveCharacterFromList(Character c) {
+        MM.characters.Remove(c);
+    }
+
     public static Character[] GetAllCharacters() {
-        return FindObjectsOfType<Character>();
+        return MM.characters.ToArray() ;
     }
 }
