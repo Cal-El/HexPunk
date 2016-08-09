@@ -27,7 +27,7 @@ public class Lavaball : MonoBehaviour {
     {
         if (!col.isTrigger && col != null)
         {
-            Character ch = GetComponent<Character>();
+            Character ch = col.GetComponent<Character>();
             if (ch != null)
             {
                 if (col.gameObject != owner)
@@ -60,7 +60,7 @@ public class Lavaball : MonoBehaviour {
         {
             if (target != null)
             {
-                Character ch = GetComponent<Character>();
+                Character ch = target.GetComponent<Character>();
                 if (ch != null)
                 {
                     if (target.gameObject == owner)

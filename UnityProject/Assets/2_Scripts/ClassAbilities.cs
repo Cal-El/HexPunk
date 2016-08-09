@@ -169,14 +169,14 @@ public class ClassAbilities : Character {
     }
 
     [Command]
-    private void CmdChangeGraphicColour(Color colour)
+    protected void CmdChangeGraphicColour(Color colour)
     {
         if (!isClient) graphicObj.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", colour);
         RpcChangeGraphicColour(colour);
     }
 
     [ClientRpc]
-    private void RpcChangeGraphicColour(Color colour)
+    protected void RpcChangeGraphicColour(Color colour)
     {
         graphicObj.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", colour);
     }

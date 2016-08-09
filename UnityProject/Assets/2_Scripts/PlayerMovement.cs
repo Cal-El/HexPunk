@@ -8,7 +8,7 @@ public class PlayerMovement : NetworkBehaviour {
     private ClassAbilities myPlayer;
     public GameObject playerCamera;
     public Camera myCam;
-    private bool isCasting = true;
+    private bool isCasting = false;
     private bool controlEnabled = true;
     
     private float xAxis = 0;
@@ -21,7 +21,6 @@ public class PlayerMovement : NetworkBehaviour {
 
     void Start () {
 		controller = GetComponent<CharacterController>();
-        //yStart = gameObject.transform.position.y;
         if(myCam == null) {
             myCam = Camera.main;
         }
@@ -55,22 +54,10 @@ public class PlayerMovement : NetworkBehaviour {
         }
         
         controller.Move(direction * speed * Time.fixedDeltaTime);
-        
-        //gameObject.transform.position = new Vector3(gameObject.transform.position.x, yStart, gameObject.transform.position.z);
-        //Debug.Log("Input: " + direction + ", Position: " + transform.position);
-
-        //// Find the angle the thumstick is pointed
-        //if (xAxis != 0.0f || yAxis != 0.0f) {
-        //	leftThumbstickAngle = Mathf.Atan2(yAxis, xAxis) * Mathf.Rad2Deg;
-        //} else {
-        //	leftThumbstickAngle = 0;
-        //}
     }
 
     public override void OnStartLocalPlayer()
     {
-        //GetComponent<MeshRenderer>().material.color = Color.blue;
-
         playerCamera = Instantiate(playerCamera);
         playerCamera.GetComponent<PlayerCamera>().myPlayer = gameObject;
         myCam = playerCamera.GetComponent<PlayerCamera>().cam;
@@ -80,7 +67,6 @@ public class PlayerMovement : NetworkBehaviour {
     {
         transform.LookAt(point, Vector3.up);
         transform.rotation = Quaternion.Euler(new Vector3(0, transform.eulerAngles.y, 0));
-        //transform.rotation = Quaternion.Lerp(currRot, transform.rotation, Time.deltaTime * 5);
     }
 
     public bool ControlEnabled

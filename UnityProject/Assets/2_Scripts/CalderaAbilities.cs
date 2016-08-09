@@ -13,8 +13,8 @@ public class CalderaAbilities : ClassAbilities {
 
     private Ability Fireball;
     private Ability Lavaball;
-    private Ability Eruption;
     private Ability Afterburner;
+    private Ability Eruption;
 
     private int playerNum = 0;
 
@@ -35,19 +35,19 @@ public class CalderaAbilities : ClassAbilities {
         Lavaball.cooldown = 0.2f;
         Lavaball.energyCost = -0.1f;
 
-        Eruption.abilityNum = 3;
-        Eruption.baseDmg = 0;
-        Eruption.castingTime = 1;
-        Eruption.cooldown = 0.5f;
-        Eruption.range = 1000;
-        Eruption.energyCost = 90;
-
-        Afterburner.abilityNum = 4;
+        Afterburner.abilityNum = 3;
         Afterburner.baseDmg = 0;
         Afterburner.castingTime = 0.25f;
         Afterburner.cooldown = 0.25f;
         Afterburner.range = 1.0f;
         Afterburner.energyCost = -0.1f;
+
+        Eruption.abilityNum = 4;
+        Eruption.baseDmg = 0;
+        Eruption.castingTime = 1;
+        Eruption.cooldown = 0.5f;
+        Eruption.range = 1000;
+        Eruption.energyCost = 90;
     }
 
     // Update is called once per frame
@@ -94,11 +94,11 @@ public class CalderaAbilities : ClassAbilities {
         {
             if (Input.GetButtonDown("Ability 1")) UseAbility(Fireball);
             if (GetAxisDown1("Ability 2")) UseAbility(Lavaball);
-            else if (Input.GetButtonDown("Ability 3")) UseAbility(Eruption);
-            else if (GetAxisDown2("Ability 4")) UseAbility(Afterburner);
+            if (Input.GetButtonDown("Ability 3")) UseAbility(Afterburner);
+            if (GetAxisDown2("Ability 4")) UseAbility(Eruption);
 
             //Revive
-            else if (Input.GetKeyDown(KeyCode.E))
+            if (Input.GetKeyDown(KeyCode.E))
             {
                 UseAbility(Revive);
             }
@@ -234,20 +234,20 @@ public class CalderaAbilities : ClassAbilities {
 
     #endregion
 
-    #region Ability 3 (Eruption)
+    #region Ability 3 (Afterburner)
 
     private void Ability3()
     {
-        energy = 0;
+        energy += 25;
     }
 
     #endregion
 
-    #region Ability 4 (Afterburner)
+    #region Ability 4 (Eruption)
 
     private void Ability4()
     {
-        energy += 25;
+        energy = 0;
     }
 
     #endregion
