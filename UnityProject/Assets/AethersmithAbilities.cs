@@ -43,7 +43,7 @@ public class AethersmithAbilities : ClassAbilities {
         Maelstrom.baseDmg = 5f;
         Maelstrom.castingTime = 1f;
         Maelstrom.cooldown = 0.25f;
-        Maelstrom.range = 10f;
+        Maelstrom.range = 6f;
         Maelstrom.energyCost = 50;
     }
 	
@@ -231,6 +231,7 @@ public class AethersmithAbilities : ClassAbilities {
     private void Ability4() {
         //Create a persistent AoE DoT spinning whirlwind of death
         GameObject whirlwind = Instantiate(maelstromPrefab, transform.position, Quaternion.identity) as GameObject;
+        whirlwind.transform.localScale *= Maelstrom.range;
         whirlwind.transform.parent = transform;
         energy -= Maelstrom.energyCost;
         //Will follow player after summoned for a duration
@@ -261,5 +262,21 @@ public class AethersmithAbilities : ClassAbilities {
 
     public override void TakeDmg(float dmg) {
         health -= dmg - dmg*((energy*0.5f)/energyMax);
+    }
+
+    public override void GainXP(float xp) {
+        float preLevel = level;
+        base.GainXP(xp);
+        if (preLevel < 1 && level >= 1) {
+            SpectralSpear.energyCost *= 0.5f;
+        } else if (preLevel < 2 && level >= 2) {
+            BubbleShield.energyCost = 20;
+        } else if (preLevel < 3 && level >= 3) {
+            Maelstrom.energyCost = 35;
+        } else if (preLevel < 4 && level >= 4) {
+            HammerSwing.baseDmg *= 1.5f;
+        } else if (preLevel < 5 && level >= 5) {
+            Maelstrom.range *= 1.2f;
+        }
     }
 }

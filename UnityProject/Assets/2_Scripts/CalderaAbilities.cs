@@ -9,14 +9,18 @@ public class CalderaAbilities : ClassAbilities {
     
     public GameObject fireballPrefab;
     public GameObject lavaballPrefab;
+    public GameObject eruptionPrefab;
     public Transform projectileCastPoint;
 
     private Ability Fireball;
     private Ability Lavaball;
-    private Ability Eruption;
     private Ability Afterburner;
+    private Ability Eruption;
 
     private int playerNum = 0;
+
+    public float afterburnerDuration = 2f;
+    private float afterburnerTimer;
 
     // Use this for initialization
     void Start()
@@ -35,19 +39,18 @@ public class CalderaAbilities : ClassAbilities {
         Lavaball.cooldown = 0.2f;
         Lavaball.energyCost = -0.1f;
 
-        Eruption.abilityNum = 3;
-        Eruption.baseDmg = 0;
-        Eruption.castingTime = 1;
-        Eruption.cooldown = 0.5f;
-        Eruption.range = 1000;
-        Eruption.energyCost = 90;
-
-        Afterburner.abilityNum = 4;
+        Afterburner.abilityNum = 3;
         Afterburner.baseDmg = 0;
-        Afterburner.castingTime = 0.25f;
-        Afterburner.cooldown = 0.25f;
+        Afterburner.castingTime = 0;
+        Afterburner.cooldown = 0;
         Afterburner.range = 1.0f;
         Afterburner.energyCost = -0.1f;
+
+        Eruption.abilityNum = 4;
+        Eruption.baseDmg = 8;
+        Eruption.castingTime = 1;
+        Eruption.cooldown = 0.5f;
+        Eruption.energyCost = 90;
     }
 
     // Update is called once per frame
@@ -94,11 +97,11 @@ public class CalderaAbilities : ClassAbilities {
         {
             if (Input.GetButtonDown("Ability 1")) UseAbility(Fireball);
             if (GetAxisDown1("Ability 2")) UseAbility(Lavaball);
-            else if (Input.GetButtonDown("Ability 3")) UseAbility(Eruption);
-            else if (GetAxisDown2("Ability 4")) UseAbility(Afterburner);
+            if (Input.GetButtonDown("Ability 3")) UseAbility(Afterburner);
+            if (GetAxisDown2("Ability 4")) UseAbility(Eruption);
 
             //Revive
-            else if (Input.GetKeyDown(KeyCode.E))
+            if (Input.GetKeyDown(KeyCode.E))
             {
                 UseAbility(Revive);
             }
@@ -124,6 +127,11 @@ public class CalderaAbilities : ClassAbilities {
                         break;
                 }
                 waitingForAbility = 0;
+            }
+
+            if(Time.time > afterburnerTimer && pm.speed != pm.baseSpeed)
+            {
+                pm.speed = pm.baseSpeed;
             }
         }
 
@@ -234,20 +242,42 @@ public class CalderaAbilities : ClassAbilities {
 
     #endregion
 
-    #region Ability 3 (Eruption)
+    #region Ability 3 (Afterburner)
 
     private void Ability3()
     {
-        energy = 0;
+        afterburnerTimer = Time.time + afterburnerDuration;
+        pm.speed = pm.baseSpeed * 1.5f;
+        energy += 25;
     }
 
     #endregion
 
-    #region Ability 4 (Afterburner)
+    #region Ability 4 (Eruption)
 
     private void Ability4()
     {
-        energy += 25;
+        GameObject eruption = Instantiate(eruptionPrefab, transform.position, transform.rotation) as GameObject;
+
+        var radius = eruption.transform.localScale.x / 2;
+
+        var targets = Physics.OverlapSphere(transform.position, radius);
+
+        foreach (var col in targets)
+        {
+            if (col != null && col.gameObject != gameObject)
+            {
+                Character ch = col.GetComponent<Character>();
+                if (ch != null)
+                {
+                    Vector3 dir = (col.transform.position - transform.position).normalized;
+                    ch.TakeDmg(Eruption.baseDmg * (Vector3.Distance(col.transform.position, transform.position)) / radius);
+                    ch.Knockback((new Vector3(dir.x, 0, dir.z) * 1000), 1);
+                }
+            }
+        }
+
+        energy = 0;
     }
 
     #endregion
@@ -273,18 +303,7 @@ public class CalderaAbilities : ClassAbilities {
     {
         if (currCooldown <= 0 && energy >= a.energyCost)
         {
-            //Can only use eruption if they are past the threshold
-            if (energy >= Eruption.energyCost)
-            {
-                if(a.abilityNum == Eruption.abilityNum)
-                {
-                    base.UseAbility(a);
-                }
-            }
-            else
-            {
                 base.UseAbility(a);
-            }
         }
     }
 }

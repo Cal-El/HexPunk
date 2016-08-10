@@ -5,6 +5,7 @@ using UnityEngine.Networking;
 using UnityEngine.Networking.Types;
 using UnityEngine.Networking.Match;
 using System.Collections;
+using System.Collections.Generic;
 
 
 namespace UnityStandardAssets.Network
@@ -41,6 +42,8 @@ namespace UnityStandardAssets.Network
         //of players, so that even client know how many player there is.
         [HideInInspector]
         public int _playerNumber = 0;
+
+        public Dictionary<int, GameObject> playerObjects = new Dictionary<int, GameObject>();
 
         //used to disconnect a client properly when exiting the matchmaker
         [HideInInspector]
@@ -341,30 +344,81 @@ namespace UnityStandardAssets.Network
                 LobbyPlayer lobbyPlayer = slot.GetComponent<LobbyPlayer>();
                 if (lobbyPlayer.connectionId == conn.connectionId)
                 {
-                    GameObject prefab;
+                    GameObject prefab = null;
+                    Transform spawnPoint;
                     switch (lobbyPlayer.selectedClass)
                     {
                         case "ConduitTile":
-                            prefab = Instantiate(lobbyPlayer.conduitPrefab);
-                            Debug.Log("Method Id: " + conn.connectionId + ", Lobby player ID: " + lobbyPlayer.playerControllerId + ", spawned: " + prefab.name);
-                            return prefab;
+                            spawnPoint = GameObject.Find("ConduitSpawn").transform;
+                            prefab = Instantiate(lobbyPlayer.conduitPrefab, spawnPoint.position, spawnPoint.rotation) as GameObject;
+                            break;
                         case "AethersmithTile":
-                            prefab = Instantiate(lobbyPlayer.aethersmithPrefab);
-                            Debug.Log("Method Id: " + conn.connectionId + ", Lobby player ID: " + lobbyPlayer.playerControllerId + ", spawned: " + prefab.name);
-                            return prefab;
+                            spawnPoint = GameObject.Find("AethersmithSpawn").transform;
+                            prefab = Instantiate(lobbyPlayer.aethersmithPrefab, spawnPoint.position, spawnPoint.rotation) as GameObject;
+                            break;
                         case "CalderaTile":
-                            prefab = Instantiate(lobbyPlayer.calderaPrefab);
-                            Debug.Log("Method Id: " + conn.connectionId + ", Lobby player ID: " + lobbyPlayer.playerControllerId + ", spawned: " + prefab.name);
-                            return prefab;
+                            spawnPoint = GameObject.Find("CalderaSpawn").transform;
+                            prefab = Instantiate(lobbyPlayer.calderaPrefab, spawnPoint.position, spawnPoint.rotation) as GameObject;
+                            break;
                         case "ShardTile":
-                            prefab = Instantiate(lobbyPlayer.shardPrefab);
-                            Debug.Log("Method Id: " + conn.connectionId + ", Lobby player ID: " + lobbyPlayer.playerControllerId + ", spawned: " + prefab.name);
-                            return prefab;
+                            spawnPoint = GameObject.Find("ShardSpawn").transform;
+                            prefab = Instantiate(lobbyPlayer.shardPrefab, spawnPoint.position, spawnPoint.rotation) as GameObject;
+                            break;
+                    }
+                    if (prefab != null)
+                    {
+                        Debug.Log("Method Id: " + conn.connectionId + ", Lobby player ID: " + lobbyPlayer.playerControllerId + ", spawned: " + prefab.name);
+                        playerObjects.Add(conn.connectionId, prefab);
+                        return prefab;
                     }
                 }
             }            
 
             return base.OnLobbyServerCreateGamePlayer(conn, playerControllerId);
+        }
+
+        public override void ServerChangeScene(string sceneName)
+        {            
+            base.ServerChangeScene(sceneName);
+        }
+
+        public override void OnServerSceneChanged(string sceneName)
+        {
+            if (sceneName != playScene)
+            {
+                GameObject obj = playerObjects[client.connection.connectionId];
+                Transform spawnPoint = null;
+
+                if (obj.name.Contains("Conduit"))
+                {
+                    spawnPoint = GameObject.Find("ConduitSpawn").transform;
+                }
+                else if (obj.name.Contains("Aethersmith"))
+                {
+                    spawnPoint = GameObject.Find("AethersmithSpawn").transform;
+                }
+                else if (obj.name.Contains("Caldera"))
+                {
+                    spawnPoint = GameObject.Find("CalderaSpawn").transform;
+                }
+                else if (obj.name.Contains("Shard"))
+                {
+                    spawnPoint = GameObject.Find("ShardSpawn").transform;
+                }
+
+                if (spawnPoint != null)
+                {
+                    obj.transform.position = spawnPoint.position;
+                    obj.transform.rotation = spawnPoint.rotation;
+                }
+            }
+
+            base.OnServerSceneChanged(sceneName);
+        }
+
+        public override void OnClientSceneChanged(NetworkConnection conn)
+        {
+            base.OnClientSceneChanged(conn);
         }
 
         // --- Countdown management

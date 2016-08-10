@@ -43,6 +43,7 @@ public class ClassAbilities : Character {
     protected int waitingForAbility = 0; //0 means none
 
     protected void Initialize() {
+        DontDestroyOnLoad(gameObject);
         health = healthMax;
         pm = GetComponent<PlayerMovement>();
 
@@ -52,9 +53,7 @@ public class ClassAbilities : Character {
         Revive.cooldown = 0.25f;
         Revive.range = 1.0f;
 
-        stacks = GetComponent<ConduitStacks>();
-        burn = GetComponent<CalderaBurnDamage>();
-        rb = GetComponent<Rigidbody>();
+        base.Initialise();
     }
 
     protected void BaseUpdate()
@@ -118,7 +117,7 @@ public class ClassAbilities : Character {
         }
     }
 
-    public void GainXP(float xp) {
+    public virtual void GainXP(float xp) {
         level += xp;
     }
 
@@ -168,14 +167,14 @@ public class ClassAbilities : Character {
     }
 
     [Command]
-    private void CmdChangeGraphicColour(Color colour)
+    protected void CmdChangeGraphicColour(Color colour)
     {
         if (!isClient) graphicObj.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", colour);
         RpcChangeGraphicColour(colour);
     }
 
     [ClientRpc]
-    private void RpcChangeGraphicColour(Color colour)
+    protected void RpcChangeGraphicColour(Color colour)
     {
         graphicObj.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", colour);
     }

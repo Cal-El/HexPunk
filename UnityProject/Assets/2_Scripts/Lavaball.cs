@@ -15,7 +15,7 @@ public class Lavaball : MonoBehaviour {
     // Use this for initialization
     void Start ()
     {
-        safeWindow += Time.time;
+        safeWindow = Time.time;
     }
 	
 	// Update is called once per frame
@@ -27,7 +27,7 @@ public class Lavaball : MonoBehaviour {
     {
         if (!col.isTrigger && col != null)
         {
-            Character ch = GetComponent<Character>();
+            Character ch = col.GetComponent<Character>();
             if (ch != null)
             {
                 if (col.gameObject != owner)
@@ -60,7 +60,7 @@ public class Lavaball : MonoBehaviour {
         {
             if (target != null)
             {
-                Character ch = GetComponent<Character>();
+                Character ch = target.GetComponent<Character>();
                 if (ch != null)
                 {
                     if (target.gameObject == owner)

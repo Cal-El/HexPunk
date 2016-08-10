@@ -14,8 +14,8 @@ public class ConduitAbilities : ClassAbilities {
 
     private Ability LightingPunch;
     private Ability StaticStomp;
-    private Ability Discharge;
     private Ability LightningDash;
+    private Ability Discharge;
 
     private int playerNum = 0;
 
@@ -40,19 +40,19 @@ public class ConduitAbilities : ClassAbilities {
         StaticStomp.range = 1;
         StaticStomp.energyCost = 2;
 
-        Discharge.abilityNum = 3;
-        Discharge.baseDmg = 0;
-        Discharge.castingTime = 1;
-        Discharge.cooldown = 0.5f;
-        Discharge.range = 1000;
-        Discharge.energyCost = 0;
-
-        LightningDash.abilityNum = 4;
+        LightningDash.abilityNum = 3;
         LightningDash.baseDmg = 0;
         LightningDash.castingTime = 0.25f;
         LightningDash.cooldown = 0.25f;
         LightningDash.range = 1.0f;
         LightningDash.energyCost = 4;
+
+        Discharge.abilityNum = 4;
+        Discharge.baseDmg = 1;
+        Discharge.castingTime = 1;
+        Discharge.cooldown = 0.5f;
+        Discharge.range = 1000;
+        Discharge.energyCost = 0;
     }
 
     // Update is called once per frame
@@ -92,8 +92,8 @@ public class ConduitAbilities : ClassAbilities {
         {
             if (Input.GetButtonDown("Ability 1")) UseAbility(LightingPunch);
             if (GetAxisDown1("Ability 2")) UseAbility(StaticStomp);
-            else if (Input.GetButtonDown("Ability 3")) UseAbility(Discharge);
-            else if (GetAxisDown2("Ability 4")) UseAbility(LightningDash);
+            if (Input.GetButtonDown("Ability 3")) UseAbility(LightningDash);
+            if (GetAxisDown2("Ability 4")) UseAbility(Discharge);
 
             //Revive
             else if (Input.GetKeyDown(KeyCode.E))
@@ -263,16 +263,61 @@ public class ConduitAbilities : ClassAbilities {
             }
         }
         if (staticStompPrefab != null){
-            Instantiate(staticStompPrefab, this.transform.position, staticStompPrefab.transform.rotation);
+            GameObject statStompBoom = Instantiate(staticStompPrefab, this.transform.position, staticStompPrefab.transform.rotation) as GameObject;
+            statStompBoom.transform.localScale *= StaticStomp.range * energy;
         }
         energy = 0;
     }
 
     #endregion
 
-    #region Ability 3 (Discharge)
+    #region Ability 3 (Lightning Dash)
 
     private void Ability3()
+    {
+        Ray ray = new Ray(transform.position + Vector3.up, transform.forward);
+        RaycastHit[] hit = Physics.RaycastAll(ray, LightningDash.range * energy);
+        Vector3 telePos = ray.origin + (ray.direction * LightningDash.range * energy);
+        if (hit.Length > 0)
+            for (int i = 0; i < hit.Length; i++)
+            {
+                Character ch = hit[i].transform.GetComponent<Character>();
+                if (ch == null)
+                {
+                    telePos = ray.origin + (ray.direction * (hit[i].distance - 0.5f));
+                    break;
+                }
+                else
+                {
+
+                    if (LightningDash.range * energy - hit[i].distance < 0.5f)
+                    {
+                        telePos = ray.origin + (ray.direction * (hit[i].distance - 0.5f));
+                    }
+                    else if (LightningDash.range * energy - hit[i].distance >= 0.5f && LightningDash.range * energy - hit[i].distance < 1.5f)
+                    {
+                        telePos = ray.origin + (ray.direction * (hit[i].distance + 1.5f));
+                        ch.stacks.AddStack();
+                        ch.TakeDmg(LightningDash.baseDmg);
+                    }
+                    else
+                    {
+                        ch.stacks.AddStack();
+                        ch.TakeDmg(LightningDash.baseDmg);
+                    }
+                }
+            }
+        Vector3 newPos = telePos + Vector3.down;
+        this.transform.position = newPos;
+        GetComponent<NetworkSyncPosition>().syncPos = newPos;
+        energy = 0;
+    }
+
+    #endregion
+
+    #region Ability 4 (Discharge)
+
+    private void Ability4()
     {
         if (lightningLists != null)
         foreach(Character c in lightningLists) {
@@ -280,7 +325,7 @@ public class ConduitAbilities : ClassAbilities {
                 {
                     float stks = c.stacks.Stacks;
                     CmdDischargeStacks(c.gameObject);
-                    c.TakeDmg(LightingPunch.baseDmg * stks);
+                    c.TakeDmg(Discharge.baseDmg * stks);
                 }
             }
     }
@@ -302,7 +347,7 @@ public class ConduitAbilities : ClassAbilities {
             o.GetComponent<Character>().stacks.Discharge();
     }
 
-    private void StartAbility3()
+    private void StartAbility4()
     {
         GameObject lightningBolts = Instantiate(dischargeLightningPathPrefab);
         Character[] things = GameObject.FindObjectsOfType<Character>();
@@ -328,55 +373,19 @@ public class ConduitAbilities : ClassAbilities {
     }
 
     [Command]
-    private void CmdStartAbility3()
+    private void CmdStartAbility4()
     {
         if (!isClient)
         {
-            StartAbility3();
+            StartAbility4();
         }
-        RpcStartAbility3();
+        RpcStartAbility4();
     }
 
     [ClientRpc]
-    private void RpcStartAbility3()
+    private void RpcStartAbility4()
     {
-        StartAbility3();
-    }
-
-    #endregion
-
-    #region Ability 4 (Lightning Dash)
-
-    private void Ability4()
-    {
-        Ray ray = new Ray(transform.position + Vector3.up, transform.forward);
-        RaycastHit[] hit = Physics.RaycastAll(ray, LightningDash.range * energy);
-        Vector3 telePos = ray.origin + (ray.direction * LightningDash.range * energy);
-        if(hit.Length > 0)
-            for (int i = 0; i < hit.Length; i++) {
-                Character ch = hit[i].transform.GetComponent<Character>();
-                if(ch == null)
-                {
-                    telePos = ray.origin + (ray.direction * (hit[i].distance - 0.5f));
-                    break;
-                } else {
-    
-                    if(LightningDash.range * energy - hit[i].distance < 0.5f) {
-                        telePos = ray.origin + (ray.direction * (hit[i].distance - 0.5f));
-                    } else if (LightningDash.range * energy - hit[i].distance >= 0.5f && LightningDash.range * energy - hit[i].distance < 1.5f) {
-                        telePos = ray.origin + (ray.direction * (hit[i].distance + 1.5f));
-                        ch.stacks.AddStack();
-                        ch.TakeDmg(0.1f);
-                    } else {
-                        ch.stacks.AddStack();
-                        ch.TakeDmg(0.1f);
-                    }
-                }
-            }
-        Vector3 newPos = telePos + Vector3.down;
-        this.transform.position = newPos;
-        GetComponent<NetworkSyncPosition>().syncPos = newPos;
-        energy = 0;
+        StartAbility4();
     }
 
     #endregion
@@ -402,8 +411,8 @@ public class ConduitAbilities : ClassAbilities {
     protected override void UseAbility(Ability a) {
         if (currCooldown <= 0 && energy >= a.energyCost) {
             base.UseAbility(a);
-            if (waitingForAbility == 3) {
-                CmdStartAbility3();
+            if (waitingForAbility == 4) {
+                CmdStartAbility4();
             }
         }
     }
@@ -436,5 +445,21 @@ public class ConduitAbilities : ClassAbilities {
         }
 
         return alreadyHit;
+    }
+
+    public override void GainXP(float xp) {
+        float preLevel = level;
+        base.GainXP(xp);
+        if (preLevel < 1 && level >= 1) {
+            LightningDash.range *= 1.2f;
+        } else if (preLevel < 2 && level >= 2) {
+            LightningDash.baseDmg = 1f;
+        } else if (preLevel < 3 && level >= 3) {
+            LightingPunch.baseDmg = 3f;
+        } else if (preLevel < 4 && level >= 4) {
+            Discharge.baseDmg *= 2f;
+        } else if (preLevel < 5 && level >= 5) {
+            StaticStomp.range *= 1.5f;
+        }
     }
 }
