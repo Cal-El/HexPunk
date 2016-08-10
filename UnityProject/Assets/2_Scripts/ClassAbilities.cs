@@ -29,14 +29,38 @@ public class ClassAbilities : Character {
     protected bool isAxisDown1 = false;
     protected bool isAxisDown2 = false;
 
-    protected struct Ability {
+    [System.Serializable]
+    public class Ability
+    {
+        [HideInInspector]
         public int abilityNum;
         public float baseDmg;
         public float castingTime;
         public float cooldown;
-        public float range;
         public float energyCost;
-    };
+        public float range;
+        public float knockbackStr;
+
+        public Ability(int abilityNum = 0, float baseDmg = 0, float castingTime = 0, float cooldown = 0, float energyCost = 0, float range = 0, float knockbackStr = 0)
+        {
+            this.abilityNum = abilityNum;
+            this.baseDmg = baseDmg;
+            this.castingTime = castingTime;
+            this.cooldown = cooldown;
+            this.energyCost = energyCost;
+            this.range = range;
+            this.knockbackStr = knockbackStr;
+        }
+    }
+
+    //protected struct Ability {
+    //    public int abilityNum;
+    //    public float baseDmg;
+    //    public float castingTime;
+    //    public float cooldown;
+    //    public float range;
+    //    public float energyCost;
+    //}
 
     protected float currCooldown = 0.0f;
     protected float castingTimer = 0.0f;

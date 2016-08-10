@@ -11,11 +11,11 @@ public class CalderaAbilities : ClassAbilities {
     public GameObject lavaballPrefab;
     public GameObject eruptionPrefab;
     public Transform projectileCastPoint;
-
-    private Ability Fireball;
-    private Ability Lavaball;
-    private Ability Afterburner;
-    private Ability Eruption;
+    
+    public Ability Fireball = new Ability(1, 1, 0.25f, 0.01f, -0.1f);
+    public Ability Lavaball = new Ability(2, 4, 1.5f, 0.2f, -0.1f);
+    public Ability Afterburner = new Ability(3, 0, 0, 0, -0.1f);
+    public Ability Eruption = new Ability(4, 8, 1, 0.5f, 90, 0, 1000);
 
     private int playerNum = 0;
 
@@ -26,31 +26,6 @@ public class CalderaAbilities : ClassAbilities {
     void Start()
     {
         base.Initialize();
-
-        Fireball.abilityNum = 1;
-        Fireball.baseDmg = 1;
-        Fireball.castingTime = 0.25f;
-        Fireball.cooldown = 0.01f;
-        Fireball.energyCost = -0.1f;
-
-        Lavaball.abilityNum = 2;
-        Lavaball.baseDmg = 4;
-        Lavaball.castingTime = 1.5f;
-        Lavaball.cooldown = 0.2f;
-        Lavaball.energyCost = -0.1f;
-
-        Afterburner.abilityNum = 3;
-        Afterburner.baseDmg = 0;
-        Afterburner.castingTime = 0;
-        Afterburner.cooldown = 0;
-        Afterburner.range = 1.0f;
-        Afterburner.energyCost = -0.1f;
-
-        Eruption.abilityNum = 4;
-        Eruption.baseDmg = 8;
-        Eruption.castingTime = 1;
-        Eruption.cooldown = 0.5f;
-        Eruption.energyCost = 90;
     }
 
     // Update is called once per frame
@@ -272,7 +247,7 @@ public class CalderaAbilities : ClassAbilities {
                 {
                     Vector3 dir = (col.transform.position - transform.position).normalized;
                     ch.TakeDmg(Eruption.baseDmg * (Vector3.Distance(col.transform.position, transform.position)) / radius);
-                    ch.Knockback((new Vector3(dir.x, 0, dir.z) * 1000), 1);
+                    ch.Knockback((new Vector3(dir.x, 0, dir.z) * Eruption.knockbackStr), 1);
                 }
             }
         }
