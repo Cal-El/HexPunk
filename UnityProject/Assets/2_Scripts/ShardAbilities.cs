@@ -51,7 +51,7 @@ public class ShardAbilities : ClassAbilities {
     }
 
     public EnergyAddedChannelledAbility IceLance = new EnergyAddedChannelledAbility( 1, 1, 0, 0.01f, 0, 100, 0, 3, 1);
-    public EnergyAddedChannelledAbility Waterspray = new EnergyAddedChannelledAbility( 1, 1.3f, 0, 0.01f, 0 , 4, 200, 0, 1);
+    public EnergyAddedChannelledAbility Waterspray = new EnergyAddedChannelledAbility( 1, 1.3f, 0, 0.01f, 0 , 7, 200, 0, 1);
     public EnergyAddedAbility Icefield = new EnergyAddedAbility( 2, 4, 1f, 0.2f, 0, 3, 0, 25 );
     public EnergyAddedAbility Waterspout = new EnergyAddedAbility( 2, 1, 1f, 0.2f, 0, 2.5f, 750, 25 );
     public FormShiftAbility FormShift = new FormShiftAbility(Color.white, Color.blue, 3, 0, 0.1f, 0, -0.1f );
