@@ -7,10 +7,10 @@ public class AethersmithAbilities : ClassAbilities {
     [SerializeField]private GameObject maelstromPrefab;
     [SerializeField]private GameObject bubblePrefab;
 
-    private Ability HammerSwing;
-    private Ability SpectralSpear;
-    private Ability BubbleShield;
-    private Ability Maelstrom;
+    public Ability HammerSwing = new Ability( 1, 3, 0.5f, 0, 0, 2f, 200);
+    public Ability SpectralSpear = new Ability( 2, 5, 0.25f, 0.1f, 10, 100f, 1000);
+    public Ability BubbleShield = new Ability( 3, 5, 1f, 0.5f, 30, 10f);
+    public Ability Maelstrom = new Ability( 4, 5f, 1f, 0.25f, 50, 6f);
 
     private int playerNum = 0;
 
@@ -18,33 +18,6 @@ public class AethersmithAbilities : ClassAbilities {
 	void Start () {
         base.Initialize();
 
-        HammerSwing.abilityNum = 1;
-        HammerSwing.baseDmg = 3;
-        HammerSwing.castingTime = 0.5f;
-        HammerSwing.cooldown = 0;
-        HammerSwing.range = 2f;
-        HammerSwing.energyCost = 0;
-
-        SpectralSpear.abilityNum = 2;
-        SpectralSpear.baseDmg = 5;
-        SpectralSpear.castingTime = 0.25f;
-        SpectralSpear.cooldown = 0.1f;
-        SpectralSpear.range = 100f;
-        SpectralSpear.energyCost = 10;
-
-        BubbleShield.abilityNum = 3;
-        BubbleShield.baseDmg = 5;
-        BubbleShield.castingTime = 1f;
-        BubbleShield.cooldown = 0.5f;
-        BubbleShield.range = 10f;
-        BubbleShield.energyCost = 30;
-
-        Maelstrom.abilityNum = 4;
-        Maelstrom.baseDmg = 5f;
-        Maelstrom.castingTime = 1f;
-        Maelstrom.cooldown = 0.25f;
-        Maelstrom.range = 6f;
-        Maelstrom.energyCost = 50;
     }
 	
 	// Update is called once per frame
@@ -175,7 +148,7 @@ public class AethersmithAbilities : ClassAbilities {
 
     #endregion
 
-    #region Ability 1 (Lightning punch)
+    #region Ability 1 (HammerSwing)
 
     private void Ability1() {
         RaycastHit[] hits = Physics.SphereCastAll(transform.position, HammerSwing.range, transform.forward, 0);
@@ -184,7 +157,7 @@ public class AethersmithAbilities : ClassAbilities {
                 Character c = hit.transform.GetComponent<Character>();
                 if (c != null) {
                     energy += 5;
-                    c.Knockback(transform.forward*200, 1);
+                    c.Knockback(transform.forward * HammerSwing.knockbackStr, 1);
                     c.TakeDmg(HammerSwing.baseDmg);
                     
                 }
@@ -198,14 +171,14 @@ public class AethersmithAbilities : ClassAbilities {
 
     #endregion
 
-    #region Ability 2 (Static stomp)
+    #region Ability 2 (SpectralSpear)
 
     private void Ability2() {
         RaycastHit hit;
         if(Physics.SphereCast(transform.position, 0.5f, transform.forward, out hit)) {
             Character c = hit.transform.GetComponent<Character>();
             if(c != null) {
-                c.Knockback(transform.forward * 1000, 1);
+                c.Knockback(transform.forward * SpectralSpear.knockbackStr, 1);
                 c.TakeDmg(SpectralSpear.baseDmg);
             }
         }
@@ -216,7 +189,7 @@ public class AethersmithAbilities : ClassAbilities {
 
     #endregion
 
-    #region Ability 3 (Discharge)
+    #region Ability 3 (BubbleShield)
 
     private void Ability3() {
         //Create a bubble around the character that blocks movement in and out of it and ranged attacks
@@ -226,7 +199,7 @@ public class AethersmithAbilities : ClassAbilities {
 
     #endregion
 
-    #region Ability 4 (Lightning Dash)
+    #region Ability 4 (Maelstrom)
 
     private void Ability4() {
         //Create a persistent AoE DoT spinning whirlwind of death

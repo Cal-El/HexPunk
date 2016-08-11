@@ -12,10 +12,10 @@ public class ConduitAbilities : ClassAbilities {
     public GameObject staticStompPrefab;
     public GameObject dischargeLightningPathPrefab;
 
-    private Ability LightingPunch;
-    private Ability StaticStomp;
-    private Ability LightningDash;
-    private Ability Discharge;
+    public Ability LightingPunch = new Ability( 1, 1, 0.25f, 0.25f, 0, 2);
+    public Ability StaticStomp = new Ability( 2, 0, 0.5f, 0.25f, 2, 1);
+    public Ability LightningDash = new Ability( 3, 0, 0.25f, 0.25f, 4, 1.0f);
+    public Ability Discharge = new Ability( 4, 1, 1, 0.5f, 0, 1000);
 
     private int playerNum = 0;
 
@@ -25,34 +25,6 @@ public class ConduitAbilities : ClassAbilities {
     void Start() {
         base.Initialize();
         energy = energyMax;
-
-        LightingPunch.abilityNum = 1;
-        LightingPunch.baseDmg = 1;
-        LightingPunch.castingTime = 0.25f;
-        LightingPunch.cooldown = 0.25f;
-        LightingPunch.range = 2;
-        LightingPunch.energyCost = 0;
-
-        StaticStomp.abilityNum = 2;
-        StaticStomp.baseDmg = 0;
-        StaticStomp.castingTime = 0.5f;
-        StaticStomp.cooldown = 0.25f;
-        StaticStomp.range = 1;
-        StaticStomp.energyCost = 2;
-
-        LightningDash.abilityNum = 3;
-        LightningDash.baseDmg = 0;
-        LightningDash.castingTime = 0.25f;
-        LightningDash.cooldown = 0.25f;
-        LightningDash.range = 1.0f;
-        LightningDash.energyCost = 4;
-
-        Discharge.abilityNum = 4;
-        Discharge.baseDmg = 1;
-        Discharge.castingTime = 1;
-        Discharge.cooldown = 0.5f;
-        Discharge.range = 1000;
-        Discharge.energyCost = 0;
     }
 
     // Update is called once per frame
