@@ -29,14 +29,54 @@ public class ClassAbilities : Character {
     protected bool isAxisDown1 = false;
     protected bool isAxisDown2 = false;
 
-    protected struct Ability {
+    [System.Serializable]
+    public class Ability
+    {
+        [HideInInspector]
         public int abilityNum;
         public float baseDmg;
         public float castingTime;
         public float cooldown;
-        public float range;
         public float energyCost;
-    };
+        public float range;
+        public float knockbackStr;
+
+        public Ability(int abilityNum = 0, float baseDmg = 0, float castingTime = 0, float cooldown = 0, float energyCost = 0, float range = 0, float knockbackStr = 0)
+        {
+            this.abilityNum = abilityNum;
+            this.baseDmg = baseDmg;
+            this.castingTime = castingTime;
+            this.cooldown = cooldown;
+            this.energyCost = energyCost;
+            this.range = range;
+            this.knockbackStr = knockbackStr;
+        }
+    }
+
+    [System.Serializable]
+    public class EnergyAddedAbility : Ability
+    {
+        [Tooltip("Energy added after the ability has been cast. This is not the energy cost.")]
+        public float energyAdded;
+
+        public EnergyAddedAbility(int abilityNum = 0, float baseDmg = 0, float castingTime = 0, float cooldown = 0, float energyCost = 0, float range = 0, float knockbackStr = 0, float energyAdded = 0)
+            :base(abilityNum, baseDmg, castingTime, cooldown, energyCost, range, knockbackStr)
+        {
+            this.energyAdded = energyAdded;
+        }
+    }
+
+    protected virtual void UseAbility(Ability a)
+    {
+        if (currCooldown <= 0)
+        {
+            currentState = ANIMATIONSTATES.Running + a.abilityNum;
+            Debug.Log(a.abilityNum + " " + currentState);
+            castingTimer = a.castingTime;
+            waitingForAbility = a.abilityNum;
+            currCooldown = a.castingTime + a.cooldown;
+        }
+    }
 
     protected float currCooldown = 0.0f;
     protected float castingTimer = 0.0f;
@@ -262,16 +302,6 @@ public class ClassAbilities : Character {
     }
 
     #endregion
-
-    protected virtual void UseAbility(Ability a) {
-        if (currCooldown <= 0) {
-            currentState = ANIMATIONSTATES.Running + a.abilityNum;
-            Debug.Log(a.abilityNum + " " + currentState);
-            castingTimer = a.castingTime;
-            waitingForAbility = a.abilityNum;
-            currCooldown = a.castingTime + a.cooldown;
-        }
-    }
 
     protected bool GetAxisDown1(string axis)
     {

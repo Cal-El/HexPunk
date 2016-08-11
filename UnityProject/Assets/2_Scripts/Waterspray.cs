@@ -7,6 +7,7 @@ public class Waterspray : MonoBehaviour
     public GameObject owner;
     [HideInInspector]
     public float damage;
+    public float knockBack;
 
     void OnTriggerStay(Collider col)
     {
@@ -19,7 +20,7 @@ public class Waterspray : MonoBehaviour
                 {
                     ch.TakeDmg(damage * Time.deltaTime);
                     Vector3 dir = (col.transform.position - transform.position).normalized;
-                    ch.Knockback((new Vector3(dir.x, 0, dir.z) * 200), 0.01f);
+                    ch.Knockback((new Vector3(dir.x, 0, dir.z) * knockBack), 0.01f);
                 }
             }
         }

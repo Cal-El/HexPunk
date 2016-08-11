@@ -23,13 +23,41 @@ public class ShardAbilities : ClassAbilities {
     private SkinnedMeshRenderer playerRenderer;
     public Transform projectileCastPoint;
 
-    private Ability IceLance;
-    private Ability Waterspray;
-    private Ability Icefield;
-    private Ability Waterspout;
-    private Ability FormShift;
-    private Ability IceRam;
-    private Ability MistCloud;
+    [System.Serializable]
+    public class EnergyAddedChannelledAbility : EnergyAddedAbility
+    {
+        [Tooltip("Determines the rate at which energy is added / subtracted while channelling.")]
+        public float energyChargeModifier;
+
+        public EnergyAddedChannelledAbility(int abilityNum = 0, float baseDmg = 0, float castingTime = 0, float cooldown = 0, float energyCost = 0, float range = 0, float knockbackStr = 0, float initialEnergyAdded = 0, float energyChargeModifier = 0)
+            : base(abilityNum, baseDmg, castingTime, cooldown, energyCost, range, knockbackStr, initialEnergyAdded)
+        {
+            this.energyChargeModifier = energyChargeModifier;
+        }
+    }
+
+    [System.Serializable]
+    public class FormShiftAbility: Ability
+    {
+        public Color iceColour;
+        public Color waterColour;
+
+        public FormShiftAbility(Color iceColour, Color waterColour, int abilityNum = 0, float baseDmg = 0, float castingTime = 0, float cooldown = 0, float energyCost = 0, float range = 0, float knockbackStr = 0)
+            : base(abilityNum, baseDmg, castingTime, cooldown, energyCost, range, knockbackStr)
+        {
+            this.iceColour = iceColour;
+            this.waterColour = waterColour;
+        }
+    }
+
+    public EnergyAddedChannelledAbility IceLance = new EnergyAddedChannelledAbility( 1, 1, 0, 0.01f, 0, 100, 0, 3, 1);
+    public EnergyAddedChannelledAbility Waterspray = new EnergyAddedChannelledAbility( 1, 1.3f, 0, 0.01f, 0 , 7, 200, 0, 1);
+    public EnergyAddedAbility Icefield = new EnergyAddedAbility( 2, 4, 1f, 0.2f, 0, 3, 0, 25 );
+    public EnergyAddedAbility Waterspout = new EnergyAddedAbility( 2, 1, 1f, 0.2f, 0, 2.5f, 750, 25 );
+    public FormShiftAbility FormShift = new FormShiftAbility(Color.white, Color.blue, 3, 0, 0.1f, 0, -0.1f );
+    public Ability IceRam = new Ability( 4, 15, 0.25f, 0.25f, 0, 100, 1000 );
+    [Tooltip("Energy is taken away while channelled.")]
+    public EnergyAddedChannelledAbility MistCloud = new EnergyAddedChannelledAbility( 4, 0, -0.1f, -0.1f, 0, 0, 0, 0, 1 );
 
     private float iceLanceCooldown = 1f;
     private GameObject currentIcicle;
@@ -49,48 +77,6 @@ public class ShardAbilities : ClassAbilities {
         base.Initialize();
         energySecondary = energyMax;
         playerRenderer = graphicObj.gameObject.GetComponent<SkinnedMeshRenderer>();
-
-        IceLance.abilityNum = 1;
-        IceLance.baseDmg = 1;
-        IceLance.castingTime = Time.deltaTime;
-        IceLance.cooldown = 0.01f;
-        IceLance.energyCost = -0.1f;
-
-        Waterspray.abilityNum = 1;
-        Waterspray.baseDmg = 1.3f;
-        Waterspray.castingTime = Time.deltaTime;
-        Waterspray.cooldown = 0.01f;
-        Waterspray.energyCost = -0.1f;
-
-        Icefield.abilityNum = 2;
-        Icefield.baseDmg = 4;
-        Icefield.castingTime = 1f;
-        Icefield.cooldown = 0.2f;
-        Icefield.energyCost = -0.1f;
-
-        Waterspout.abilityNum = 2;
-        Waterspout.baseDmg = 1;
-        Waterspout.castingTime = 1f;
-        Waterspout.cooldown = 0.2f;
-        Waterspout.energyCost = -0.1f;
-
-        FormShift.abilityNum = 3;
-        FormShift.baseDmg = 0;
-        FormShift.castingTime = 0.1f;
-        FormShift.cooldown = 0;
-        FormShift.energyCost = -0.1f;
-
-        IceRam.abilityNum = 4;
-        IceRam.baseDmg = 15;
-        IceRam.castingTime = 0.25f;
-        IceRam.cooldown = 0.25f;
-        IceRam.range = 1.0f;
-        IceRam.energyCost = -0.1f;
-
-        MistCloud.abilityNum = 4;
-        MistCloud.castingTime = -0.1f;
-        MistCloud.cooldown = -0.1f;
-        MistCloud.energyCost = -0.1f;
     }
 
     // Update is called once per frame
@@ -359,20 +345,20 @@ public class ShardAbilities : ClassAbilities {
         if (icicleScript != null)
         {
             icicleScript.damage = IceLance.baseDmg;
+            icicleScript.range = IceLance.range;
         }
-        growthTimer = 0;
+        growthTimer = Time.time + growthWindow;
 
-        energy += 3;
+        energy += IceLance.energyAdded;
     }
 
     private void Ability1()
     {
-        if(currentIcicle != null && growthTimer <= growthWindow)
+        if(currentIcicle != null && Time.time <= growthTimer)
         {
-            growthTimer += Time.deltaTime;
             currentIcicle.transform.localScale += Vector3.one * 0.01f;
             icicleScript.damage += 0.05f;
-            energy += Time.deltaTime;
+            energy += Time.deltaTime * IceLance.energyChargeModifier;
         }
 
     }
@@ -397,21 +383,21 @@ public class ShardAbilities : ClassAbilities {
         if (watersprayScript != null)
         {
             watersprayScript.damage = Waterspray.baseDmg;
+            watersprayScript.knockBack = Waterspray.knockbackStr;
         }
-        growthTimer = 0;
+        growthTimer = Time.time + Waterspray.range / 20;
     }
 
     private void Ability1b()
     {
-        if (currentWaterspray != null && growthTimer <= growthWindow / 5)
+        if (currentWaterspray != null && Time.time <= growthTimer)
         {
-            growthTimer += Time.deltaTime;
             currentWaterspray.transform.localScale += Vector3.forward * 0.3f;
             currentWaterspray.transform.position = projectileCastPoint.position;
             currentWaterspray.transform.rotation = transform.rotation;
         }
 
-        energySecondary += Time.deltaTime;
+        energySecondary += Time.deltaTime * Waterspray.energyChargeModifier;
     }
 
     private void StopWaterSpray()
@@ -430,7 +416,14 @@ public class ShardAbilities : ClassAbilities {
     {
         GameObject iceField = Instantiate(iceFieldPrefab, transform.position, transform.rotation) as GameObject;
 
-        var targets = Physics.OverlapSphere(transform.position, iceField.transform.localScale.x / 2);
+        IceField script = iceField.GetComponent<IceField>();
+
+        if(script != null)
+        {
+            script.range = Icefield.range;
+        }
+
+        var targets = Physics.OverlapSphere(transform.position, Icefield.range);
 
         foreach (var col in targets)
         {
@@ -445,7 +438,7 @@ public class ShardAbilities : ClassAbilities {
             }
         }
 
-        energy += 10;
+        energy += Icefield.energyAdded;
     }
 
     #endregion
@@ -456,7 +449,14 @@ public class ShardAbilities : ClassAbilities {
     {
         GameObject waterspout = Instantiate(waterspoutPrefab, transform.position, transform.rotation) as GameObject;
 
-        var targets = Physics.OverlapSphere(transform.position, waterspout.transform.localScale.x / 2);
+        IceField script = waterspout.GetComponent<IceField>();
+
+        if (script != null)
+        {
+            script.range = Waterspout.range;
+        }
+
+        var targets = Physics.OverlapSphere(transform.position, Waterspout.range);
 
         foreach (var col in targets)
         {
@@ -467,12 +467,12 @@ public class ShardAbilities : ClassAbilities {
                 {
                     Vector3 dir = (col.transform.position - transform.position).normalized;
                         ch.TakeDmg(Waterspout.baseDmg);
-                        ch.Knockback((new Vector3(dir.x, 0, dir.z) * 750), 1);
+                        ch.Knockback((new Vector3(dir.x, 0, dir.z) * Waterspout.knockbackStr), 1);
                 }
             }
         }
 
-        energySecondary += 25;
+        energySecondary += Waterspout.energyAdded;
     }
 
     #endregion
@@ -485,13 +485,13 @@ public class ShardAbilities : ClassAbilities {
         {
             //Change to water form
             case Form.ICE:
-                CmdChangeGraphicColour(Color.blue);
+                CmdChangeGraphicColour(FormShift.waterColour);
                 currentForm = Form.WATER;
                 break;
 
             //Change to ice form
             case Form.WATER:
-                CmdChangeGraphicColour(Color.white);
+                CmdChangeGraphicColour(FormShift.iceColour);
                 currentForm = Form.ICE;
                 break;
         }
@@ -509,7 +509,11 @@ public class ShardAbilities : ClassAbilities {
             IceRam iceRamScript = iceRam.GetComponent<IceRam>();
             iceRamScript.owner = gameObject;
             iceRamScript.damage = IceRam.baseDmg;
+            iceRamScript.knockBack = IceRam.knockbackStr;
+            iceRamScript.range = IceRam.range;
         }
+
+        energy = 0;
     }
 
     #endregion
@@ -523,6 +527,8 @@ public class ShardAbilities : ClassAbilities {
             mistCloud.enabled = true;
             playerRenderer.enabled = false;
         }
+
+        energySecondary -= Time.deltaTime * MistCloud.energyChargeModifier;
     }
 
     private void StopMistCloud()
