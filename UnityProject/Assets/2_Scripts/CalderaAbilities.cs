@@ -12,15 +12,15 @@ public class CalderaAbilities : ClassAbilities {
     public GameObject eruptionPrefab;
     public Transform projectileCastPoint;
     
-    public Ability Fireball = new Ability(1, 1, 0.25f, 0.01f, -0.1f);
-    public Ability Lavaball = new Ability(2, 4, 1.5f, 0.2f, -0.1f);
-    public Ability Afterburner = new Ability(3, 0, 0, 0, -0.1f);
-    public Ability Eruption = new Ability(4, 8, 1, 0.5f, 90, 0, 1000);
+    public EnergyAddedAbility Fireball = new EnergyAddedAbility(1, 1, 0.25f, 0.01f, 0, 100, 0, 4);
+    public EnergyAddedAbility Lavaball = new EnergyAddedAbility(2, 4, 1.5f, 0.2f, 0, 100, 0, 40);
+    public EnergyAddedAbility Afterburner = new EnergyAddedAbility(3, 0, 0, 0, -0.1f, 0, 0, 25);
+    public float afterburnerDuration = 2f;
+    private float afterburnerTimer;
+    public Ability Eruption = new Ability(4, 8, 1, 0.5f, 90, 5, 1000);
 
     private int playerNum = 0;
 
-    public float afterburnerDuration = 2f;
-    private float afterburnerTimer;
 
     // Use this for initialization
     void Start()
@@ -195,8 +195,9 @@ public class CalderaAbilities : ClassAbilities {
             Fireball fireBallScript = fireball.GetComponent<Fireball>();
             fireBallScript.owner = gameObject;
             fireBallScript.damage = Fireball.baseDmg;
+            fireBallScript.range = Fireball.range;
         }
-        energy += 4;
+        energy += Fireball.energyAdded;
     }
 
     #endregion
@@ -211,8 +212,9 @@ public class CalderaAbilities : ClassAbilities {
             Lavaball lavaballScript = lavaball.GetComponent<Lavaball>();
             lavaballScript.owner = gameObject;
             lavaballScript.damage = Lavaball.baseDmg;
+            lavaballScript.range = Lavaball.range;
         }
-        energy += 40;
+        energy += Lavaball.energyAdded;
     }
 
     #endregion
@@ -223,7 +225,7 @@ public class CalderaAbilities : ClassAbilities {
     {
         afterburnerTimer = Time.time + afterburnerDuration;
         pm.speed = pm.baseSpeed * 1.5f;
-        energy += 25;
+        energy += Afterburner.energyAdded;
     }
 
     #endregion
@@ -234,9 +236,14 @@ public class CalderaAbilities : ClassAbilities {
     {
         GameObject eruption = Instantiate(eruptionPrefab, transform.position, transform.rotation) as GameObject;
 
-        var radius = eruption.transform.localScale.x / 2;
+        Eruption script = eruption.GetComponent<Eruption>();
 
-        var targets = Physics.OverlapSphere(transform.position, radius);
+        if(script != null)
+        {
+            script.range = Eruption.range;
+        }
+
+        var targets = Physics.OverlapSphere(transform.position, Eruption.range);
 
         foreach (var col in targets)
         {
@@ -246,7 +253,7 @@ public class CalderaAbilities : ClassAbilities {
                 if (ch != null)
                 {
                     Vector3 dir = (col.transform.position - transform.position).normalized;
-                    ch.TakeDmg(Eruption.baseDmg * (Vector3.Distance(col.transform.position, transform.position)) / radius);
+                    ch.TakeDmg(Eruption.baseDmg * (Vector3.Distance(col.transform.position, transform.position)) / Eruption.range);
                     ch.Knockback((new Vector3(dir.x, 0, dir.z) * Eruption.knockbackStr), 1);
                 }
             }
