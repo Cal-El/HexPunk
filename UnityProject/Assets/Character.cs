@@ -4,11 +4,11 @@ using System.Collections;
 
 public abstract class Character : NetworkBehaviour {
 
-    //[HideInInspector]
+    [HideInInspector]
     public ConduitStacks stacks;
-    //[HideInInspector]
+    [HideInInspector]
     public CalderaBurnDamage burn;
-    //[HideInInspector]
+    [HideInInspector]
     public Rigidbody rb;
 
     /// <summary>

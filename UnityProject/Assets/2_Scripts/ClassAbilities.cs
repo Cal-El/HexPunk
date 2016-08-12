@@ -88,6 +88,8 @@ public class ClassAbilities : Character {
         pm = GetComponent<PlayerMovement>();
 
         //Setup revive ability which is used by all classes
+        Revive = new Ability();
+
         Revive.abilityNum = 5;
         Revive.castingTime = 1f;
         Revive.cooldown = 0.25f;
