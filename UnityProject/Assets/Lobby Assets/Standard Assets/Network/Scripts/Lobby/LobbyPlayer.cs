@@ -32,15 +32,9 @@ namespace UnityStandardAssets.Network
         public GameObject calderaPrefab;
         public GameObject shardPrefab;
 
-
-        public GameObject localIcone;
-        public GameObject remoteIcone;
-
         //OnMyName function will be invoked on clients when server change the value of playerName
         [SyncVar(hook = "OnMyName")]
         public string playerName = "";
-        [SyncVar(hook = "OnMyColor")]
-        public Color playerColor = Color.white;
 
         public Color OddRowColor = new Color(250.0f / 255.0f, 250.0f / 255.0f, 250.0f / 255.0f, 1.0f);
         public Color EvenRowColor = new Color(180.0f / 255.0f, 180.0f / 255.0f, 180.0f / 255.0f, 1.0f);
@@ -75,7 +69,6 @@ namespace UnityStandardAssets.Network
             //setup the player data on UI. The value are SyncVar so the player
             //will be created with the right value currently on server
             OnMyName(playerName);
-            OnMyColor(playerColor);
         }
 
         public override void OnStartAuthority()
@@ -121,13 +114,8 @@ namespace UnityStandardAssets.Network
         void SetupLocalPlayer()
         {
             nameInput.interactable = true;
-            remoteIcone.gameObject.SetActive(false);
-            localIcone.gameObject.SetActive(true);
 
             CheckRemoveButton();
-
-            if (playerColor == Color.white)
-                CmdColorChange();
 
             ChangeReadyButtonColor(JoinColor);
 
@@ -205,12 +193,6 @@ namespace UnityStandardAssets.Network
         {
             playerName = newName;
             nameInput.text = playerName;
-        }
-
-        public void OnMyColor(Color newColor)
-        {
-            playerColor = newColor;
-            colorImage.color = newColor;
         }
         
         //Takes the string sent to the server and updates the class buttons
@@ -303,45 +285,6 @@ namespace UnityStandardAssets.Network
         //====== Server Command
 
         [Command]
-        public void CmdColorChange()
-        {
-            int idx = System.Array.IndexOf(Colors, playerColor);
-
-            int inUseIdx = _colorInUse.IndexOf(idx);
-
-            if (idx < 0) idx = 0;
-
-            idx = (idx + 1) % Colors.Length;
-
-            bool alreadyInUse = false;
-
-            do
-            {
-                alreadyInUse = false;
-                for (int i = 0; i < _colorInUse.Count; ++i)
-                {
-                    if (_colorInUse[i] == idx)
-                    {//that color is already in use
-                        alreadyInUse = true;
-                        idx = (idx + 1) % Colors.Length;
-                    }
-                }
-            }
-            while (alreadyInUse);
-
-            if (inUseIdx >= 0)
-            {//if we already add an entry in the colorTabs, we change it
-                _colorInUse[inUseIdx] = idx;
-            }
-            else
-            {//else we add it
-                _colorInUse.Add(idx);
-            }
-
-            playerColor = Colors[idx];
-        }
-
-        [Command]
         public void CmdNameChanged(string name)
         {
             playerName = name;
@@ -350,20 +293,6 @@ namespace UnityStandardAssets.Network
         //Cleanup thing when get destroy (which happen when client kick or disconnect)
         public void OnDestroy()
         {
-            int idx = System.Array.IndexOf(Colors, playerColor);
-
-            if (idx < 0)
-                return;
-
-            for (int i = 0; i < _colorInUse.Count; ++i)
-            {
-                if (_colorInUse[i] == idx)
-                {//that color is already in use
-                    _colorInUse.RemoveAt(i);
-                    break;
-                }
-            }
-
             LobbyPlayerList._instance.RemovePlayer(this);
             if (LobbyManager.s_Singleton != null) LobbyManager.s_Singleton.OnPlayersNumberModified(-1);
         }
