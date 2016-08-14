@@ -16,7 +16,7 @@ namespace UnityStandardAssets.Network
         static List<int> _colorInUse = new List<int>();
 
         public Image colorImage;
-        public InputField nameInput;
+        public Image nameImage;
         public Button readyButton;
         public Button waitingPlayerButton;
         public Button removePlayerButton;
@@ -24,6 +24,7 @@ namespace UnityStandardAssets.Network
         public Button aethersmithButton;
         public Button calderaButton;
         public Button shardButton;
+        [SyncVar]
         public int connectionId;
         [SyncVar(hook = "OnClassChanged")]
         public string selectedClass;
@@ -31,16 +32,12 @@ namespace UnityStandardAssets.Network
         public GameObject aethersmithPrefab;
         public GameObject calderaPrefab;
         public GameObject shardPrefab;
-
-        //OnMyName function will be invoked on clients when server change the value of playerName
-        [SyncVar(hook = "OnMyName")]
-        public string playerName = "";
+        
+        public Sprite[] playerNumberImages = new Sprite[4];
 
         public Color OddRowColor = new Color(250.0f / 255.0f, 250.0f / 255.0f, 250.0f / 255.0f, 1.0f);
         public Color EvenRowColor = new Color(180.0f / 255.0f, 180.0f / 255.0f, 180.0f / 255.0f, 1.0f);
-
-        static Color JoinColor = new Color(255.0f/255.0f, 0.0f, 101.0f/255.0f,1.0f);
-        static Color NotReadyColor = new Color(34.0f / 255.0f, 44 / 255.0f, 55.0f / 255.0f, 1.0f);
+        
         static Color ReadyColor = new Color(0.0f, 204.0f / 255.0f, 204.0f / 255.0f, 1.0f);
         static Color TransparentColor = new Color(0, 0, 0, 0);
         static Color UnselectedClass = new Color(160, 160, 160, 1);
@@ -56,6 +53,8 @@ namespace UnityStandardAssets.Network
 
             LobbyPlayerList._instance.AddPlayer(this);
             LobbyPlayerList._instance.DisplayDirectServerWarning(isServer && LobbyManager.s_Singleton.matchMaker == null);
+            
+            nameImage.sprite = playerNumberImages[connectionId];
 
             if (isLocalPlayer)
             {
@@ -65,18 +64,11 @@ namespace UnityStandardAssets.Network
             {
                 SetupOtherPlayer();
             }
-
-            //setup the player data on UI. The value are SyncVar so the player
-            //will be created with the right value currently on server
-            OnMyName(playerName);
         }
 
         public override void OnStartAuthority()
         {
             base.OnStartAuthority();
-
-            //if we return from a game, color of text can still be the one for "Ready"
-            readyButton.transform.GetChild(0).GetComponent<Text>().color = Color.white;
 
            SetupLocalPlayer();
         }
@@ -93,7 +85,6 @@ namespace UnityStandardAssets.Network
 
         void SetupOtherPlayer()
         {
-            nameInput.interactable = false;
             removePlayerButton.interactable = NetworkServer.active;
             
             conduitButton.interactable = false;
@@ -102,10 +93,7 @@ namespace UnityStandardAssets.Network
             shardButton.interactable = false;
             //Show previously highlighted
             UpdateSelectedClass(selectedClass);
-
-            ChangeReadyButtonColor(NotReadyColor);
-
-            readyButton.transform.GetChild(0).GetComponent<Text>().text = "...";
+            
             readyButton.interactable = false;
 
             OnClientReady(false);
@@ -113,24 +101,11 @@ namespace UnityStandardAssets.Network
 
         void SetupLocalPlayer()
         {
-            nameInput.interactable = true;
-
             CheckRemoveButton();
-
-            ChangeReadyButtonColor(JoinColor);
-
-            readyButton.transform.GetChild(0).GetComponent<Text>().text = "JOIN";
+            
             readyButton.interactable = true;
 
             //have to use child count of player prefab already setup as "this.slot" is not set yet
-            if (playerName == "")
-                CmdNameChanged("Player" + (LobbyPlayerList._instance.playerListContentTransform.childCount-1));
-
-            //we switch from simple name display to name input
-            nameInput.interactable = true;
-
-            nameInput.onEndEdit.RemoveAllListeners();
-            nameInput.onEndEdit.AddListener(OnNameChanged);
 
             conduitButton.interactable = true;
             aethersmithButton.interactable = true;
@@ -163,22 +138,12 @@ namespace UnityStandardAssets.Network
             if (readyState)
             {
                 ChangeReadyButtonColor(TransparentColor);
-
-                Text textComponent = readyButton.transform.GetChild(0).GetComponent<Text>();
-                textComponent.text = "READY";
-                textComponent.color = ReadyColor;
+                
                 readyButton.interactable = false;
-                nameInput.interactable = false;
             }
             else
             {
-                ChangeReadyButtonColor(isLocalPlayer ? JoinColor : NotReadyColor);
-
-                Text textComponent = readyButton.transform.GetChild(0).GetComponent<Text>();
-                textComponent.text = isLocalPlayer ? "JOIN" : "...";
-                textComponent.color = Color.white;
                 readyButton.interactable = isLocalPlayer;
-                nameInput.interactable = isLocalPlayer;
             }
         }
 
@@ -188,12 +153,6 @@ namespace UnityStandardAssets.Network
         }
 
         ///===== callback from sync var
-
-        public void OnMyName(string newName)
-        {
-            playerName = newName;
-            nameInput.text = playerName;
-        }
         
         //Takes the string sent to the server and updates the class buttons
         public void OnClassChanged(string newClass)
@@ -209,11 +168,6 @@ namespace UnityStandardAssets.Network
         public void OnReadyClicked()
         {
             SendReadyToBeginMessage();
-        }
-
-        public void OnNameChanged(string str)
-        { 
-            CmdNameChanged(str);
         }
 
         //Function for button that sends button string to the server
@@ -283,12 +237,6 @@ namespace UnityStandardAssets.Network
         }
 
         //====== Server Command
-
-        [Command]
-        public void CmdNameChanged(string name)
-        {
-            playerName = name;
-        }
 
         //Cleanup thing when get destroy (which happen when client kick or disconnect)
         public void OnDestroy()
