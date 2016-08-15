@@ -22,7 +22,7 @@ public class Megamanager : MonoBehaviour {
     public RoomConnection[] roomTree;
 
 	// Use this for initialization
-	void Start () {
+	void Awake () {
         if (MM != null) {
             Destroy(this);
         } else {
