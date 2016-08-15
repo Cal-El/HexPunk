@@ -22,6 +22,7 @@ namespace UnityStandardAssets.Network
 
         [Space]
         [Header("UI Reference")]
+        public GameObject gameMainMenu;
         public LobbyTopPanel topPanel;
 
         public RectTransform mainMenuPanel;
@@ -378,7 +379,8 @@ namespace UnityStandardAssets.Network
         }
 
         public override void ServerChangeScene(string sceneName)
-        {            
+        {
+            if (sceneName != offlineScene) Destroy(gameMainMenu);
             base.ServerChangeScene(sceneName);
         }
 

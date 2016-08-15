@@ -10,13 +10,8 @@ namespace UnityStandardAssets.Network
     //Player entry in the lobby. Handle selecting color/setting name & getting ready for the game
     //Any LobbyHook can then grab it and pass those value to the game player prefab (see the Pong Example in the Samples Scenes)
     public class LobbyPlayer : NetworkLobbyPlayer
-    {
-        static Color[] Colors = new Color[] { Color.blue, Color.red, Color.yellow, Color.green };
-        //used on server to avoid assigning the same color to two player
-        static List<int> _colorInUse = new List<int>();
-
-        public Image colorImage;
-        public InputField nameInput;
+    {        
+        public Text playerNameText;
         public Button readyButton;
         public Button waitingPlayerButton;
         public Button removePlayerButton;
@@ -24,6 +19,7 @@ namespace UnityStandardAssets.Network
         public Button aethersmithButton;
         public Button calderaButton;
         public Button shardButton;
+        [SyncVar]
         public int connectionId;
         [SyncVar(hook = "OnClassChanged")]
         public string selectedClass;
@@ -32,21 +28,13 @@ namespace UnityStandardAssets.Network
         public GameObject calderaPrefab;
         public GameObject shardPrefab;
 
-        //OnMyName function will be invoked on clients when server change the value of playerName
-        [SyncVar(hook = "OnMyName")]
-        public string playerName = "";
+        public Color OddRowColor = new Color(17f / 255.0f, 16f / 255.0f, 50f / 255.0f, 1.0f);
+        public Color EvenRowColor = new Color(7f / 255.0f, 6.0f / 255.0f, 22.0f / 255.0f, 1.0f);
 
-        public Color OddRowColor = new Color(250.0f / 255.0f, 250.0f / 255.0f, 250.0f / 255.0f, 1.0f);
-        public Color EvenRowColor = new Color(180.0f / 255.0f, 180.0f / 255.0f, 180.0f / 255.0f, 1.0f);
-
-        static Color JoinColor = new Color(255.0f/255.0f, 0.0f, 101.0f/255.0f,1.0f);
-        static Color NotReadyColor = new Color(34.0f / 255.0f, 44 / 255.0f, 55.0f / 255.0f, 1.0f);
-        static Color ReadyColor = new Color(0.0f, 204.0f / 255.0f, 204.0f / 255.0f, 1.0f);
-        static Color TransparentColor = new Color(0, 0, 0, 0);
+        static Color JoinColor = new Color(247f / 255.0f, 104f / 255.0f, 140f / 255.0f, 1.0f);
+        static Color NotReadyColor = new Color(1, 1, 1, 0.5f);
+        static Color ReadyColor = new Color(104f / 255.0f, 247f / 255.0f, 163f / 255.0f, 1.0f);
         static Color UnselectedClass = new Color(160, 160, 160, 1);
-
-        //static Color OddRowColor = new Color(250.0f / 255.0f, 250.0f / 255.0f, 250.0f / 255.0f, 1.0f);
-        //static Color EvenRowColor = new Color(180.0f / 255.0f, 180.0f / 255.0f, 180.0f / 255.0f, 1.0f);
 
         public override void OnClientEnterLobby()
         {
@@ -57,6 +45,8 @@ namespace UnityStandardAssets.Network
             LobbyPlayerList._instance.AddPlayer(this);
             LobbyPlayerList._instance.DisplayDirectServerWarning(isServer && LobbyManager.s_Singleton.matchMaker == null);
 
+            playerNameText.text = string.Format("Player {0}", connectionId + 1);
+
             if (isLocalPlayer)
             {
                 SetupLocalPlayer();
@@ -65,10 +55,6 @@ namespace UnityStandardAssets.Network
             {
                 SetupOtherPlayer();
             }
-
-            //setup the player data on UI. The value are SyncVar so the player
-            //will be created with the right value currently on server
-            OnMyName(playerName);
         }
 
         public override void OnStartAuthority()
@@ -93,7 +79,6 @@ namespace UnityStandardAssets.Network
 
         void SetupOtherPlayer()
         {
-            nameInput.interactable = false;
             removePlayerButton.interactable = NetworkServer.active;
             
             conduitButton.interactable = false;
@@ -105,7 +90,6 @@ namespace UnityStandardAssets.Network
 
             ChangeReadyButtonColor(NotReadyColor);
 
-            readyButton.transform.GetChild(0).GetComponent<Text>().text = "...";
             readyButton.interactable = false;
 
             OnClientReady(false);
@@ -113,25 +97,12 @@ namespace UnityStandardAssets.Network
 
         void SetupLocalPlayer()
         {
-            nameInput.interactable = true;
-
             CheckRemoveButton();
 
             ChangeReadyButtonColor(JoinColor);
-
-            readyButton.transform.GetChild(0).GetComponent<Text>().text = "JOIN";
+            
             readyButton.interactable = true;
-
-            //have to use child count of player prefab already setup as "this.slot" is not set yet
-            if (playerName == "")
-                CmdNameChanged("Player" + (LobbyPlayerList._instance.playerListContentTransform.childCount-1));
-
-            //we switch from simple name display to name input
-            nameInput.interactable = true;
-
-            nameInput.onEndEdit.RemoveAllListeners();
-            nameInput.onEndEdit.AddListener(OnNameChanged);
-
+            
             conduitButton.interactable = true;
             aethersmithButton.interactable = true;
             calderaButton.interactable = true;
@@ -155,44 +126,24 @@ namespace UnityStandardAssets.Network
             foreach (PlayerController p in ClientScene.localPlayers)
                 localPlayerCount += (p == null || p.playerControllerId == -1) ? 0 : 1;
 
-            removePlayerButton.interactable = localPlayerCount > 1;
+            removePlayerButton.gameObject.SetActive(connectionId == 0);
         }
 
         public override void OnClientReady(bool readyState)
         {
             if (readyState)
             {
-                ChangeReadyButtonColor(TransparentColor);
-
-                Text textComponent = readyButton.transform.GetChild(0).GetComponent<Text>();
-                textComponent.text = "READY";
-                textComponent.color = ReadyColor;
-                readyButton.interactable = false;
-                nameInput.interactable = false;
+                ChangeReadyButtonColor(ReadyColor);
             }
             else
             {
                 ChangeReadyButtonColor(isLocalPlayer ? JoinColor : NotReadyColor);
-
-                Text textComponent = readyButton.transform.GetChild(0).GetComponent<Text>();
-                textComponent.text = isLocalPlayer ? "JOIN" : "...";
-                textComponent.color = Color.white;
-                readyButton.interactable = isLocalPlayer;
-                nameInput.interactable = isLocalPlayer;
             }
         }
 
         public void OnPlayerListChanged(int idx)
         { 
             GetComponent<Image>().color = (idx % 2 == 0) ? EvenRowColor : OddRowColor;
-        }
-
-        ///===== callback from sync var
-
-        public void OnMyName(string newName)
-        {
-            playerName = newName;
-            nameInput.text = playerName;
         }
         
         //Takes the string sent to the server and updates the class buttons
@@ -208,12 +159,8 @@ namespace UnityStandardAssets.Network
         //so that all client get the new value throught syncvar
         public void OnReadyClicked()
         {
-            SendReadyToBeginMessage();
-        }
-
-        public void OnNameChanged(string str)
-        { 
-            CmdNameChanged(str);
+            if (readyToBegin) SendNotReadyToBeginMessage();
+            else SendReadyToBeginMessage();
         }
 
         //Function for button that sends button string to the server
@@ -283,12 +230,6 @@ namespace UnityStandardAssets.Network
         }
 
         //====== Server Command
-
-        [Command]
-        public void CmdNameChanged(string name)
-        {
-            playerName = name;
-        }
 
         //Cleanup thing when get destroy (which happen when client kick or disconnect)
         public void OnDestroy()
