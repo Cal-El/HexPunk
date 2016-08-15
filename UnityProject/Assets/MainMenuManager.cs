@@ -8,6 +8,7 @@ public class MainMenuManager : MonoBehaviour {
     public enum MENUSTATES {All, MainMenu, LobbyScreen, SettingsScreen};
     public MENUSTATES currState;
     public GameObject lobbyManager;
+    private string startScene;
 
     [System.Serializable]
     public class MenuElement {
@@ -27,12 +28,14 @@ public class MainMenuManager : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         DontDestroyOnLoad(gameObject);
+        startScene = SceneManager.GetActiveScene().name;
         currState = MENUSTATES.MainMenu;
         if (FindObjectsOfType<MainMenuManager>().Length > 1) Destroy(gameObject);
 	}
 	
 	// Update is called once per frame
 	void Update () {
+        if (SceneManager.GetActiveScene().name != startScene) Destroy(gameObject);
         transitionTimer += Time.deltaTime;
 	    foreach (MenuElement m in menuElements) {
             if (m.appearInState == MENUSTATES.All) {
