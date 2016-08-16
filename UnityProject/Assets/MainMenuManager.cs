@@ -7,6 +7,8 @@ public class MainMenuManager : MonoBehaviour {
 
     public enum MENUSTATES {All, MainMenu, LobbyScreen, SettingsScreen};
     public MENUSTATES currState;
+    public GameObject lobbyManager;
+    private string startScene;
 
     [System.Serializable]
     public class MenuElement {
@@ -25,11 +27,15 @@ public class MainMenuManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+        DontDestroyOnLoad(gameObject);
+        startScene = SceneManager.GetActiveScene().name;
         currState = MENUSTATES.MainMenu;
+        if (FindObjectsOfType<MainMenuManager>().Length > 1) Destroy(gameObject);
 	}
 	
 	// Update is called once per frame
 	void Update () {
+        if (SceneManager.GetActiveScene().name != startScene) Destroy(gameObject);
         transitionTimer += Time.deltaTime;
 	    foreach (MenuElement m in menuElements) {
             if (m.appearInState == MENUSTATES.All) {
@@ -48,11 +54,28 @@ public class MainMenuManager : MonoBehaviour {
         }
 	}
 
-    public void Play() {
-        SceneManager.LoadScene("Lobby");
+    public void Play()
+    {
+        foreach(var element in menuElements)
+        {
+            if(element.appearInState == MENUSTATES.LobbyScreen)
+            {
+                element.timeToTransition = 1.75f;
+            }
+        }
+        transitionTimer = 0;
+        currState = MENUSTATES.LobbyScreen;
     }
 
-    public void Settings() {
+    public void Settings()
+    {
+        foreach (var element in menuElements)
+        {
+            if (element.appearInState == MENUSTATES.SettingsScreen)
+            {
+                element.timeToTransition = 1.75f;
+            }
+        }
         transitionTimer = 0;
         currState = MENUSTATES.SettingsScreen;
     }
