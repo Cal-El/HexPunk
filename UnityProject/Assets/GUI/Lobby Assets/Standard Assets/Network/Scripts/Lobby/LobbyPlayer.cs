@@ -20,7 +20,9 @@ namespace UnityStandardAssets.Network
         [SyncVar]
         public int connectionId;
         [SyncVar(hook = "OnClassChanged")]
-        public int selectedClass = 0;
+        public int currentClass = 0;
+        [SyncVar]
+        public int selectedClass; //unselected
         public GameObject[] classTiles = new GameObject[4];
         public GameObject conduitPrefab;
         public GameObject aethersmithPrefab;
@@ -80,7 +82,7 @@ namespace UnityStandardAssets.Network
         {
             removePlayerButton.interactable = NetworkServer.active;
             //Show previously highlighted
-            UpdateSelectedClass(selectedClass);
+            UpdateSelectedClass(currentClass);
 
             ChangeReadyButtonColor(NotReadyColor);
 
@@ -93,6 +95,7 @@ namespace UnityStandardAssets.Network
 
         void SetupLocalPlayer()
         {
+            CmdSelectedClass(-1);
             CheckRemoveButton();
 
             ChangeReadyButtonColor(JoinColor);
@@ -143,7 +146,7 @@ namespace UnityStandardAssets.Network
         //Takes the string sent to the server and updates the class buttons
         public void OnClassChanged(int newClass)
         {
-            selectedClass = newClass;
+            currentClass = newClass;
 
             UpdateSelectedClass(newClass);
         }
@@ -154,8 +157,58 @@ namespace UnityStandardAssets.Network
         //so that all client get the new value throught syncvar
         public void OnReadyClicked()
         {
-            if (readyToBegin) SendNotReadyToBeginMessage();
-            else SendReadyToBeginMessage();
+            if (readyToBegin)
+            {
+                CmdSelectedClass(-1); // unselected
+                leftButton.interactable = true;
+                rightButton.interactable = true;
+
+                SendNotReadyToBeginMessage();
+            }
+            else
+            {
+                selectedClass = currentClass;
+                CmdSelectedClass(currentClass);
+                leftButton.interactable = false;
+                rightButton.interactable = false;
+
+                bool hasBeenSelected = false;
+                foreach(var slot in LobbyManager.s_Singleton.lobbySlots)
+                {
+                    if (!hasBeenSelected && slot != null)
+                    {
+                        LobbyPlayer lp = slot.GetComponent<LobbyPlayer>();
+                        if (lp != null)
+                        {
+                            if (lp.selectedClass != -1)
+                            {
+                                if (lp.connectionId != connectionId)
+                                {
+                                    hasBeenSelected = selectedClass == lp.selectedClass;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (!hasBeenSelected)
+                {
+                    SendReadyToBeginMessage(); // Ready up
+                }
+                else
+                {
+                    selectedClass = -1;
+                    CmdSelectedClass(-1); // Unselect class
+                    leftButton.interactable = true;
+                    rightButton.interactable = true;
+                }
+            }
+        }
+
+        [Command]
+        public void CmdSelectedClass(int classNumber)
+        {
+            selectedClass = classNumber;
         }
 
         public void OnClassIncreased()
@@ -174,43 +227,43 @@ namespace UnityStandardAssets.Network
         {
             if (increment)
             {
-                if (selectedClass < classTiles.Length - 1)
+                if (currentClass < classTiles.Length - 1)
                 {
-                    selectedClass++;
+                    currentClass++;
                 }
                 else
                 {
-                    selectedClass = 0;
+                    currentClass = 0;
                 }
             }
             else
             {
-                if (selectedClass > 0)
+                if (currentClass > 0)
                 {
-                    selectedClass--;
+                    currentClass--;
                 }
                 else
                 {
-                    selectedClass = classTiles.Length - 1;
+                    currentClass = classTiles.Length - 1;
                 }
             }
         }
 
-        void UpdateSelectedClass(int selectedClass)
+        void UpdateSelectedClass(int currentClass)
         {
             foreach(var tile in classTiles)
             {
                 tile.SetActive(false);
             }
 
-            classTiles[selectedClass].SetActive(true);
+            classTiles[currentClass].SetActive(true);
 
             //conduitButton.GetComponent<Image>().color = UnselectedClass;
             //aethersmithButton.GetComponent<Image>().color = UnselectedClass;
             //calderaButton.GetComponent<Image>().color = UnselectedClass;
             //shardButton.GetComponent<Image>().color = UnselectedClass;
 
-            //switch (selectedClass)
+            //switch (currentClass)
             //{
             //    case 0:
             //        conduitButton.GetComponent<Image>().color = Color.black;
