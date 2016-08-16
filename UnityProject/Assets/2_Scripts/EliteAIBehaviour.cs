@@ -7,8 +7,8 @@ public class EliteAIBehaviour : Character {
 
     //State machine variables
     public enum STATES { Idle, Battlecry, Chasing, MeleeAttacking, RangedAttacking, Dead}
-    [HideInInspector]public STATES agentState = STATES.Idle;
-    [HideInInspector]public STATES animationState = STATES.Idle;
+    public STATES agentState = STATES.Idle;
+    public STATES animationState = STATES.Idle;
 
     public SkinnedMeshRenderer mr;
 
@@ -61,6 +61,13 @@ public class EliteAIBehaviour : Character {
             Vector3 prePos = transform.position;
             if (inactiveTimer <= 0) {
                 if (transform.parent == null || transform.parent.GetComponent<Room>().roomUnlocked) {
+                    if (agentState != STATES.RangedAttacking) {
+                        if (rangeAttack.attackTimer <= 0) {
+                            agentState = STATES.RangedAttacking;
+                        } else {
+                            rangeAttack.attackTimer -= Time.deltaTime;
+                        }
+                    }
                     switch (agentState) {
                         case STATES.Idle:
                             mr.material.SetColor("_EmissionColor", Color.green);
@@ -81,6 +88,11 @@ public class EliteAIBehaviour : Character {
                         case STATES.MeleeAttacking:
                             mr.material.SetColor("_EmissionColor", Color.white);
                             AttackingBehaviour();
+                            break;
+                        case STATES.RangedAttacking:
+                            mr.material.SetColor("_EmissionColor", Color.cyan);
+                            animationState = STATES.RangedAttacking;
+                            RangeAttackingBehaviour();
                             break;
                         case STATES.Dead:
                             
@@ -163,6 +175,70 @@ public class EliteAIBehaviour : Character {
             if(meleeAttack.attackTimer <= 0) {              //Ready to attack again
                 meleeAttack.attackTimer = meleeAttack.cooldown + meleeAttack.castingTime;
             }
+        }
+    }
+
+    private void RangeAttackingBehaviour() {
+        //Target player
+        if (rangeAttack.attackTimer <= 0) {
+            navAgent.enabled = false;
+            navObst.enabled = true;
+
+            //Find farthest player in los
+            target = null;
+            foreach (ClassAbilities p in Megamanager.MM.players) {
+                bool inLOS = false;
+                Ray ray = new Ray(transform.position, (p.Position - transform.position).normalized);
+                RaycastHit[] hits = Physics.RaycastAll(ray, rangeAttack.range);
+                hits = Megamanager.SortByDistance(hits);
+                for (int i = 0; i < hits.Length; i++) {
+                    Character ch = hits[i].transform.GetComponent<Character>();
+                    Debug.Log(i+ ": " +hits[i].transform.name);
+                    if(ch == p) {
+                        inLOS = true;
+                    } else if (ch != null) {
+                    } else { break; }
+                }
+                if (inLOS) {
+                    if (target == null) {
+                        target = p;
+                    } else if (Vector3.Distance(target.Position, transform.position) < Vector3.Distance(p.Position, transform.position)) {
+                        target = p;
+                    } else { continue; }
+                } else { continue; }
+                
+            }
+            //No Target found
+            if (target == null) {
+                rangeAttack.attackTimer = rangeAttack.cooldown;
+                StartChase();
+                Debug.Log("No targetFound");
+            } else {
+                rangeAttack.attackTimer = 0 + Time.deltaTime;
+            }
+        } else if (rangeAttack.attackTimer >= rangeAttack.castingTime) {
+            //Time to attack
+            Ray ray = new Ray(transform.position, target.Position - transform.position);
+            RaycastHit[] hits = Physics.SphereCastAll(ray, 1, rangeAttack.range);
+
+            hits = Megamanager.SortByDistance(hits);
+            
+            foreach (RaycastHit hit in hits) {
+                if (hit.transform == null) {
+                    Debug.LogError("Null transform hit at " + hit.point);
+                    continue;
+                }
+                Character ch = hit.transform.GetComponent<Character>();
+                if (ch != null) {
+                    if (ch == this) continue;
+                    ch.TakeDmg(rangeAttack.baseDmg);
+                } else { break; }
+            }
+            //Start cooldown and chase
+            rangeAttack.attackTimer = rangeAttack.cooldown;
+            StartChase();
+        } else {
+            rangeAttack.attackTimer += Time.deltaTime;
         }
     }
 
@@ -253,13 +329,16 @@ public class EliteAIBehaviour : Character {
 
     public void Retagetting()
     {
-        float threshold = Vector3.Distance(this.transform.position, target.transform.position) * 0.8f;
-        if (target.currentState == ClassAbilities.ANIMATIONSTATES.Dead) threshold = 1000;
-        foreach (ClassAbilities p in Megamanager.MM.players)
-        {
-            if (Vector3.Distance(this.transform.position, p.transform.position) <= threshold && p.currentState != ClassAbilities.ANIMATIONSTATES.Dead){
-                target = p;
+        if (target != null) {
+            float threshold = Vector3.Distance(this.transform.position, target.transform.position) * 0.8f;
+            if (target.currentState == ClassAbilities.ANIMATIONSTATES.Dead) threshold = 1000;
+            foreach (ClassAbilities p in Megamanager.MM.players) {
+                if (Vector3.Distance(this.transform.position, p.transform.position) <= threshold && p.currentState != ClassAbilities.ANIMATIONSTATES.Dead) {
+                    target = p;
+                }
             }
+        } else {
+            FindTarget();
         }
     }
 }

@@ -347,4 +347,10 @@ public class ClassAbilities : Character {
         }
         return isAxisDown2;
     }
+
+    public Vector3 Position {
+        get {
+            return new Vector3(transform.position.x, transform.position.y+1, transform.position.z);
+        }
+    }
 }
