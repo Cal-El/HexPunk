@@ -106,4 +106,22 @@ public class Megamanager : MonoBehaviour {
     public static Character[] GetAllCharacters() {
         return MM.characters.ToArray() ;
     }
+
+    /// <summary>
+    /// It was found that order is not garenteed in RaycastAll
+    /// </summary>
+    /// <returns>Sorted Array</returns>
+    public static RaycastHit[] SortByDistance(RaycastHit[] list) {
+        RaycastHit[] returnList = new RaycastHit[list.Length];
+        for (int i = 0; i < list.Length; i++) {
+            int smallerThanMe = 0;
+            for (int j = 0; j < list.Length; j++) {
+                if(list[i].distance > list[j].distance) {
+                    smallerThanMe++;
+                }
+            }
+            returnList[smallerThanMe] = list[i];
+        }
+        return returnList;
+    }
 }

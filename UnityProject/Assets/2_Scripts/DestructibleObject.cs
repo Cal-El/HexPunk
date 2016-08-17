@@ -50,6 +50,6 @@ public class DestructibleObject : Character
 
         _isDestroyed = true;
 
-        NetworkServer.Destroy(gameObject);
+        Destroy(gameObject);
     }
 }

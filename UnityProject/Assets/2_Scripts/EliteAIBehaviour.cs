@@ -1,14 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class BomberAIBehaviour : Character {
+public class EliteAIBehaviour : Character {
 
     private const float TIME_FOR_NAVMESH_UPDATE = 0.5f;
 
     //State machine variables
-    public enum STATES { Idle, Battlecry, Chasing, Attacking, Knockback, Dead}
-    [HideInInspector]public STATES agentState = STATES.Idle;
-    [HideInInspector]public STATES animationState = STATES.Idle;
+    public enum STATES { Idle, Battlecry, Chasing, MeleeAttacking, RangedAttacking, Dead}
+    public STATES agentState = STATES.Idle;
+    public STATES animationState = STATES.Idle;
 
     public SkinnedMeshRenderer mr;
 
@@ -17,12 +17,19 @@ public class BomberAIBehaviour : Character {
     public float maxHealth = 5;
 
     //Attack Statistics
-    [Header("Combat Statistics")]
-    public float baseDmg = 5;                   //Base damage of the melee attack
-    public float castingTime = 1;               //The time it takes from starting an attack to it actually connecting with a player
-    public float cooldown = 1;                  //The time it between attacks
-    private float attackTimer = 0;
-    public float range = 2;                     //Range/Reach of the attack
+    
+    [System.Serializable]
+    public struct Attack {
+        public float baseDmg;                   //Base damage of the melee attack
+        public float castingTime;               //The time it takes from starting an attack to it actually connecting with a player
+        public float cooldown;                  //The time it between attacks
+        public float attackTimer;
+        public float range;                     //Range/Reach of the attack
+    }
+    [Header("Melee Attack")]
+    public Attack meleeAttack;
+    [Header("Ranged Attack")]
+    public Attack rangeAttack;
 
     //Battlecry Variable
     [Header("Battlecry Attributes")]
@@ -37,16 +44,6 @@ public class BomberAIBehaviour : Character {
     [HideInInspector]public NavMeshAgent navAgent;
     private NavMeshObstacle navObst;
     private float inactiveTimer = 0.0f;
-    private float knockbackTimer = 0.0f;
-
-    [Header("Bomber Elements")]
-    [SerializeField] private GameObject warningParticleEffect;
-    [SerializeField] private GameObject explosionPrefab;
-    [SerializeField] private float bombDamage = 10;
-    [SerializeField] private float blastRadius = 3;
-    private float deathTimer = 0;
-    [SerializeField] private float timeToDie = 2;
-
 
     void Awake () {
         base.Initialise();
@@ -62,14 +59,15 @@ public class BomberAIBehaviour : Character {
 	void Update () {
         if (agentState != STATES.Dead) {
             Vector3 prePos = transform.position;
-            if(knockbackTimer > 0) {
-                knockbackTimer -= Time.deltaTime;
-                if(knockbackTimer <= 0) {
-                    StartChase();
-                }
-            }
             if (inactiveTimer <= 0) {
                 if (transform.parent == null || transform.parent.GetComponent<Room>().roomUnlocked) {
+                    if (agentState != STATES.RangedAttacking) {
+                        if (rangeAttack.attackTimer <= 0) {
+                            agentState = STATES.RangedAttacking;
+                        } else {
+                            rangeAttack.attackTimer -= Time.deltaTime;
+                        }
+                    }
                     switch (agentState) {
                         case STATES.Idle:
                             mr.material.SetColor("_EmissionColor", Color.green);
@@ -87,12 +85,14 @@ public class BomberAIBehaviour : Character {
                             animationState = STATES.Chasing;
                             ChasingBehaviour();
                             break;
-                        case STATES.Attacking:
+                        case STATES.MeleeAttacking:
                             mr.material.SetColor("_EmissionColor", Color.white);
                             AttackingBehaviour();
                             break;
-                        case STATES.Knockback:
-                            mr.material.SetColor("_EmissionColor", Color.blue);
+                        case STATES.RangedAttacking:
+                            mr.material.SetColor("_EmissionColor", Color.cyan);
+                            animationState = STATES.RangedAttacking;
+                            RangeAttackingBehaviour();
                             break;
                         case STATES.Dead:
                             
@@ -138,66 +138,112 @@ public class BomberAIBehaviour : Character {
         if (navAgent != null && target != null) {
             navAgent.enabled = true;
             navObst.enabled = false;
-            navAgent.destination = target.transform.position + (this.transform.position-target.transform.position).normalized*range/2;
+            navAgent.destination = target.transform.position + (this.transform.position-target.transform.position).normalized* meleeAttack.range /2;
         }
         
         
-        if (Vector3.Distance(this.transform.position, target.transform.position) < range - 0.5f && knockbackTimer <= 0) {
+        if (Vector3.Distance(this.transform.position, target.transform.position) < meleeAttack.range - 0.5f) {
             navAgent.enabled = false;
             navObst.enabled = true;
-            agentState = STATES.Attacking;
+            agentState = STATES.MeleeAttacking;
         }
     }
 
     private void AttackingBehaviour() {
-        if(attackTimer > cooldown) {            //Attacking
-            animationState = STATES.Attacking;
-            attackTimer -= Time.deltaTime;
-            if (attackTimer <= cooldown) {      //Theshold crossed. Time to attack
+        if(meleeAttack.attackTimer > meleeAttack.cooldown) {            //Attacking
+            animationState = STATES.MeleeAttacking;
+            meleeAttack.attackTimer -= Time.deltaTime;
+            if (meleeAttack.attackTimer <= meleeAttack.cooldown) {      //Theshold crossed. Time to attack
                 RaycastHit hit;
-                if (Physics.Raycast(new Ray(transform.position, transform.forward), out hit, range)) {
+                if (Physics.Raycast(new Ray(transform.position, transform.forward), out hit, meleeAttack.range)) {
                     if(hit.transform.tag == "Player") {
-                        hit.transform.GetComponent<ClassAbilities>().TakeDmg(baseDmg);
+                        hit.transform.GetComponent<ClassAbilities>().TakeDmg(meleeAttack.baseDmg);
                     }
                 }
             }
         } else {                                //Not Attacking
             animationState = STATES.Idle;
             transform.LookAt(new Vector3(target.transform.position.x, this.transform.position.y, target.transform.position.z));
-            attackTimer -= Time.deltaTime;
-            if (Vector3.Distance(this.transform.position, target.transform.position) > range) {
+            meleeAttack.attackTimer -= Time.deltaTime;
+            if (Vector3.Distance(this.transform.position, target.transform.position) > meleeAttack.range) {
                 StartChase();
                 return;
             }
             if (!target.IsAlive) {
                 Retagetting();
             }
-            if(attackTimer <= 0) {              //Ready to attack again
-                attackTimer = cooldown + castingTime;
+            if(meleeAttack.attackTimer <= 0) {              //Ready to attack again
+                meleeAttack.attackTimer = meleeAttack.cooldown + meleeAttack.castingTime;
             }
         }
     }
 
-    private void KnockbackBehaviour() {
-        knockbackTimer -= Time.deltaTime;
-        if(knockbackTimer <= 0) {
+    private void RangeAttackingBehaviour() {
+        //Target player
+        if (rangeAttack.attackTimer <= 0) {
+            navAgent.enabled = false;
+            navObst.enabled = true;
+
+            //Find farthest player in los
+            target = null;
+            foreach (ClassAbilities p in Megamanager.MM.players) {
+                bool inLOS = false;
+                Ray ray = new Ray(transform.position, (p.Position - transform.position).normalized);
+                RaycastHit[] hits = Physics.RaycastAll(ray, rangeAttack.range);
+                hits = Megamanager.SortByDistance(hits);
+                for (int i = 0; i < hits.Length; i++) {
+                    Character ch = hits[i].transform.GetComponent<Character>();
+                    Debug.Log(i+ ": " +hits[i].transform.name);
+                    if(ch == p) {
+                        inLOS = true;
+                    } else if (ch != null) {
+                    } else { break; }
+                }
+                if (inLOS) {
+                    if (target == null) {
+                        target = p;
+                    } else if (Vector3.Distance(target.Position, transform.position) < Vector3.Distance(p.Position, transform.position)) {
+                        target = p;
+                    } else { continue; }
+                } else { continue; }
+                
+            }
+            //No Target found
+            if (target == null) {
+                rangeAttack.attackTimer = rangeAttack.cooldown;
+                StartChase();
+                Debug.Log("No targetFound");
+            } else {
+                rangeAttack.attackTimer = 0 + Time.deltaTime;
+            }
+        } else if (rangeAttack.attackTimer >= rangeAttack.castingTime) {
+            //Time to attack
+            Ray ray = new Ray(transform.position, target.Position - transform.position);
+            RaycastHit[] hits = Physics.SphereCastAll(ray, 1, rangeAttack.range);
+
+            hits = Megamanager.SortByDistance(hits);
+            
+            foreach (RaycastHit hit in hits) {
+                if (hit.transform == null) {
+                    Debug.LogError("Null transform hit at " + hit.point);
+                    continue;
+                }
+                Character ch = hit.transform.GetComponent<Character>();
+                if (ch != null) {
+                    if (ch == this) continue;
+                    ch.TakeDmg(rangeAttack.baseDmg);
+                } else { break; }
+            }
+            //Start cooldown and chase
+            rangeAttack.attackTimer = rangeAttack.cooldown;
             StartChase();
+        } else {
+            rangeAttack.attackTimer += Time.deltaTime;
         }
     }
 
     private void DeadBehaviour() {
-        deathTimer += Time.deltaTime;
-        if(deathTimer >= timeToDie) {
-            foreach (Character c in Megamanager.GetAllCharacters()) {
-                if(Vector3.Distance(c.transform.position, transform.position) <= blastRadius) {
-                    c.Knockback((c.transform.position - transform.position).normalized * 500, 1);
-                    c.TakeDmg(bombDamage);
-                    
-                }
-            }
-            Destroy(Instantiate(explosionPrefab, transform.position, Quaternion.identity) as GameObject, 0.5f);
-            Destroy(this.gameObject);
-        }
+        
     }
 
     private void StartBattlecry() {
@@ -213,14 +259,13 @@ public class BomberAIBehaviour : Character {
     }
 
     private void StartDeath() {
-        navObst.enabled = true;
+        navObst.enabled = false;
         navAgent.enabled = false;
-        rb.isKinematic = true;
+        rb.isKinematic = false;
         GetComponent<CapsuleCollider>().enabled = true;
-        warningParticleEffect.SetActive(true);
-        warningParticleEffect.transform.localScale = new Vector3(blastRadius, blastRadius, warningParticleEffect.transform.localScale.z);
         base.Destroyed();
         agentState = STATES.Dead;
+        Destroy(gameObject, 5);
     }
 
     public void ReceiveMessage(char a) {
@@ -257,16 +302,7 @@ public class BomberAIBehaviour : Character {
     }
 
     public override void Knockback(Vector3 force, float timer) {
-        if(agentState == STATES.Idle) {
-            FindTarget();
-        }
-        agentState = STATES.Knockback;
-        transform.LookAt(transform.position - force, Vector3.up);
-        navAgent.enabled = false;
-        navObst.enabled = true;
-        rb.isKinematic = false;
-        rb.AddForce(force);
-        knockbackTimer = timer;
+
     }
 
     public void CheckForPlayers() {
@@ -293,13 +329,16 @@ public class BomberAIBehaviour : Character {
 
     public void Retagetting()
     {
-        float threshold = Vector3.Distance(this.transform.position, target.transform.position) * 0.8f;
-        if (target.currentState == ClassAbilities.ANIMATIONSTATES.Dead) threshold = 1000;
-        foreach (ClassAbilities p in Megamanager.MM.players)
-        {
-            if (Vector3.Distance(this.transform.position, p.transform.position) <= threshold && p.currentState != ClassAbilities.ANIMATIONSTATES.Dead){
-                target = p;
+        if (target != null) {
+            float threshold = Vector3.Distance(this.transform.position, target.transform.position) * 0.8f;
+            if (target.currentState == ClassAbilities.ANIMATIONSTATES.Dead) threshold = 1000;
+            foreach (ClassAbilities p in Megamanager.MM.players) {
+                if (Vector3.Distance(this.transform.position, p.transform.position) <= threshold && p.currentState != ClassAbilities.ANIMATIONSTATES.Dead) {
+                    target = p;
+                }
             }
+        } else {
+            FindTarget();
         }
     }
 }

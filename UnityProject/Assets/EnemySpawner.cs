@@ -61,14 +61,10 @@ public class EnemySpawner : DestructibleObject {
                 }
                 while (spawnList[i].severity + totalSevThisCycle <= maxSeverityPerCycle && spawnList[i].severity + totalSeverity <= maxSeverity) {
                     newSpawns.Add(spawnList[i]);
-                    Debug.Log("Determining Spawns.");
                     totalSeverity += spawnList[i].severity;
-                    Debug.Log("Determining Spawns..");
                     totalSevThisCycle += spawnList[i].severity;
-                    Debug.Log("Determining Spawns...");
                 }
             }
-            Debug.Log("Spawning Units...");
 
             //Spawn the new guys in a circle around the spawner
             for(int i = 0; i < newSpawns.Count; i++) {
@@ -84,7 +80,6 @@ public class EnemySpawner : DestructibleObject {
                 catch { Debug.LogError("Spawning non-character Entity"); }
                 spawnedList.Add(newGuy);
             }
-            Debug.Log("Spawning Complete");
 
         }
 	}
