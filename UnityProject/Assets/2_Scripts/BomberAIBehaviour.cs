@@ -41,6 +41,7 @@ public class BomberAIBehaviour : Character {
 
     [Header("Bomber Elements")]
     [SerializeField] private GameObject warningParticleEffect;
+    [SerializeField] private GameObject explosionPrefab;
     [SerializeField] private float bombDamage = 10;
     [SerializeField] private float blastRadius = 3;
     private float deathTimer = 0;
@@ -194,6 +195,7 @@ public class BomberAIBehaviour : Character {
                     
                 }
             }
+            Destroy(Instantiate(explosionPrefab, transform.position, Quaternion.identity) as GameObject, 0.5f);
             Destroy(this.gameObject);
         }
     }
@@ -216,7 +218,7 @@ public class BomberAIBehaviour : Character {
         rb.isKinematic = true;
         GetComponent<CapsuleCollider>().enabled = true;
         warningParticleEffect.SetActive(true);
-        warningParticleEffect.transform.localScale = new Vector3(blastRadius * 2, blastRadius * 2, warningParticleEffect.transform.localScale.z);
+        warningParticleEffect.transform.localScale = new Vector3(blastRadius, blastRadius, warningParticleEffect.transform.localScale.z);
         base.Destroyed();
         agentState = STATES.Dead;
     }
