@@ -10,18 +10,12 @@ public class HUDProperties : MonoBehaviour {
         public Image healthBar;
         public Image energyBar;
         public Image xpBar;
-        [Tooltip ("Shows a slight indication of the time it takes to cast the ability.")]
+        [HideInInspector]
         public float[] abilityCds = new float[4];
     }
 
     public HUD hud;
     public Image[] abilityCooldownIcons = new Image[4];
-    private float[] cooldownTimers = new float[4];
-    
-    void Start()
-    {
-        ShowIconCooldown(1);
-    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -30,19 +24,18 @@ public class HUDProperties : MonoBehaviour {
         {
             if(abilityCooldownIcons[i].fillAmount > 0)
             {
-                cooldownTimers[i] += Time.deltaTime;
-                abilityCooldownIcons[i].fillAmount -= (cooldownTimers[i] / hud.abilityCds[i]) * Time.deltaTime;
+                abilityCooldownIcons[i].fillAmount -= (Time.deltaTime / hud.abilityCds[i]);
             }
         }
 	}
 
-    public void ShowIconCooldown(int abilityNumber)
+    public void ShowIconCooldown(int abilityNumber, float abilityCooldown)
     {
         if (hud == null) return;
         abilityNumber -= 1;
+        hud.abilityCds[abilityNumber] = abilityCooldown;
         if (hud.abilityCds[abilityNumber] != 0)
         {
-            cooldownTimers[abilityNumber] = 0;
             abilityCooldownIcons[abilityNumber].fillAmount = 1;
         }
     }
