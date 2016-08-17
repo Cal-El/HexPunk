@@ -5,23 +5,22 @@ using UnityEngine.UI;
 
 public class PlayerGUICanvas : MonoBehaviour
 {
-
-    public Image icon;
-    public Image healthBar;
-    public Image energyBar;
-    public Image xpBar;
+    public HUDProperties myHud;
 
     private GameObject myPlayer;
     private ClassAbilities playerStats;
 
     public GameObject betrayerCanvas;
     private bool isBetrayer = false;
-    private OtherPlayerGUI[] guiList;
+    private OtherPlayerGUI[] guiList = new OtherPlayerGUI[3];
 
     public GameObject victoryGUI;
     private bool victory = false;
     public GameObject defeatGUI;
     private bool defeat = false;
+
+    [Header ("Don't change the order")]
+    public GameObject[] huds = new GameObject[4];
 
     private float visHP;
     private float visEP;
@@ -35,14 +34,21 @@ public class PlayerGUICanvas : MonoBehaviour
         myPlayer = transform.parent.GetComponent<PlayerCamera>().myPlayer;
         playerStats = myPlayer.GetComponent<ClassAbilities>();
 
-        if (isBetrayer)
-        {
-            icon.color = Color.red;
-        }
-        else
-        {
-            icon.color = Color.blue;
-        }
+        string name = myPlayer.gameObject.name;
+        
+        SetHUDs(name, "Conduit");
+        SetHUDs(name, "Aethersmith");
+        SetHUDs(name, "Caldera");
+        SetHUDs(name, "Shard");
+
+        //if (isBetrayer)
+        //{
+        //    icon.color = Color.red;
+        //}
+        //else
+        //{
+        //    icon.color = Color.blue;
+        //}
         visHP = playerStats.health;
         visEP = playerStats.energy;
 
@@ -51,9 +57,29 @@ public class PlayerGUICanvas : MonoBehaviour
                     betrayerCanvas.transform.FindChild("OtherPlayerGUI3").GetComponent<OtherPlayerGUI>() };
     }
 
+    private void SetHUDs(string playerName, string className)
+    {
+        if (playerName.Contains(className))
+        {
+            foreach(var hud in huds)
+            {
+                if (!hud.gameObject.name.Contains(className))
+                {
+                    Destroy(hud);
+                }
+                else
+                {
+                    myHud = hud.GetComponent<HUDProperties>();
+                }
+            }
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
+        if (myHud == null) return;
+
         if (Input.GetKeyDown(KeyCode.P))
         {
             isBetrayer = !isBetrayer;
@@ -63,8 +89,10 @@ public class PlayerGUICanvas : MonoBehaviour
         visEP = Mathf.Lerp(visEP, playerStats.energy, Time.deltaTime * 10);
         visXP = Mathf.Lerp(visXP, playerStats.GetLevel(), Time.deltaTime * 10);
 
-        healthBar.fillAmount = visHP / 100;
-        energyBar.fillAmount = visEP / playerStats.energyMax;
+        myHud.hud.healthBar.fillAmount = visHP / 100;
+        myHud.hud.energyBar.fillAmount = visEP / playerStats.energyMax;
+
+        var xpBar = myHud.hud.xpBar;
 
         if (visXP < 1) {
             xpBar.fillAmount = 0.175f * visXP;
@@ -92,12 +120,12 @@ public class PlayerGUICanvas : MonoBehaviour
         set
         {
             betrayerCanvas.SetActive(value);
-            if (value)
-            {
-                icon.color = Color.red;
-                SetBetrayerGUI();
-            }
-            else icon.color = Color.blue;
+            //if (value)
+            //{
+            //    icon.color = Color.red;
+            //    SetBetrayerGUI();
+            //}
+            //else icon.color = Color.blue;
             isBetrayer = value;
         }
     }

@@ -10,6 +10,8 @@ public class ClassAbilities : Character {
 
     public Transform graphicObj;
     protected PlayerMovement pm;
+    protected PlayerGUICanvas myGUI;
+    protected HUDProperties myHud;
     public float healthMax = 100;
     [SyncVar]
     public float health;
@@ -75,6 +77,11 @@ public class ClassAbilities : Character {
             castingTimer = a.castingTime;
             waitingForAbility = a.abilityNum;
             currCooldown = a.castingTime + a.cooldown;
+            Debug.Log(currCooldown);
+            if(myHud != null)
+            {
+                myHud.ShowIconCooldown(a.abilityNum, currCooldown);
+            }
         }
     }
 
@@ -86,6 +93,8 @@ public class ClassAbilities : Character {
         DontDestroyOnLoad(gameObject);
         health = healthMax;
         pm = GetComponent<PlayerMovement>();
+        myGUI = pm.playerCamera.GetComponentInChildren<PlayerGUICanvas>();
+        myHud = myGUI.myHud;
 
         //Setup revive ability which is used by all classes
         Revive = new Ability();
@@ -100,6 +109,12 @@ public class ClassAbilities : Character {
 
     protected void BaseUpdate()
     {
+        if(myGUI == null || myHud == null)
+        {
+            myGUI = pm.playerCamera.GetComponentInChildren<PlayerGUICanvas>();
+            myHud = myGUI.myHud;
+        }
+
         if(!rb.isKinematic) {
             knockbackTimer -= Time.deltaTime;
             if(knockbackTimer <= 0) {
