@@ -5,21 +5,12 @@ using System.Collections.Generic;
 
 public class ShardAbilities : ClassAbilities {
 
-    public float energyDecay = 6;
-    public enum Form { ICE, WATER }
-
-    [SyncVar]
-    public Form currentForm = Form.ICE;
-
-    [SyncVar]
-    public float energySecondary;
+    public float energyDecay = 1;
 
     public GameObject iciclePrefab;
-    public GameObject watersprayPrefab;
     public GameObject iceFieldPrefab;
-    public GameObject waterspoutPrefab;
-    public GameObject iceRamPrefab;
     public MeshRenderer mistCloud;
+    public GameObject iceRamPrefab;
     private SkinnedMeshRenderer playerRenderer;
     public Transform projectileCastPoint;
 
@@ -35,39 +26,21 @@ public class ShardAbilities : ClassAbilities {
             this.energyChargeModifier = energyChargeModifier;
         }
     }
-
-    [System.Serializable]
-    public class FormShiftAbility: Ability
-    {
-        public Color iceColour;
-        public Color waterColour;
-
-        public FormShiftAbility(Color iceColour, Color waterColour, int abilityNum = 0, float baseDmg = 0, float castingTime = 0, float cooldown = 0, float energyCost = 0, float range = 0, float knockbackStr = 0)
-            : base(abilityNum, baseDmg, castingTime, cooldown, energyCost, range, knockbackStr)
-        {
-            this.iceColour = iceColour;
-            this.waterColour = waterColour;
-        }
-    }
-
+    
     public EnergyAddedChannelledAbility IceLance = new EnergyAddedChannelledAbility( 1, 1, 0, 0.01f, 0, 100, 0, 3, 1);
-    public EnergyAddedChannelledAbility Waterspray = new EnergyAddedChannelledAbility( 1, 1.3f, 0, 0.01f, 0 , 7, 200, 0, 1);
+    private bool startedCasting = false;
+    private float iceLanceCast;
+    private float iceLanceCooldown;
     public EnergyAddedAbility Icefield = new EnergyAddedAbility( 2, 4, 1f, 0.2f, 0, 3, 0, 25 );
-    public EnergyAddedAbility Waterspout = new EnergyAddedAbility( 2, 1, 1f, 0.2f, 0, 2.5f, 750, 25 );
-    public FormShiftAbility FormShift = new FormShiftAbility(Color.white, Color.blue, 3, 0, 0.1f, 0, -0.1f );
-    public Ability IceRam = new Ability( 4, 15, 0.25f, 0.25f, 0, 100, 1000 );
     [Tooltip("Energy is taken away while channelled.")]
-    public EnergyAddedChannelledAbility MistCloud = new EnergyAddedChannelledAbility( 4, 0, -0.1f, -0.1f, 0, 0, 0, 0, 1 );
+    public EnergyAddedChannelledAbility MistCloud = new EnergyAddedChannelledAbility( 3, 0, 0, 0, 0, 0, 0, 0, 1 );
+    public Ability IceRam = new Ability(4, 15, 0.25f, 0.25f, 100, 100, 1000);
 
-    private float iceLanceCooldown = 1f;
     private GameObject currentIcicle;
     private Icicle icicleScript;
     private bool chargingAbility1 = false;
     private float growthWindow = 1;
     private float growthTimer;
-
-    private GameObject currentWaterspray;
-    private Waterspray watersprayScript;
 
     private int playerNum = 0;
 
@@ -75,7 +48,9 @@ public class ShardAbilities : ClassAbilities {
     void Start()
     {
         base.Initialize();
-        energySecondary = energyMax;
+        iceLanceCast = IceLance.castingTime;
+        iceLanceCooldown = IceLance.cooldown;
+        IceLance.cooldown = Time.deltaTime;
         playerRenderer = graphicObj.gameObject.GetComponent<SkinnedMeshRenderer>();
     }
 
@@ -102,17 +77,15 @@ public class ShardAbilities : ClassAbilities {
             castingTimer = Mathf.Max(castingTimer - Time.deltaTime, 0);
         }
 
-        if (energy < FormShift.energyCost)
+        if (energy < IceRam.energyCost)
         {
             energy = energy - Time.deltaTime * energyDecay;
-            energySecondary = energySecondary - Time.deltaTime * energyDecay;
         }
 
         //Energy
         if (energy < energyMax)
         {
             energy = Mathf.Clamp(energy, 0, energyMax);
-            energySecondary = Mathf.Clamp(energySecondary, 0, energyMax);
         }
 
         //Death
@@ -123,38 +96,24 @@ public class ShardAbilities : ClassAbilities {
         //Abilities
         if (IsAlive)
         {
-            switch (currentForm)
+            
+            
+            if (Input.GetButtonDown("Ability 1"))
             {
-                case Form.ICE:
-                    if (Input.GetButtonDown("Ability 1")) StartIceLaunch();
-                    if (Input.GetButtonUp("Ability 1"))
-                    {
-                        LaunchIcicle();
-                    }
-                    else if (Input.GetButton("Ability 1"))
-                    {
-                        IceLance.castingTime = Time.deltaTime;
-                        UseAbility(IceLance);
-                    }
-                    if (GetAxisDown1("Ability 2")) UseAbility(Icefield);
-                    if (GetAxisDown2("Ability 4")) UseAbility(IceRam);
-                    break;
-
-                case Form.WATER:
-                    if (Input.GetButtonDown("Ability 1")) StartWaterSpray();
-                    if (Input.GetButtonUp("Ability 1")) StopWaterSpray();
-                    else if (Input.GetButton("Ability 1"))
-                    {
-                        Waterspray.castingTime = Time.deltaTime;
-                        UseAbility(Waterspray);
-                    }
-                    if (GetAxisDown1("Ability 2")) UseAbility(Waterspout);
-                    if (Input.GetButtonUp("Ability 4")) StopMistCloud();
-                    else if (Input.GetButton("Ability 4")) UseAbility(MistCloud);
-                    break;
+                ShardUseAbility(IceLance, true);
             }
-
-            if (Input.GetButtonDown("Ability 3")) UseAbility(FormShift);
+            if (Input.GetButtonUp("Ability 1") && startedCasting)
+            {
+                ShardUseAbility(IceLance, false, true);
+            }
+            else if (Input.GetButton("Ability 1") && startedCasting)
+            {
+                ShardUseAbility(IceLance);
+            }
+            if (GetAxisDown1("Ability 2")) ShardUseAbility(Icefield);
+            if (Input.GetButtonUp("Ability 3") || energy <= 0) StopMistCloud();
+            else if (Input.GetButton("Ability 3") && energy > 0) ShardUseAbility(MistCloud);
+            if (GetAxisDown2("Ability 4")) ShardUseAbility(IceRam);
 
             //Revive
             if (Input.GetKeyDown(KeyCode.E))
@@ -164,48 +123,22 @@ public class ShardAbilities : ClassAbilities {
 
             if (waitingForAbility != 0 && castingTimer <= 0)
             {
-                switch (currentForm)
+                switch (waitingForAbility)
                 {
-                    case Form.ICE:
-                        switch (waitingForAbility)
-                        {
-                            case 1:
-                                CmdAbility1();
-                                break;
-                            case 2:
-                                CmdAbility2();
-                                break;
-                            case 3:
-                                CmdAbility3();
-                                break;
-                            case 4:
-                                CmdAbility4();
-                                break;
-                            case 5:
-                                Ability5();
-                                break;
-                        }
+                    case 1:
+                        CmdAbility1();
                         break;
-
-                    case Form.WATER:
-                        switch (waitingForAbility)
-                        {
-                            case 1:
-                                CmdAbility1b();
-                                break;
-                            case 2:
-                                CmdAbility2b();
-                                break;
-                            case 3:
-                                CmdAbility3();
-                                break;
-                            case 4:
-                                CmdAbility4b();
-                                break;
-                            case 5:
-                                Ability5();
-                                break;
-                        }
+                    case 2:
+                        CmdAbility2();
+                        break;
+                    case 3:
+                        CmdAbility3();
+                        break;
+                    case 4:
+                        CmdAbility4();
+                        break;
+                    case 5:
+                        Ability5();
                         break;
                 }
 
@@ -236,22 +169,6 @@ public class ShardAbilities : ClassAbilities {
     }
 
     [Command]
-    private void CmdAbility1b()
-    {
-        if (!isClient)
-        {
-            Ability1b();
-        }
-        RpcAbility1b();
-    }
-
-    [ClientRpc]
-    private void RpcAbility1b()
-    {
-        Ability1b();
-    }
-
-    [Command]
     private void CmdAbility2()
     {
         if (!isClient)
@@ -265,22 +182,6 @@ public class ShardAbilities : ClassAbilities {
     private void RpcAbility2()
     {
         Ability2();
-    }
-
-    [Command]
-    private void CmdAbility2b()
-    {
-        if (!isClient)
-        {
-            Ability2b();
-        }
-        RpcAbility2b();
-    }
-
-    [ClientRpc]
-    private void RpcAbility2b()
-    {
-        Ability2b();
     }
 
     [Command]
@@ -315,22 +216,6 @@ public class ShardAbilities : ClassAbilities {
         Ability4();
     }
 
-    [Command]
-    private void CmdAbility4b()
-    {
-        if (!isClient)
-        {
-            Ability4b();
-        }
-        RpcAbility4b();
-    }
-
-    [ClientRpc]
-    private void RpcAbility4b()
-    {
-        Ability4b();
-    }
-
     #endregion
 
     #endregion
@@ -344,6 +229,7 @@ public class ShardAbilities : ClassAbilities {
         icicleScript = currentIcicle.GetComponent<Icicle>();
         if (icicleScript != null)
         {
+            icicleScript.owner = gameObject;
             icicleScript.damage = IceLance.baseDmg;
             icicleScript.range = IceLance.range;
         }
@@ -368,43 +254,6 @@ public class ShardAbilities : ClassAbilities {
         if (icicleScript != null)
         {
             icicleScript.enabled = true;
-        }
-    }
-
-    #endregion
-
-    #region Ability 1 b (Waterspray)
-
-    private void StartWaterSpray()
-    {
-        this.GetComponent<PlayerMovement>().IsCasting = true;
-        currentWaterspray = Instantiate(watersprayPrefab, projectileCastPoint.position, transform.rotation) as GameObject;
-        watersprayScript = currentWaterspray.GetComponent<Waterspray>();
-        if (watersprayScript != null)
-        {
-            watersprayScript.damage = Waterspray.baseDmg;
-            watersprayScript.knockBack = Waterspray.knockbackStr;
-        }
-        growthTimer = Time.time + Waterspray.range / 20;
-    }
-
-    private void Ability1b()
-    {
-        if (currentWaterspray != null && Time.time <= growthTimer)
-        {
-            currentWaterspray.transform.localScale += Vector3.forward * 0.3f;
-            currentWaterspray.transform.position = projectileCastPoint.position;
-            currentWaterspray.transform.rotation = transform.rotation;
-        }
-
-        energySecondary += Time.deltaTime * Waterspray.energyChargeModifier;
-    }
-
-    private void StopWaterSpray()
-    {
-        if (currentWaterspray != null)
-        {
-            Destroy(currentWaterspray);
         }
     }
 
@@ -443,58 +292,23 @@ public class ShardAbilities : ClassAbilities {
 
     #endregion
 
-    #region Ability 2 b (Waterspout)
-
-    private void Ability2b()
-    {
-        GameObject waterspout = Instantiate(waterspoutPrefab, transform.position, transform.rotation) as GameObject;
-
-        IceField script = waterspout.GetComponent<IceField>();
-
-        if (script != null)
-        {
-            script.range = Waterspout.range;
-        }
-
-        var targets = Physics.OverlapSphere(transform.position, Waterspout.range);
-
-        foreach (var col in targets)
-        {
-            if (col != null && col.gameObject != gameObject)
-            {
-                Character ch = col.GetComponent<Character>();
-                if (ch != null)
-                {
-                    Vector3 dir = (col.transform.position - transform.position).normalized;
-                        ch.TakeDmg(Waterspout.baseDmg);
-                        ch.Knockback((new Vector3(dir.x, 0, dir.z) * Waterspout.knockbackStr), 1);
-                }
-            }
-        }
-
-        energySecondary += Waterspout.energyAdded;
-    }
-
-    #endregion
-
-    #region Ability 3 (FormShift)
+    #region Ability 3 (Mistcloud)
 
     private void Ability3()
     {
-        switch (currentForm)
+        if (!mistCloud.enabled)
         {
-            //Change to water form
-            case Form.ICE:
-                CmdChangeGraphicColour(FormShift.waterColour);
-                currentForm = Form.WATER;
-                break;
-
-            //Change to ice form
-            case Form.WATER:
-                CmdChangeGraphicColour(FormShift.iceColour);
-                currentForm = Form.ICE;
-                break;
+            mistCloud.enabled = true;
+            playerRenderer.enabled = false;
         }
+
+        energy -= Time.deltaTime * MistCloud.energyChargeModifier;
+    }
+
+    private void StopMistCloud()
+    {
+        playerRenderer.enabled = true;
+        mistCloud.enabled = false;
     }
 
     #endregion
@@ -518,27 +332,6 @@ public class ShardAbilities : ClassAbilities {
 
     #endregion
 
-    #region Ability 4 b (Mistcloud)
-
-    private void Ability4b()
-    {
-        if (!mistCloud.enabled)
-        {
-            mistCloud.enabled = true;
-            playerRenderer.enabled = false;
-        }
-
-        energySecondary -= Time.deltaTime * MistCloud.energyChargeModifier;
-    }
-
-    private void StopMistCloud()
-    {
-        playerRenderer.enabled = true;
-        mistCloud.enabled = false;
-    }
-
-    #endregion
-
     #region Ability 5 (Revive)
 
     private void Ability5()
@@ -556,8 +349,31 @@ public class ShardAbilities : ClassAbilities {
 
     #endregion
 
-    protected override void UseAbility(Ability a)
-    {        
-        base.UseAbility(a);
+    private void ShardUseAbility(Ability a, bool start = false, bool launch = false)
+    {
+        if (launch && startedCasting)
+        {
+            currCooldown = 0;
+            IceLance.cooldown = iceLanceCooldown;
+            base.UseAbility(a);
+            LaunchIcicle();
+            startedCasting = false;
+            IceLance.cooldown = Time.deltaTime;
+        }
+        else if (currCooldown <= 0 && energy >= a.energyCost)
+        {
+            if (start)
+            {
+                startedCasting = true;
+                IceLance.castingTime = iceLanceCast;
+                StartIceLaunch();
+                base.UseAbility(a);
+                IceLance.castingTime = Time.deltaTime;
+            }
+            else
+            {
+                base.UseAbility(a);
+            }
+        }
     }
 }

@@ -24,7 +24,7 @@ public class IceRam : MonoBehaviour {
         transform.Translate(Vector3.forward * Time.deltaTime * speed);
         if (Vector3.Distance(startPos, transform.position) > range)
         {
-            Destroy(this);
+            Destroy(gameObject);
         }
     }
 

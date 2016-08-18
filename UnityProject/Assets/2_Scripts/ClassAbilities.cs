@@ -77,7 +77,6 @@ public class ClassAbilities : Character {
             castingTimer = a.castingTime;
             waitingForAbility = a.abilityNum;
             currCooldown = a.castingTime + a.cooldown;
-            Debug.Log(currCooldown);
             if(myHud != null)
             {
                 myHud.ShowIconCooldown(a.abilityNum, currCooldown);
