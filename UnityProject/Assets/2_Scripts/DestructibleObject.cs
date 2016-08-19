@@ -13,9 +13,14 @@ public class DestructibleObject : Character
     private float maxHealth;
     private float health;
 
+    void Start() {
+        Initialize();
+    }
+
     // Use this for initialization
-    void Start()
+    protected void Initialize()
     {
+        health = maxHealth;
         base.Initialise();
     }
 

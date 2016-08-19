@@ -27,7 +27,7 @@ public class EnemySpawner : DestructibleObject {
 
 	// Use this for initialization
 	void Start () {
-        Initialise();
+        Initialize();
 
         if (spawnList == null || spawnList.Length <= 0) {
             Debug.LogError("SpawnList is Empty");
