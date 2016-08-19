@@ -25,11 +25,17 @@ public class EliteAIBehaviour : Character {
         public float cooldown;                  //The time it between attacks
         public float attackTimer;
         public float range;                     //Range/Reach of the attack
+        public float knockback;
     }
     [Header("Melee Attack")]
     public Attack meleeAttack;
     [Header("Ranged Attack")]
     public Attack rangeAttack;
+    private Vector3 rangeTarget;
+    [SerializeField]
+    private GameObject warningEffect;
+    [SerializeField]
+    private GameObject beamEffect;
 
     //Battlecry Variable
     [Header("Battlecry Attributes")]
@@ -47,6 +53,9 @@ public class EliteAIBehaviour : Character {
 
     void Awake () {
         base.Initialise();
+
+        warningEffect.SetActive(false);
+        beamEffect.SetActive(false);
 
         navAgent = this.GetComponent<NavMeshAgent>();
         navObst = this.GetComponent<NavMeshObstacle>();
@@ -154,10 +163,16 @@ public class EliteAIBehaviour : Character {
             animationState = STATES.MeleeAttacking;
             meleeAttack.attackTimer -= Time.deltaTime;
             if (meleeAttack.attackTimer <= meleeAttack.cooldown) {      //Theshold crossed. Time to attack
-                RaycastHit hit;
-                if (Physics.Raycast(new Ray(transform.position, transform.forward), out hit, meleeAttack.range)) {
-                    if(hit.transform.tag == "Player") {
-                        hit.transform.GetComponent<ClassAbilities>().TakeDmg(meleeAttack.baseDmg);
+                RaycastHit[] hits = Physics.SphereCastAll(transform.position, meleeAttack.range, transform.forward, 0);
+                foreach (RaycastHit hit in hits) {
+                    if (Vector3.Angle(hit.transform.position - transform.position, transform.forward) < 90) {
+                        Character c = hit.transform.GetComponent<Character>();
+                        if (c != null) {
+                            c.Knockback(transform.forward * meleeAttack.knockback, 1);
+                            c.TakeDmg(meleeAttack.baseDmg);
+
+                        }
+
                     }
                 }
             }
@@ -193,8 +208,8 @@ public class EliteAIBehaviour : Character {
                 hits = Megamanager.SortByDistance(hits);
                 for (int i = 0; i < hits.Length; i++) {
                     Character ch = hits[i].transform.GetComponent<Character>();
-                    Debug.Log(i+ ": " +hits[i].transform.name);
-                    if(ch == p) {
+                    Debug.Log(i + ": " + hits[i].transform.name);
+                    if (ch == p) {
                         inLOS = true;
                     } else if (ch != null) {
                     } else { break; }
@@ -206,7 +221,7 @@ public class EliteAIBehaviour : Character {
                         target = p;
                     } else { continue; }
                 } else { continue; }
-                
+
             }
             //No Target found
             if (target == null) {
@@ -215,14 +230,15 @@ public class EliteAIBehaviour : Character {
                 Debug.Log("No targetFound");
             } else {
                 rangeAttack.attackTimer = 0 + Time.deltaTime;
+                warningEffect.SetActive(true);
             }
-        } else if (rangeAttack.attackTimer >= rangeAttack.castingTime) {
+        } else if (rangeAttack.attackTimer >= rangeAttack.castingTime && target != null) {
             //Time to attack
-            Ray ray = new Ray(transform.position, target.Position - transform.position);
+            Ray ray = new Ray(transform.position, rangeTarget - transform.position);
             RaycastHit[] hits = Physics.SphereCastAll(ray, 1, rangeAttack.range);
 
             hits = Megamanager.SortByDistance(hits);
-            
+
             foreach (RaycastHit hit in hits) {
                 if (hit.transform == null) {
                     Debug.LogError("Null transform hit at " + hit.point);
@@ -232,13 +248,24 @@ public class EliteAIBehaviour : Character {
                 if (ch != null) {
                     if (ch == this) continue;
                     ch.TakeDmg(rangeAttack.baseDmg);
+                    ch.Knockback(transform.forward * 1000, 1);
                 } else { break; }
             }
+            beamEffect.SetActive(true);
+            warningEffect.SetActive(false);
+            target = null;
+        } else if (rangeAttack.attackTimer >= rangeAttack.castingTime + 1) {
             //Start cooldown and chase
+            beamEffect.SetActive(false);
             rangeAttack.attackTimer = rangeAttack.cooldown;
             StartChase();
         } else {
             rangeAttack.attackTimer += Time.deltaTime;
+            if (target != null) {
+                rangeTarget = Vector3.Lerp(rangeTarget, target.Position, Time.deltaTime);
+                transform.LookAt(rangeTarget);
+                transform.rotation = Quaternion.Euler(new Vector3(0, transform.rotation.eulerAngles.y, 0));
+            }
         }
     }
 
@@ -262,6 +289,8 @@ public class EliteAIBehaviour : Character {
         navObst.enabled = false;
         navAgent.enabled = false;
         rb.isKinematic = false;
+        warningEffect.SetActive(false);
+        beamEffect.SetActive(false);
         GetComponent<CapsuleCollider>().enabled = true;
         base.Destroyed();
         agentState = STATES.Dead;

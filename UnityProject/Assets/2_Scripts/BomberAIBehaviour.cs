@@ -260,13 +260,16 @@ public class BomberAIBehaviour : Character {
         if(agentState == STATES.Idle) {
             FindTarget();
         }
-        agentState = STATES.Knockback;
+        
         transform.LookAt(transform.position - force, Vector3.up);
         navAgent.enabled = false;
         navObst.enabled = true;
         rb.isKinematic = false;
         rb.AddForce(force);
         knockbackTimer = timer;
+        if(GetHealth() > 0) {
+            agentState = STATES.Knockback;
+        }
     }
 
     public void CheckForPlayers() {
