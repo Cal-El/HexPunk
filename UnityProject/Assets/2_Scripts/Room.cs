@@ -10,7 +10,9 @@ public class Room : MonoBehaviour {
     public bool roomUnlocked;
     public enum ALIGNMENTS { Good, Neutral, Bad}
     public ALIGNMENTS roomAlignment = ALIGNMENTS.Neutral;
-    public List<Spawner> spawners; 
+    public List<Spawner> spawners;
+    [TextArea(2,10)]
+    public string message;
 
     void Start() {
 
@@ -22,6 +24,9 @@ public class Room : MonoBehaviour {
 
     public void UnlockRoom() {
         if (!roomUnlocked) {
+            if(message.Length > 0) {
+                FindObjectOfType<TextMessage>().SendText(message);
+            }
             roomUnlocked = true;
             roomActive = true;
             foreach (Spawner s in spawners)
