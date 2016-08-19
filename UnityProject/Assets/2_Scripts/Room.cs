@@ -13,13 +13,16 @@ public class Room : MonoBehaviour {
     public List<Spawner> spawners;
     [TextArea(2,10)]
     public string message;
+    private List<Character> enemys;
 
     void Start() {
-
+        enemys = new List<Character>();
     }
 
     void Update() {
-
+        foreach(Character c in enemys) {
+            if (c == null) enemys.Remove(c);
+        }
     }
 
     public void UnlockRoom() {
@@ -29,9 +32,17 @@ public class Room : MonoBehaviour {
             }
             roomUnlocked = true;
             roomActive = true;
-            foreach (Spawner s in spawners)
-                s.ActivateSpawner(roomAlignment);
+            foreach (Spawner s in spawners) {
+                Character c = s.ActivateSpawner(roomAlignment).GetComponent<Character>();
+                if(c != null) {
+                    enemys.Add(c);
+                }
+            }
         }
+    }
+
+    public void RemoveCharacter(Character c) {
+        enemys.Remove(c);
     }
 
     public void AddSpawner(Spawner s) {
@@ -39,5 +50,9 @@ public class Room : MonoBehaviour {
             spawners = new List<Spawner>();
         }
         spawners.Add(s);
+    }
+
+    public List<Character> Enemies() {
+        return enemys;
     }
 }

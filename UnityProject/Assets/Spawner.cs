@@ -17,16 +17,19 @@ public class Spawner : MonoBehaviour {
 
     }
 	
-	public void ActivateSpawner(Room.ALIGNMENTS alignment) {
+	public GameObject ActivateSpawner(Room.ALIGNMENTS alignment) {
         switch (alignment) {
             case Room.ALIGNMENTS.Good:
-                Instantiate(goodSpawn, transform.position, transform.rotation);
+                return Instantiate(goodSpawn, transform.position, transform.rotation) as GameObject;
                 break;
             case Room.ALIGNMENTS.Neutral:
-                Instantiate(neutralSpawn, transform.position, transform.rotation);
+                return Instantiate(neutralSpawn, transform.position, transform.rotation) as GameObject;
                 break;
             case Room.ALIGNMENTS.Bad:
-                Instantiate(evilSpawn, transform.position, transform.rotation);
+                return Instantiate(evilSpawn, transform.position, transform.rotation) as GameObject;
+                break;
+            default:
+                return null;
                 break;
         }
     }

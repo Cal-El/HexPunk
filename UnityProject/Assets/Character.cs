@@ -10,6 +10,7 @@ public abstract class Character : NetworkBehaviour {
     public CalderaBurnDamage burn;
     [HideInInspector]
     public Rigidbody rb;
+    [HideInInspector] public Room myRoom;
 
     /// <summary>
     /// To be called by all start functions
@@ -23,6 +24,7 @@ public abstract class Character : NetworkBehaviour {
 
     protected void Destroyed() {
         Megamanager.RemoveCharacterFromList(this);
+        if(myRoom != null) myRoom.RemoveCharacter(this);
     }
 
     public abstract float GetHealth();
