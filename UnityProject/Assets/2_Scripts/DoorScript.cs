@@ -5,15 +5,15 @@ public class DoorScript : MonoBehaviour {
 
     public bool open = false;
     public float timeToOpen = 2.0f;
-    public Transform[] doors;
-    private Vector3[] openedPositions = new Vector3[2] {
-        new Vector3(0.0151f, -0.0006f, 0),
-        new Vector3(-0.065f, -0.0006f, 0.05f)
-    };
-    private Vector3[] closedPositions = new Vector3[2] {
-        new Vector3(-0.0049f, -0.0006f, 0),
-        new Vector3(-0.04503f, -0.0006f, 0.05f)
-    };
+
+    [System.Serializable] public struct DOOR {
+        public Transform obj;
+        public Vector3 openedPos;
+        public Vector3 closedPos;
+    }
+
+    public DOOR[] doors;
+    
     private float openess = 0.0f;
 	
 	// Update is called once per frame
@@ -24,6 +24,6 @@ public class DoorScript : MonoBehaviour {
             openess = Mathf.Clamp(openess - Time.deltaTime / timeToOpen, 0, 1);
 
         for (int i = 0; i < doors.Length; i++)
-            doors[i].transform.localPosition = Vector3.Lerp(closedPositions[i], openedPositions[i], openess);
+            doors[i].obj.localPosition = Vector3.Lerp(doors[i].closedPos, doors[i].openedPos, openess);
 	}
 }
