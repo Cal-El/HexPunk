@@ -9,7 +9,7 @@ public class ShardAbilities : ClassAbilities {
 
     public GameObject iciclePrefab;
     public GameObject iceFieldPrefab;
-    public MeshRenderer mistCloud;
+    public GameObject mistCloud;
     public GameObject iceRamPrefab;
     private SkinnedMeshRenderer playerRenderer;
     public Transform projectileCastPoint;
@@ -296,9 +296,9 @@ public class ShardAbilities : ClassAbilities {
 
     private void Ability3()
     {
-        if (!mistCloud.enabled)
+        if (!mistCloud.activeInHierarchy)
         {
-            mistCloud.enabled = true;
+            mistCloud.SetActive(true);
             playerRenderer.enabled = false;
         }
 
@@ -308,7 +308,7 @@ public class ShardAbilities : ClassAbilities {
     private void StopMistCloud()
     {
         playerRenderer.enabled = true;
-        mistCloud.enabled = false;
+        mistCloud.SetActive(false);
     }
 
     #endregion
