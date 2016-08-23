@@ -12,7 +12,7 @@ public class Eruption : MonoBehaviour {
     {
         timer = Time.time + duration;
         range *= 2;
-        transform.localScale = new Vector3(range, transform.localScale.y, range);
+        //transform.localScale = new Vector3(range, transform.localScale.y, range);
     }
 
     // Update is called once per frame
