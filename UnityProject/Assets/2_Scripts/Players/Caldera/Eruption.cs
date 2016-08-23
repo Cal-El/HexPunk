@@ -6,6 +6,7 @@ public class Eruption : MonoBehaviour {
     public float range;
     public float duration = 0.3f;
     private float timer;
+    public ParticleSystem p;
 
     void Start()
     {
@@ -17,6 +18,11 @@ public class Eruption : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        if (Time.time > timer) Destroy(gameObject);
+        if (Time.time > timer) {
+            p.transform.parent = null;
+            p.enableEmission = false;
+            p.loop = false;
+            Destroy(p.gameObject, 5);
+            Destroy(gameObject); }
     }
 }

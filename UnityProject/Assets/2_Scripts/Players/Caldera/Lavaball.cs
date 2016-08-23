@@ -14,6 +14,7 @@ public class Lavaball : MonoBehaviour {
     public float splashRadius = 3;
     public float safeWindow = 0.75f;
     private Vector3 startPos;
+    public ParticleSystem p;
 
     void Start()
     {
@@ -27,6 +28,10 @@ public class Lavaball : MonoBehaviour {
         transform.Translate(Vector3.forward * Time.deltaTime * speed);
         if (Vector3.Distance(startPos, transform.position) > range)
         {
+            p.transform.parent = null;
+            p.enableEmission = false;
+            p.loop = false;
+            Destroy(p.gameObject, 5);
             Destroy(gameObject);
         }
     }
@@ -53,6 +58,10 @@ public class Lavaball : MonoBehaviour {
             }
             else
             {
+                p.transform.parent = null;
+                p.enableEmission = false;
+                p.loop = false;
+                Destroy(p.gameObject, 5);
                 Splash(transform.position);
                 Destroy(gameObject);
             }

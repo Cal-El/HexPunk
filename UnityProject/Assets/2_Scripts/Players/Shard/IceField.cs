@@ -3,23 +3,28 @@ using System.Collections;
 
 public class IceField : MonoBehaviour {
     [HideInInspector]
-    public float range;
+    public float range =1;
     public float duration = 0.1f;
-    private float halfLife;
+    public AnimationCurve growth;
     private float timer;
+    
 
     void Start()
     {
-        halfLife = Time.time + duration / 20;
-        timer = Time.time + duration;
+        timer = 0;
         range *= 2;
-        transform.localScale = new Vector3(range, transform.localScale.y, range);
+        transform.localScale = new Vector3(range, 0, range);
     }
 
     // Update is called once per frame
     void Update ()
     {
-        if (Time.time < halfLife) transform.localScale += Vector3.up * Time.deltaTime * 50;
-        if (Time.time > timer) Destroy(gameObject);
+        timer += Time.deltaTime;
+        transform.localScale = new Vector3(range, growth.Evaluate(timer), range);
+        if (timer > duration)
+        { 
+            Destroy(gameObject);
+
+        }
 	}
 }
