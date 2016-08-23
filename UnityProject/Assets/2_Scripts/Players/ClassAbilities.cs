@@ -9,6 +9,7 @@ public class ClassAbilities : Character {
     public ANIMATIONSTATES currentState;
 
     public Transform graphicObj;
+    protected PlayerAudioManager pam;
     protected PlayerMovement pm;
     protected PlayerGUICanvas myGUI;
     protected HUDProperties myHud;
@@ -21,6 +22,7 @@ public class ClassAbilities : Character {
     protected float level = 0;
 
     private bool isAlive = true;
+    public float percentHealthOnRevive;
     public bool IsReviving { get; set; }
     protected Ability Revive;
 
@@ -92,6 +94,7 @@ public class ClassAbilities : Character {
         DontDestroyOnLoad(gameObject);
         health = healthMax;
         pm = GetComponent<PlayerMovement>();
+        pam = GetComponentInChildren<PlayerAudioManager>();
         myGUI = pm.playerCamera.GetComponentInChildren<PlayerGUICanvas>();
         myHud = myGUI.myHud;
 
@@ -187,6 +190,7 @@ public class ClassAbilities : Character {
 
     public override void TakeDmg(float dmg, DamageType damageType = DamageType.Standard) {
         health = Mathf.Clamp(health - dmg, 0, healthMax);
+        if (health > 0) pam.PlayTakeDamageAudio();
     }
 
     public override void Heal(float addedHP) {
@@ -254,7 +258,7 @@ public class ClassAbilities : Character {
 
     protected virtual void EnableCharacter(bool enabled)
     {
-        if (enabled) health = 80;
+        if (enabled) health = healthMax * percentHealthOnRevive;
         var cc = GetComponent<CharacterController>();
         if (cc != null) cc.enabled = enabled;
 
@@ -268,6 +272,7 @@ public class ClassAbilities : Character {
         {
             currentState = ANIMATIONSTATES.Dead;
             IsAlive = false;
+            pam.PlayDeathAudio();
             //Put death animation and stuff here
         }
         RpcDeath();
@@ -278,6 +283,7 @@ public class ClassAbilities : Character {
     {
         currentState = ANIMATIONSTATES.Dead;
         IsAlive = false;
+        pam.PlayDeathAudio();
         //Put death animation and stuff here
     }
 
@@ -298,7 +304,7 @@ public class ClassAbilities : Character {
 
         var ca = o.GetComponent<ClassAbilities>();
         ca.IsReviving = true;
-        ca.health = 80;
+        ca.health = healthMax * percentHealthOnRevive;
     }
 
     [Command]

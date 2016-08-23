@@ -44,9 +44,9 @@ public class AethersmithAbilities : ClassAbilities {
         }
 
         //Death
-        if (health <= 0) CmdDeath();
+        if (health <= 0 && IsAlive) CmdDeath();
 
-        if (IsReviving) CmdRevive();
+        if (IsReviving && !IsAlive) CmdRevive();
 
         //Abilities
         if (IsAlive) {
@@ -238,6 +238,7 @@ public class AethersmithAbilities : ClassAbilities {
 
     public override void TakeDmg(float dmg, DamageType damageType = DamageType.Standard) {
         health -= dmg - dmg*((energy*0.5f)/energyMax);
+        if (health > 0) pam.PlayTakeDamageAudio();
     }
 
     public override void GainXP(float xp) {
