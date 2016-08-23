@@ -8,5 +8,5 @@ public class PlayerAudioManager : CharacterAudioManager
     public void PlayReviveAudio()
     {
         revive.source.PlayOneShot(revive.audioClips[Random.Range(0, revive.audioClips.Length - 1)]);
-    }
+    }    
 }
