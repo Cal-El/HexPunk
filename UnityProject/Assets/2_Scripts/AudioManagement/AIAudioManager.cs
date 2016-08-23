@@ -6,13 +6,8 @@ public class AIAudioManager : CharacterAudioManager {
     
     public AudioSourceManager deathBurnElectric;
 
-
-    // Use this for initialization
-    void Start () {
+    public void PlayDeathBurnElectricAudio()
+    {
+        PlayRandomFromClips(deathBurnElectric);
     }
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
 }

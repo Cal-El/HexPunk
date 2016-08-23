@@ -5,6 +5,9 @@ using System.Collections.Generic;
 
 public class ShardAbilities : ClassAbilities {
 
+    [HideInInspector]
+    public ShardAudioManager am;
+
     public float energyDecay = 1;
 
     public GameObject iciclePrefab;
@@ -48,6 +51,7 @@ public class ShardAbilities : ClassAbilities {
     void Start()
     {
         base.Initialize();
+        am = GetComponentInChildren<ShardAudioManager>();
         iceLanceCast = IceLance.castingTime;
         iceLanceCooldown = IceLance.cooldown;
         IceLance.cooldown = Time.deltaTime;

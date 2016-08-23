@@ -5,6 +5,9 @@ using System.Collections.Generic;
 
 public class ConduitAbilities : ClassAbilities {
 
+    [HideInInspector]
+    public ConduitAudioManager am;
+
     public float chainLightningRange = 5.0f;
     public GameObject lightningBoltPathPrefab;
     public GameObject punchBang;
@@ -25,6 +28,7 @@ public class ConduitAbilities : ClassAbilities {
     void Start() {
         base.Initialize();
         energy = energyMax;
+        am = GetComponentInChildren<ConduitAudioManager>();
     }
 
     // Update is called once per frame
@@ -194,7 +198,7 @@ public class ConduitAbilities : ClassAbilities {
                         hits[i].stacks.AddStack();
                         if (i > 0)
                         {
-                            hits[i].TakeDmg(LightingPunch.baseDmg / 2);
+                            hits[i].TakeDmg(LightingPunch.baseDmg / 2, DamageType.FireElectric);
                         }
                         if (hits[i] == null)
                         {
@@ -270,12 +274,12 @@ public class ConduitAbilities : ClassAbilities {
                     {
                         telePos = ray.origin + (ray.direction * (hit[i].distance + 1.5f));
                         ch.stacks.AddStack();
-                        ch.TakeDmg(LightningDash.baseDmg);
+                        ch.TakeDmg(LightningDash.baseDmg, DamageType.FireElectric);
                     }
                     else
                     {
                         ch.stacks.AddStack();
-                        ch.TakeDmg(LightningDash.baseDmg);
+                        ch.TakeDmg(LightningDash.baseDmg, DamageType.FireElectric);
                     }
                 }
             }
@@ -297,7 +301,7 @@ public class ConduitAbilities : ClassAbilities {
                 {
                     float stks = c.stacks.Stacks;
                     CmdDischargeStacks(c.gameObject);
-                    c.TakeDmg(Discharge.baseDmg * stks);
+                    c.TakeDmg(Discharge.baseDmg * stks, DamageType.FireElectric);
                 }
             }
     }

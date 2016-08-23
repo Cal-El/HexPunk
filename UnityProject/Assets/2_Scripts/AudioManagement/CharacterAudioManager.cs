@@ -9,16 +9,24 @@ public class CharacterAudioManager : MonoBehaviour {
 
     public void PlayTakeDamageAudio()
     {
-        takeDamage.source.PlayOneShot(takeDamage.audioClips[Random.Range(0, takeDamage.audioClips.Length - 1)]);
+        PlayRandomFromClips(takeDamage);
     }
 
     public void PlayFootstepAudio()
     {
-        footstep.source.PlayOneShot(footstep.audioClips[Random.Range(0, footstep.audioClips.Length - 1)]);
+        PlayRandomFromClips(footstep);
     }
 
     public void PlayDeathAudio()
     {
-        death.source.PlayOneShot(death.audioClips[Random.Range(0, death.audioClips.Length - 1)]);
+        PlayRandomFromClips(death);
+    }
+
+    protected void PlayRandomFromClips(AudioSourceManager sourceManager)
+    {
+        if (!sourceManager.source.isPlaying)
+        {
+            sourceManager.source.PlayOneShot(sourceManager.audioClips[Random.Range(0, sourceManager.audioClips.Length - 1)]);
+        }
     }
 }

@@ -40,14 +40,14 @@ public class Lavaball : MonoBehaviour {
             {
                 if (col.gameObject != owner)
                 {
-                    ch.TakeDmg(damage * Time.deltaTime * damageModifyer);
+                    ch.TakeDmg(damage * Time.deltaTime * damageModifyer, Character.DamageType.FireElectric);
                     ch.burn.IsBurning = true;
                 }
                 else
                 {
                     if (Time.time > safeWindow)
                     {
-                        ch.TakeDmg(damage * Time.deltaTime * damageModifyer / 2);
+                        ch.TakeDmg(damage * Time.deltaTime * damageModifyer / 2, Character.DamageType.FireElectric);
                     }
                 }
             }
@@ -73,11 +73,11 @@ public class Lavaball : MonoBehaviour {
                 {
                     if (target.gameObject == owner)
                     {
-                        ch.TakeDmg(spashDamage / 2);
+                        ch.TakeDmg(spashDamage / 2, Character.DamageType.FireElectric);
                     }
                     else
                     {
-                        ch.TakeDmg(spashDamage);
+                        ch.TakeDmg(spashDamage, Character.DamageType.FireElectric);
                         ch.burn.IsBurning = true;
                     }
                 }

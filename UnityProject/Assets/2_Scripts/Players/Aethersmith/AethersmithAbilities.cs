@@ -4,6 +4,9 @@ using System.Collections;
 
 public class AethersmithAbilities : ClassAbilities {
 
+    [HideInInspector]
+    public AethersmithAudioManager am;
+
     [SerializeField]private GameObject maelstromPrefab;
     [SerializeField]private GameObject bubblePrefab;
 
@@ -17,7 +20,7 @@ public class AethersmithAbilities : ClassAbilities {
 	// Use this for initialization
 	void Start () {
         base.Initialize();
-
+        am = GetComponentInChildren<AethersmithAudioManager>();
     }
 	
 	// Update is called once per frame
@@ -233,7 +236,7 @@ public class AethersmithAbilities : ClassAbilities {
         }
     }
 
-    public override void TakeDmg(float dmg) {
+    public override void TakeDmg(float dmg, DamageType damageType = DamageType.Standard) {
         health -= dmg - dmg*((energy*0.5f)/energyMax);
     }
 

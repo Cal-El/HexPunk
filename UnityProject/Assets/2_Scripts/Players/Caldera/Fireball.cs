@@ -40,7 +40,7 @@ public class Fireball : MonoBehaviour {
             {
                 if (ch != null)
                 {
-                    ch.TakeDmg(damage);
+                    ch.TakeDmg(damage, Character.DamageType.FireElectric);
                     ch.burn.IsBurning = true;
                 }
                 Splash(transform.position);
@@ -51,7 +51,7 @@ public class Fireball : MonoBehaviour {
             {
                 if (Time.time > safeWindow)
                 {
-                    ch.TakeDmg(damage / 2);
+                    ch.TakeDmg(damage / 2, Character.DamageType.FireElectric);
                     Splash(transform.position);
                     Destroy(gameObject);
                 }
@@ -73,11 +73,11 @@ public class Fireball : MonoBehaviour {
                 {
                     if (target.gameObject == owner)
                     {
-                        ch.TakeDmg(spashDamage / 2);
+                        ch.TakeDmg(spashDamage / 2, Character.DamageType.FireElectric);
                     }
                     else
                     {
-                        ch.TakeDmg(spashDamage);
+                        ch.TakeDmg(spashDamage, Character.DamageType.FireElectric);
                         ch.burn.IsBurning = true;
                     }
                 }

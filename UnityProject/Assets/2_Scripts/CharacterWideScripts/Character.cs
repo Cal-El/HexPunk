@@ -4,6 +4,8 @@ using System.Collections;
 
 public abstract class Character : NetworkBehaviour {
 
+    public enum DamageType { Standard, FireElectric };
+
     [HideInInspector]
     public ConduitStacks stacks;
     [HideInInspector]
@@ -31,7 +33,7 @@ public abstract class Character : NetworkBehaviour {
 
     public abstract void Heal(float healVal);
 
-    public abstract void TakeDmg(float dmg);
+    public abstract void TakeDmg(float dmg, DamageType damageType = DamageType.Standard);
 
     public abstract void Knockback(Vector3 force, float timer);
 

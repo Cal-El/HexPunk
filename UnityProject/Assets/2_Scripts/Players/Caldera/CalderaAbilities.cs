@@ -4,6 +4,9 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class CalderaAbilities : ClassAbilities {
+    
+    [HideInInspector]
+    public CalderaAudioManager am;
 
     public float energyDecay = 6;
     
@@ -26,6 +29,7 @@ public class CalderaAbilities : ClassAbilities {
     void Start()
     {
         base.Initialize();
+        am = GetComponentInChildren<CalderaAudioManager>(); 
     }
 
     // Update is called once per frame
@@ -253,7 +257,7 @@ public class CalderaAbilities : ClassAbilities {
                 if (ch != null)
                 {
                     Vector3 dir = (col.transform.position - transform.position).normalized;
-                    ch.TakeDmg(Eruption.baseDmg * (Vector3.Distance(col.transform.position, transform.position)) / Eruption.range);
+                    ch.TakeDmg(Eruption.baseDmg * (Vector3.Distance(col.transform.position, transform.position)) / Eruption.range, DamageType.FireElectric);
                     ch.Knockback((new Vector3(dir.x, 0, dir.z) * Eruption.knockbackStr), 1);
                 }
             }

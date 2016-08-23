@@ -22,7 +22,7 @@ public class CalderaBurnDamage : MonoBehaviour {
     {
 	    if(Time.time > timer && currentTick < numberOfTicks)
         {
-            c.TakeDmg(tickDamage);
+            c.TakeDmg(tickDamage, Character.DamageType.FireElectric);
             currentTick++;
             if (currentTick >= numberOfTicks) isBurning = false;
             timer += dotTimer;

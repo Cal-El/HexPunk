@@ -12,6 +12,8 @@ public class EliteAIBehaviour : Character {
 
     public SkinnedMeshRenderer mr;
 
+    public AIEliteAudioManager am;
+
     //Health Values
     private float health;
     public float maxHealth = 5;
@@ -53,6 +55,8 @@ public class EliteAIBehaviour : Character {
 
     void Awake () {
         base.Initialise();
+
+        am = GetComponentInChildren<AIEliteAudioManager>();
 
         warningEffect.SetActive(false);
         beamEffect.SetActive(false);
@@ -321,12 +325,24 @@ public class EliteAIBehaviour : Character {
         health = Mathf.Clamp(health + healVal, 0, maxHealth);
     }
 
-    public override void TakeDmg(float dmg) {
+    public override void TakeDmg(float dmg, DamageType damageType = DamageType.Standard) {
         health = Mathf.Clamp(health - dmg, 0, maxHealth);
         if (agentState == STATES.Idle)
             StartBattlecry();
         if (health <= 0) {
             StartDeath();
+            if (damageType == DamageType.FireElectric)
+            {
+                am.PlayDeathBurnElectricAudio();
+            }
+            else
+            {
+                am.PlayDeathAudio();
+            }
+        }
+        else
+        {
+            am.PlayTakeDamageAudio();
         }
     }
 

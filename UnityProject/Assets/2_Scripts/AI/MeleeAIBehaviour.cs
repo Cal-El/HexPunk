@@ -12,6 +12,9 @@ public class MeleeAIBehaviour : Character {
 
     public SkinnedMeshRenderer mr;
 
+    [HideInInspector]
+    public AIMeleeAudioManager am;
+
     //Health Values
     private float health;
     public float maxHealth = 5;
@@ -41,6 +44,8 @@ public class MeleeAIBehaviour : Character {
 
     void Awake () {
         base.Initialise();
+
+        am = GetComponentInChildren<AIMeleeAudioManager>();
 
         navAgent = this.GetComponent<NavMeshAgent>();
         navObst = this.GetComponent<NavMeshObstacle>();
@@ -226,12 +231,26 @@ public class MeleeAIBehaviour : Character {
         health = Mathf.Clamp(health + healVal, 0, maxHealth);
     }
 
-    public override void TakeDmg(float dmg) {
+    public override void TakeDmg(float dmg, DamageType damageType = DamageType.Standard)
+    {
         health = Mathf.Clamp(health - dmg, 0, maxHealth);
         if (agentState == STATES.Idle)
             StartBattlecry();
-        if (health <= 0) {
+        if (health <= 0)
+        {
             StartDeath();
+            if (damageType == DamageType.FireElectric)
+            {
+                am.PlayDeathBurnElectricAudio();
+            }
+            else
+            {
+                am.PlayDeathAudio();
+            }
+        }
+        else
+        {
+            am.PlayTakeDamageAudio();
         }
     }
 

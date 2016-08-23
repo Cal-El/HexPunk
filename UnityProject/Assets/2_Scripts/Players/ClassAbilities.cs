@@ -185,7 +185,7 @@ public class ClassAbilities : Character {
         return health;
     }
 
-    public override void TakeDmg(float dmg) {
+    public override void TakeDmg(float dmg, DamageType damageType = DamageType.Standard) {
         health = Mathf.Clamp(health - dmg, 0, healthMax);
     }
 
