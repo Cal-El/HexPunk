@@ -11,13 +11,15 @@ public class PlayerGUICanvas : MonoBehaviour
     private ClassAbilities playerStats;
 
     public GameObject betrayerCanvas;
-    private bool isBetrayer = false;
+    [HideInInspector]
+    public bool isBetrayer = false;
     private OtherPlayerGUI[] guiList = new OtherPlayerGUI[3];
 
     public GameObject victoryGUI;
     private bool victory = false;
     public GameObject defeatGUI;
     private bool defeat = false;
+    public ScreenFader fader;
 
     [Header ("Don't change the order")]
     public GameObject[] huds = new GameObject[4];

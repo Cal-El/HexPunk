@@ -58,6 +58,9 @@ public class PlayerMovement : NetworkBehaviour {
         }
         
         controller.Move(direction * speed * Time.fixedDeltaTime);
+        if(transform.position.y > 0.1f || transform.position.y < 0.0f) {
+            transform.position = new Vector3(transform.position.x, 0, transform.position.z);
+        }
     }
 
     public override void OnStartLocalPlayer()

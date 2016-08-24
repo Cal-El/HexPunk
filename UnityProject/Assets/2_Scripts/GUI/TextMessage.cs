@@ -4,6 +4,7 @@ using System.Collections;
 
 public class TextMessage : MonoBehaviour {
 
+    public PlayerGUICanvas pGUI;
     private string message;
     private Text messageArea;
     [SerializeField]
@@ -31,9 +32,11 @@ public class TextMessage : MonoBehaviour {
 	}
 
     public void SendText(string _message) {
-        timer = 0;
-        message = _message;
-        messageArea.text = _message;
-        isPlaying = true;
+        if (pGUI.isBetrayer) {
+            timer = 0;
+            message = _message;
+            messageArea.text = _message;
+            isPlaying = true;
+        }
     }
 }
