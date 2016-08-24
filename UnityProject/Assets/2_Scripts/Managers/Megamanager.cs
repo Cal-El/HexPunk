@@ -14,9 +14,9 @@ public class Megamanager : MonoBehaviour {
         public DoorScript door;
 
         public void UnlockConnection() {
-            door.open = true;
-            r1.UnlockRoom();
-            r2.UnlockRoom();
+            if(door != null) door.open = true;
+            if (r1 != null) r1.UnlockRoom();
+            if (r2 != null) r2.UnlockRoom();
         }
     }
     public RoomConnection[] roomTree;
@@ -27,6 +27,7 @@ public class Megamanager : MonoBehaviour {
             Destroy(this);
         } else {
             MM = this;
+            DontDestroyOnLoad(this.gameObject);
         }
         players = FindObjectsOfType<ClassAbilities>();
     }
@@ -65,6 +66,7 @@ public class Megamanager : MonoBehaviour {
 
     public void UnlockConnection(int ID) {
         roomTree[ID].UnlockConnection();
+        Debug.Log("Unlocking Connection "+ID);
     }
 
     void OnDestroy() {

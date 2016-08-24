@@ -20,8 +20,10 @@ public class Room : MonoBehaviour {
     }
 
     void Update() {
-        foreach(Character c in enemys) {
-            if (c == null) enemys.Remove(c);
+        int i = 0;
+        while (i < enemys.Count) {
+            if (enemys[i] == null) enemys.Remove(enemys[i]);
+            else { i++; }
         }
     }
 
