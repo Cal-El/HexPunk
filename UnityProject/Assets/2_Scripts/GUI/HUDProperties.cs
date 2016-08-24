@@ -10,8 +10,7 @@ public class HUDProperties : MonoBehaviour {
     public Image healthBar;
     public Image energyBar;
     public Image xpBar;
-    [HideInInspector]
-    public float[] abilityCds = new float[4];
+    private float[] abilityCds = new float[4];
     public Image[] abilityCooldownIcons = new Image[4];
     public Image[] notEnoughEnergyIcons = new Image[4];
 	
