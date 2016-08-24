@@ -46,9 +46,12 @@ public class AethersmithAbilities : ClassAbilities {
         }
 
         //Hud ability indicators
-        myHud.ShowIconNotEnoughEnergy(SpectralSpear.abilityNum, SpectralSpear.energyCost, energy);
-        myHud.ShowIconNotEnoughEnergy(BubbleShield.abilityNum, BubbleShield.energyCost, energy);
-        myHud.ShowIconNotEnoughEnergy(Maelstrom.abilityNum, Maelstrom.energyCost, energy);
+        if (myHud != null)
+        {
+            myHud.ShowIconNotEnoughEnergy(SpectralSpear.abilityNum, SpectralSpear.energyCost, energy);
+            myHud.ShowIconNotEnoughEnergy(BubbleShield.abilityNum, BubbleShield.energyCost, energy);
+            myHud.ShowIconNotEnoughEnergy(Maelstrom.abilityNum, Maelstrom.energyCost, energy);
+        }
 
         //Death
         if (health <= 0) CmdDeath();
