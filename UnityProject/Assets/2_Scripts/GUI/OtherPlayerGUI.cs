@@ -19,7 +19,6 @@ public class OtherPlayerGUI : MonoBehaviour
     {
         if (player == null) return;
         playerStats = player.GetComponent<ClassAbilities>();
-        visHP = playerStats.health;
 
         if (player.name.Contains("Conduit"))
         {
@@ -44,6 +43,6 @@ public class OtherPlayerGUI : MonoBehaviour
     void Update()
     {
         if (player == null) return;
-        healthBar.fillAmount = visHP / 100;
+        healthBar.fillAmount = playerStats.health / 100;
     }
 }
