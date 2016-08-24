@@ -7,9 +7,8 @@ public class OtherPlayerGUI : MonoBehaviour
     public GameObject player;
 
     public Image icon;
+    public Sprite[] sprites = new Sprite[4];
     public Image healthBar;
-    public Image healthBarStub;
-    public Vector2 healthBarRange; //x value is minimum bar size, y is max
 
     private ClassAbilities playerStats;
 
@@ -18,21 +17,33 @@ public class OtherPlayerGUI : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        healthBar.color = Color.red;
-        healthBarStub.color = Color.red;
-
         if (player == null) return;
         playerStats = player.GetComponent<ClassAbilities>();
         visHP = playerStats.health;
+
+        if (player.name.Contains("Conduit"))
+        {
+            icon.sprite = sprites[0];
+        }
+        if (player.name.Contains("Aethersmith"))
+        {
+            icon.sprite = sprites[1];
+        }
+        if (player.name.Contains("Caldera"))
+        {
+            icon.sprite = sprites[2];
+        }
+        if (player.name.Contains("Shard"))
+        {
+            icon.sprite = sprites[3];
+        }
+
     }
 
     // Update is called once per frame
     void Update()
     {
         if (player == null) return;
-        visHP = Mathf.Lerp(visHP, playerStats.health, Time.deltaTime * 10);
-
-        healthBar.rectTransform.localScale = new Vector3(visHP / 100, healthBar.rectTransform.localScale.y, healthBar.rectTransform.localScale.z);
-        healthBarStub.rectTransform.anchoredPosition = new Vector2(Mathf.Lerp(healthBarRange.x, healthBarRange.y, visHP / 100), healthBarStub.rectTransform.anchoredPosition.y);
+        healthBar.fillAmount = visHP / 100;
     }
 }
