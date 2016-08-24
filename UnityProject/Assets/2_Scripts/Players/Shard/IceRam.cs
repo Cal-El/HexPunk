@@ -13,6 +13,8 @@ public class IceRam : MonoBehaviour {
     public float speed = 8;
     private Vector3 startPos;
 
+    public ParticleSystem p;
+
     void Start()
     {
         startPos = transform.position;
@@ -24,6 +26,10 @@ public class IceRam : MonoBehaviour {
         transform.Translate(Vector3.forward * Time.deltaTime * speed);
         if (Vector3.Distance(startPos, transform.position) > range)
         {
+            p.transform.parent = null;
+            p.enableEmission = false;
+            p.loop = false;
+            Destroy(p.gameObject, 5);
             Destroy(gameObject);
         }
     }
@@ -44,6 +50,10 @@ public class IceRam : MonoBehaviour {
             }
             else
             {
+                p.transform.parent = null;
+                p.enableEmission = false;
+                p.loop = false;
+                Destroy(p.gameObject, 5);
                 Destroy(gameObject);
             }
         }

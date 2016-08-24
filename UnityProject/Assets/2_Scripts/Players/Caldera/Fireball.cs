@@ -13,6 +13,7 @@ public class Fireball : MonoBehaviour {
     public float splashRadius = 1;
     public float safeWindow = 0.2f;
     private Vector3 startPos;
+    public ParticleSystem p;
 
     void Start()
     {
@@ -26,6 +27,10 @@ public class Fireball : MonoBehaviour {
         transform.Translate(Vector3.forward * Time.deltaTime * speed);
         if (Vector3.Distance(startPos, transform.position) > range)
         {
+            p.transform.parent = null;
+            p.enableEmission = false;
+            p.loop = false;
+            Destroy(p.gameObject, 5);
             Destroy(gameObject);
         }
     }
@@ -41,9 +46,14 @@ public class Fireball : MonoBehaviour {
                 if (ch != null)
                 {
                     ch.TakeDmg(damage, Character.DamageType.FireElectric);
-                    ch.burn.IsBurning = true;
+                    if(ch.burn != null)
+                        ch.burn.IsBurning = true;
                 }
                 Splash(transform.position);
+                p.transform.parent = null;
+                p.enableEmission = false;
+                p.loop = false;
+                Destroy(p.gameObject, 5);
                 Destroy(gameObject);
             }
             //Damage owner if they run in to it
@@ -53,6 +63,10 @@ public class Fireball : MonoBehaviour {
                 {
                     ch.TakeDmg(damage / 2, Character.DamageType.FireElectric);
                     Splash(transform.position);
+                    p.transform.parent = null;
+                    p.enableEmission = false;
+                    p.loop = false;
+                    Destroy(p.gameObject, 5);
                     Destroy(gameObject);
                 }
             }
@@ -78,7 +92,8 @@ public class Fireball : MonoBehaviour {
                     else
                     {
                         ch.TakeDmg(spashDamage, Character.DamageType.FireElectric);
-                        ch.burn.IsBurning = true;
+                        if (ch.burn != null)
+                            ch.burn.IsBurning = true;
                     }
                 }
             }

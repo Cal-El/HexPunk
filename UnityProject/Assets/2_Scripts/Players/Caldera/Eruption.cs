@@ -6,17 +6,23 @@ public class Eruption : MonoBehaviour {
     public float range;
     public float duration = 0.3f;
     private float timer;
+    public ParticleSystem p;
 
     void Start()
     {
         timer = Time.time + duration;
         range *= 2;
-        transform.localScale = new Vector3(range, transform.localScale.y, range);
+        //transform.localScale = new Vector3(range, transform.localScale.y, range);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Time.time > timer) Destroy(gameObject);
+        if (Time.time > timer) {
+            p.transform.parent = null;
+            p.enableEmission = false;
+            p.loop = false;
+            Destroy(p.gameObject, 5);
+            Destroy(gameObject); }
     }
 }

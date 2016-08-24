@@ -4,11 +4,11 @@ using System.Collections;
 
 public class AethersmithAbilities : ClassAbilities {
 
-    [HideInInspector]
-    public AethersmithAudioManager am;
-
     [SerializeField]private GameObject maelstromPrefab;
     [SerializeField]private GameObject bubblePrefab;
+    [SerializeField] private GameObject javalinPrefab;
+    [SerializeField]private GameObject javalinVisual;
+    [SerializeField]private ParticleSystem javalinParticle;
 
     public Ability HammerSwing = new Ability( 1, 3, 0.5f, 0, 0, 2f, 200);
     public Ability SpectralSpear = new Ability( 2, 5, 0.25f, 0.1f, 10, 100f, 1000);
@@ -20,7 +20,9 @@ public class AethersmithAbilities : ClassAbilities {
 	// Use this for initialization
 	void Start () {
         base.Initialize();
-        am = GetComponentInChildren<AethersmithAudioManager>();
+        
+        javalinVisual.SetActive(false);
+        javalinParticle.enableEmission = false;
     }
 	
 	// Update is called once per frame
@@ -44,9 +46,9 @@ public class AethersmithAbilities : ClassAbilities {
         }
 
         //Death
-        if (health <= 0 && IsAlive) CmdDeath();
+        if (health <= 0) CmdDeath();
 
-        if (IsReviving && !IsAlive) CmdRevive();
+        if (IsReviving) CmdRevive();
 
         //Abilities
         if (IsAlive) {
@@ -178,13 +180,23 @@ public class AethersmithAbilities : ClassAbilities {
 
     private void Ability2() {
         RaycastHit hit;
-        if(Physics.SphereCast(transform.position, 0.5f, transform.forward, out hit)) {
+        if (Physics.SphereCast(transform.position, 0.5f, transform.forward, out hit)) {
             Character c = hit.transform.GetComponent<Character>();
-            if(c != null) {
+            if (c != null) {
                 c.Knockback(transform.forward * SpectralSpear.knockbackStr, 1);
                 c.TakeDmg(SpectralSpear.baseDmg);
             }
+            GameObject g = Instantiate(javalinPrefab, javalinParticle.transform.position, Quaternion.identity) as GameObject;
+            g.transform.LookAt(new Vector3(hit.point.x, 1, hit.point.z));
+            g.transform.localScale = new Vector3(1, 1, hit.distance);
+
+        } else {
+            GameObject g = Instantiate(javalinPrefab, javalinParticle.transform.position, Quaternion.identity) as GameObject;
+            g.transform.LookAt(javalinVisual.transform.position + transform.forward);
+            g.transform.localScale = new Vector3(1, 1, SpectralSpear.range);
         }
+        javalinVisual.SetActive(false);
+        javalinParticle.enableEmission = false;
         energy -= 10;
         //Shoot a spear that has almost no travel time
         //Large Single-target knockback
@@ -233,11 +245,15 @@ public class AethersmithAbilities : ClassAbilities {
     protected override void UseAbility(Ability a) {
         if (currCooldown <= 0 && energy >= a.energyCost) {
             base.UseAbility(a);
+            if (a == SpectralSpear) {
+                javalinVisual.SetActive(true);
+                javalinParticle.enableEmission = true;
+            }
         }
     }
 
     public override void TakeDmg(float dmg, DamageType damageType = DamageType.Standard) {
-        health -= dmg - dmg*((energy*0.5f)/energyMax);
+        health = Mathf.Clamp(health - (dmg - dmg*((energy*0.5f)/energyMax)),0,healthMax);
         if (health > 0) pam.PlayTakeDamageAudio();
     }
 

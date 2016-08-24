@@ -13,6 +13,7 @@ public class CalderaAbilities : ClassAbilities {
     public GameObject fireballPrefab;
     public GameObject lavaballPrefab;
     public GameObject eruptionPrefab;
+    public GameObject fireRunning;
     public Transform projectileCastPoint;
     
     public EnergyAddedAbility Fireball = new EnergyAddedAbility(1, 1, 0.25f, 0.01f, 0, 100, 0, 4);
@@ -229,6 +230,8 @@ public class CalderaAbilities : ClassAbilities {
     {
         afterburnerTimer = Time.time + afterburnerDuration;
         pm.speed = pm.baseSpeed * 1.5f;
+        GameObject g = Instantiate(fireRunning, transform.position, transform.rotation) as GameObject;
+        g.transform.parent = this.transform;
         energy += Afterburner.energyAdded;
     }
 

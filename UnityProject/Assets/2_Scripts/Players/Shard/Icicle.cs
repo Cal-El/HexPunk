@@ -10,6 +10,7 @@ public class Icicle : MonoBehaviour {
     public float range;
     public float speed = 10;
     private Vector3 startPos;
+    public ParticleSystem p;
 
     void Start()
     {
@@ -22,6 +23,10 @@ public class Icicle : MonoBehaviour {
         transform.Translate(Vector3.forward * Time.deltaTime * speed);
         if (Vector3.Distance(startPos, transform.position) > range)
         {
+            p.transform.parent = null;
+            p.enableEmission = false;
+            p.loop = false;
+            Destroy(p.gameObject, 5);
             Destroy(gameObject);
         }
     }
@@ -37,6 +42,10 @@ public class Icicle : MonoBehaviour {
                 {
                     ch.TakeDmg(damage);
                 }
+                p.transform.parent = null;
+                p.enableEmission = false;
+                p.loop = false;
+                Destroy(p.gameObject, 5);
                 Destroy(gameObject);
             }
         }
