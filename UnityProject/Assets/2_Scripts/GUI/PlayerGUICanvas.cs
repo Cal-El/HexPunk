@@ -40,15 +40,7 @@ public class PlayerGUICanvas : MonoBehaviour
         SetHUDs(name, "Aethersmith");
         SetHUDs(name, "Caldera");
         SetHUDs(name, "Shard");
-
-        //if (isBetrayer)
-        //{
-        //    icon.color = Color.red;
-        //}
-        //else
-        //{
-        //    icon.color = Color.blue;
-        //}
+        
         visHP = playerStats.health;
         visEP = playerStats.energy;
 
@@ -89,10 +81,10 @@ public class PlayerGUICanvas : MonoBehaviour
         visEP = Mathf.Lerp(visEP, playerStats.energy, Time.deltaTime * 10);
         visXP = Mathf.Lerp(visXP, playerStats.GetLevel(), Time.deltaTime * 10);
 
-        myHud.hud.healthBar.fillAmount = visHP / 100;
-        myHud.hud.energyBar.fillAmount = visEP / playerStats.energyMax;
+        myHud.healthBar.fillAmount = visHP / 100;
+        myHud.energyBar.fillAmount = visEP / playerStats.energyMax;
 
-        var xpBar = myHud.hud.xpBar;
+        var xpBar = myHud.xpBar;
 
         if (visXP < 1) {
             xpBar.fillAmount = 0.175f * visXP;
@@ -119,13 +111,9 @@ public class PlayerGUICanvas : MonoBehaviour
 
         set
         {
+            SetBetrayerGUI();
             betrayerCanvas.SetActive(value);
-            //if (value)
-            //{
-            //    icon.color = Color.red;
-            //    SetBetrayerGUI();
-            //}
-            //else icon.color = Color.blue;
+            myHud.icon.sprite = myHud.betrayerIcon;
             isBetrayer = value;
         }
     }

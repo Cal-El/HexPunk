@@ -67,6 +67,13 @@ public class CalderaAbilities : ClassAbilities {
             energy = Mathf.Clamp(energy, 0, energyMax);
         }
 
+
+        //Hud ability indicators
+        if (myHud != null)
+        {
+            myHud.ShowIconNotEnoughEnergy(Eruption.abilityNum, Eruption.energyCost, energy);
+        }
+
         //Death
         if (health <= 0 && IsAlive) CmdDeath();
 

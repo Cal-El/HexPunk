@@ -92,6 +92,13 @@ public class ShardAbilities : ClassAbilities {
             energy = Mathf.Clamp(energy, 0, energyMax);
         }
 
+        //Hud ability indicators
+        if (myHud != null)
+        {
+            myHud.ShowIconNotEnoughEnergy(MistCloud.abilityNum, 0.005f, energy);
+            myHud.ShowIconNotEnoughEnergy(IceRam.abilityNum, IceRam.energyCost, energy);
+        }
+
         //Death
         if (health <= 0 && IsAlive) CmdDeath();
 
