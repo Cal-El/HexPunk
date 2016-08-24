@@ -18,6 +18,7 @@ public class UnlockOnRoomClear : MonoBehaviour {
 	void Update () {
         if(myRoom.roomUnlocked && myRoom.Enemies().Count <= 0) {
             Megamanager.MM.UnlockConnection(connectionID);
+            this.enabled = false;
         }
     }
 }
