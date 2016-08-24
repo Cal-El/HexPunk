@@ -45,6 +45,11 @@ public class AethersmithAbilities : ClassAbilities {
             castingTimer = Mathf.Max(castingTimer - Time.deltaTime, 0);
         }
 
+        //Hud ability indicators
+        myHud.ShowIconNotEnoughEnergy(SpectralSpear.abilityNum, SpectralSpear.energyCost, energy);
+        myHud.ShowIconNotEnoughEnergy(BubbleShield.abilityNum, BubbleShield.energyCost, energy);
+        myHud.ShowIconNotEnoughEnergy(Maelstrom.abilityNum, Maelstrom.energyCost, energy);
+
         //Death
         if (health <= 0) CmdDeath();
 

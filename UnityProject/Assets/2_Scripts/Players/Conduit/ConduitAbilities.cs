@@ -44,6 +44,11 @@ public class ConduitAbilities : ClassAbilities {
         {
             energy = Mathf.Clamp(energy + Time.deltaTime, 0, energyMax);
         }
+        
+        //Hud ability indicators
+        myHud.ShowIconNotEnoughEnergy(StaticStomp.abilityNum, StaticStomp.energyCost, energy);
+        myHud.ShowIconNotEnoughEnergy(LightningDash.abilityNum, LightningDash.energyCost, energy);
+        //Need to add a way to do the same for discharge
 
         //Cooldown
         if (currCooldown > 0) {

@@ -28,11 +28,29 @@ public class HUDProperties : MonoBehaviour {
 
     public void ShowIconCooldown(int abilityNumber, float abilityCooldown)
     {
-        abilityNumber -= 1;
-        abilityCds[abilityNumber] = abilityCooldown;
-        if (abilityCds[abilityNumber] != 0)
+        if (abilityCooldown != 0)
         {
+            abilityNumber -= 1;
+            abilityCds[abilityNumber] = abilityCooldown;
+
             abilityCooldownIcons[abilityNumber].fillAmount = 1;
+        }
+    }
+
+    public void ShowIconNotEnoughEnergy(int abilityNumber, float abilityEnergyCost, float currentEnergy)
+    {
+        if (abilityEnergyCost != 0)
+        {
+            abilityNumber -= 1;
+
+            if (currentEnergy >= abilityEnergyCost && notEnoughEnergyIcons[abilityNumber].enabled)
+            {
+                notEnoughEnergyIcons[abilityNumber].enabled = false;
+            }
+            else if (currentEnergy < abilityEnergyCost && !notEnoughEnergyIcons[abilityNumber].enabled)
+            {
+                notEnoughEnergyIcons[abilityNumber].enabled = true;
+            }
         }
     }
 }
