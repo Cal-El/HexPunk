@@ -32,7 +32,7 @@ public class TextMessage : MonoBehaviour {
 	}
 
     public void SendText(string _message) {
-        if (pGUI.isBetrayer) {
+        if (pGUI.IsBetrayer) {
             timer = 0;
             message = _message;
             messageArea.text = _message;

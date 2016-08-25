@@ -11,8 +11,7 @@ public class PlayerGUICanvas : MonoBehaviour
     private ClassAbilities playerStats;
 
     public GameObject betrayerCanvas;
-    [HideInInspector]
-    public bool isBetrayer = false;
+    private bool isBetrayer = false;
     private OtherPlayerGUI[] guiList = new OtherPlayerGUI[3];
 
     public GameObject victoryGUI;

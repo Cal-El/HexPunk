@@ -47,4 +47,11 @@ public class NetworkSyncPosition : NetworkBehaviour {
             lastPos = myTransform.position;
         }
     }
+
+    [ClientRpc]
+    public void RpcServerSetPosition(Vector3 pos)
+    {
+        transform.position = pos;
+        syncPos = pos;
+    }
 }
