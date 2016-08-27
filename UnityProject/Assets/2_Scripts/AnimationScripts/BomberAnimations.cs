@@ -35,7 +35,7 @@ public class BomberAnimations : NetworkBehaviour
                 case BomberAIBehaviour.STATES.Chasing:
                     ani.Play(Chasing);
                     break;
-                case BomberAIBehaviour.STATES.Attacking:
+                case BomberAIBehaviour.STATES.MeleeAttacking:
                     ani.Play(Attacking);
                     break;
                 case BomberAIBehaviour.STATES.Dead:

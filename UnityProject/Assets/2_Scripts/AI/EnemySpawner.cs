@@ -4,6 +4,12 @@ using System.Collections.Generic;
 
 public class EnemySpawner : DestructibleObject {
 
+    public enum STATES { Idle, Activated, Dying};
+    public STATES agentState = STATES.Idle;
+
+    private Animation anim;
+    public float perceptionRange = 10;
+
     [System.Serializable]
     public struct Spawnable {
         [Tooltip("Character object to be spawned.")]
@@ -28,6 +34,7 @@ public class EnemySpawner : DestructibleObject {
 	// Use this for initialization
 	void Start () {
         Initialize();
+        anim = GetComponent<Animation>();
 
         if (spawnList == null || spawnList.Length <= 0) {
             Debug.LogError("SpawnList is Empty");
@@ -39,14 +46,45 @@ public class EnemySpawner : DestructibleObject {
 	
 	// Update is called once per frame
 	void Update () {
+        switch (agentState)
+        {
+            case STATES.Idle:
+                IdleBehaviour();
+                break;
+            case STATES.Activated:
+                ActivatedBehaviour();
+                break;
+            case STATES.Dying:
+                DeathBehaviour();
+                break;
+        }
+	}
+
+    private void IdleBehaviour()
+    {
+        foreach(ClassAbilities p in Megamanager.MM.players)
+        {
+            if(Vector3.Distance(p.transform.position, transform.position) < perceptionRange)
+            {
+                Activate();
+                break;
+            }
+        }
+    }
+
+    private void ActivatedBehaviour()
+    {
         //Activate Spawn cycle, if able
         timer += Time.deltaTime;
-        if(timer >= cycleTime) {
+        if (timer >= cycleTime)
+        {
             timer = 0;
 
             //Clean up list
-            for (int i = 0; i < spawnedList.Count; i++) {
-                if (spawnedList[i].spawn == null) {
+            for (int i = 0; i < spawnedList.Count; i++)
+            {
+                if (spawnedList[i].spawn == null)
+                {
                     totalSeverity -= spawnedList[i].severity;
                     spawnedList.Remove(spawnedList[i]);
                 }
@@ -55,11 +93,14 @@ public class EnemySpawner : DestructibleObject {
             //Determine what is being spawned
             float totalSevThisCycle = 0;
             List<Spawnable> newSpawns = new List<Spawnable>();
-            for (int i = 0; i < spawnList.Length; i++) {
-                if (totalSeverity >= maxSeverity) {
+            for (int i = 0; i < spawnList.Length; i++)
+            {
+                if (totalSeverity >= maxSeverity)
+                {
                     break;
                 }
-                while (spawnList[i].severity + totalSevThisCycle <= maxSeverityPerCycle && spawnList[i].severity + totalSeverity <= maxSeverity) {
+                while (spawnList[i].severity + totalSevThisCycle <= maxSeverityPerCycle && spawnList[i].severity + totalSeverity <= maxSeverity)
+                {
                     newSpawns.Add(spawnList[i]);
                     totalSeverity += spawnList[i].severity;
                     totalSevThisCycle += spawnList[i].severity;
@@ -67,7 +108,8 @@ public class EnemySpawner : DestructibleObject {
             }
 
             //Spawn the new guys in a circle around the spawner
-            for(int i = 0; i < newSpawns.Count; i++) {
+            for (int i = 0; i < newSpawns.Count; i++)
+            {
                 Spawnable newGuy;
                 Vector3 offsetPostition = new Vector3(
                     transform.position.x + Mathf.Cos((i + 0.0f) / newSpawns.Count * Mathf.PI * 2) * 2,
@@ -82,5 +124,16 @@ public class EnemySpawner : DestructibleObject {
             }
 
         }
-	}
+    }
+
+    private void DeathBehaviour()
+    {
+        Destroy(this.gameObject);
+    }
+
+    public void Activate()
+    {
+        anim.Play();
+        agentState = STATES.Activated;
+    }
 }

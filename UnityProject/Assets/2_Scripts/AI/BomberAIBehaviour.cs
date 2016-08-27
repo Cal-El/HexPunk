@@ -1,22 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class BomberAIBehaviour : Character {
-
-    private const float TIME_FOR_NAVMESH_UPDATE = 0.5f;
-
-    //State machine variables
-    public enum STATES { Idle, Battlecry, Chasing, Attacking, Knockback, Dead}
-    [HideInInspector]public STATES agentState = STATES.Idle;
-    [HideInInspector]public STATES animationState = STATES.Idle;
-
-    public SkinnedMeshRenderer mr;
+public class BomberAIBehaviour : AIBehaviour {
 
     public AIBomberAudioManager am;
-
-    //Health Values
-    private float health;
-    public float maxHealth = 5;
 
     //Attack Statistics
     [Header("Combat Statistics")]
@@ -25,14 +12,6 @@ public class BomberAIBehaviour : Character {
     public float cooldown = 1;                  //The time it between attacks
     private float attackTimer = 0;
     public float range = 2;                     //Range/Reach of the attack
-
-    //Battlecry Variable
-    [Header("Battlecry Attributes")]
-    public char[] battleTriggers;           //The char triggers that can override this AI to begin attacking
-    public float battlecryTime = 1.5f;      //Time it takes to complete a battlecry
-    private float battlecryTimer = 0.0f;    //Timer for use while battlecry is triggering
-    public float battlecryRange = 2.0f;     //Range in which the battlecry triggers others around it
-    public float playerPerceptionRange = 5.0f;
 
     //Pathfinding Variables
     private ClassAbilities target;
@@ -91,7 +70,7 @@ public class BomberAIBehaviour : Character {
                             animationState = STATES.Chasing;
                             ChasingBehaviour();
                             break;
-                        case STATES.Attacking:
+                        case STATES.MeleeAttacking:
                             mr.material.SetColor("_EmissionColor", Color.white);
                             AttackingBehaviour();
                             break;
@@ -128,8 +107,8 @@ public class BomberAIBehaviour : Character {
         if(battlecryTimer <= 0) {
             RaycastHit[] hits = Physics.SphereCastAll(transform.position, battlecryRange, transform.forward, 0);
             foreach(RaycastHit hit in hits) {
-                if (hit.transform.GetComponent<MeleeAIBehaviour>() != null) {
-                    hit.transform.GetComponent<MeleeAIBehaviour>().HearBattlecry();
+                if (hit.transform.GetComponent<AIBehaviour>() != null) {
+                    hit.transform.GetComponent<AIBehaviour>().HearBattlecry();
                 }
             }
             FindTarget();
@@ -149,13 +128,13 @@ public class BomberAIBehaviour : Character {
         if (Vector3.Distance(this.transform.position, target.transform.position) < range - 0.5f && knockbackTimer <= 0) {
             navAgent.enabled = false;
             navObst.enabled = true;
-            agentState = STATES.Attacking;
+            agentState = STATES.MeleeAttacking;
         }
     }
 
     private void AttackingBehaviour() {
         if(attackTimer > cooldown) {            //Attacking
-            animationState = STATES.Attacking;
+            animationState = STATES.MeleeAttacking;
             attackTimer -= Time.deltaTime;
             if (attackTimer <= cooldown) {      //Theshold crossed. Time to attack
                 RaycastHit hit;
@@ -204,11 +183,6 @@ public class BomberAIBehaviour : Character {
         }
     }
 
-    private void StartBattlecry() {
-        battlecryTimer = battlecryTime;
-        agentState = STATES.Battlecry;
-    }
-
     private void StartChase() {
         inactiveTimer = TIME_FOR_NAVMESH_UPDATE;
         navObst.enabled = false;
@@ -225,30 +199,6 @@ public class BomberAIBehaviour : Character {
         warningParticleEffect.transform.localScale = new Vector3(blastRadius, blastRadius, warningParticleEffect.transform.localScale.z);
         base.Destroyed();
         agentState = STATES.Dead;
-    }
-
-    public void ReceiveMessage(char a) {
-        if (agentState == STATES.Idle) {
-            foreach (char c in battleTriggers) {
-                if (c == a) {
-                    StartBattlecry();
-                }
-            }
-        }
-    }
-
-    public void HearBattlecry() {
-        if (agentState == STATES.Idle) {
-            StartBattlecry();
-        }
-    }
-
-    public override float GetHealth() {
-        return health;
-    }
-
-    public override void Heal(float healVal) {
-        health = Mathf.Clamp(health + healVal, 0, maxHealth);
     }
 
     public override void TakeDmg(float dmg, DamageType damageType = DamageType.Standard)
