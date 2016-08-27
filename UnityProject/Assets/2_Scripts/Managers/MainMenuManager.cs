@@ -5,8 +5,11 @@ using System.Collections;
 
 public class MainMenuManager : MonoBehaviour {
 
+    public static MainMenuManager singleton;
+
     public enum MENUSTATES {All, MainMenu, LobbyScreen, SettingsScreen};
-    public MENUSTATES currState;
+    [HideInInspector]
+    public MENUSTATES currState = MENUSTATES.MainMenu;
     public GameObject lobbyManager;
     private string startScene;
 
@@ -29,8 +32,14 @@ public class MainMenuManager : MonoBehaviour {
 	void Start () {
         DontDestroyOnLoad(gameObject);
         startScene = SceneManager.GetActiveScene().name;
-        currState = MENUSTATES.MainMenu;
-        if (FindObjectsOfType<MainMenuManager>().Length > 1) Destroy(gameObject);
+        if (singleton == null)
+        {
+            singleton = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
 	}
 	
 	// Update is called once per frame

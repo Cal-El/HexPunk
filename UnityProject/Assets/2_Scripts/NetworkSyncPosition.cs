@@ -15,6 +15,16 @@ public class NetworkSyncPosition : NetworkBehaviour {
     private Vector3 lastPos;
     private float threshold = 0.1f;
 
+    void Start()
+    {
+        if (!isLocalPlayer) return;
+        myTransform = transform;
+        var pos = FindSpawnPoint();
+        myTransform.position = pos;
+        CmdProvidePositionToServer(pos);
+        lastPos = pos;
+    }
+
     void Update()
     {
         LerpPosition();
@@ -48,10 +58,27 @@ public class NetworkSyncPosition : NetworkBehaviour {
         }
     }
 
-    [ClientRpc]
-    public void RpcServerSetPosition(Vector3 pos)
+    private Vector3 FindSpawnPoint()
     {
-        transform.position = pos;
-        syncPos = pos;
+        Vector3 spawnPoint = Vector3.zero;
+
+        if (name.Contains("Conduit"))
+        {
+            spawnPoint = GameObject.Find("ConduitSpawn").transform.position;
+        }
+        else if (name.Contains("Aethersmith"))
+        {
+            spawnPoint = GameObject.Find("AethersmithSpawn").transform.position;
+        }
+        else if (name.Contains("Caldera"))
+        {
+            spawnPoint = GameObject.Find("CalderaSpawn").transform.position;
+        }
+        else if (name.Contains("Shard"))
+        {
+            spawnPoint = GameObject.Find("ShardSpawn").transform.position;
+        }
+
+        return spawnPoint;
     }
 }

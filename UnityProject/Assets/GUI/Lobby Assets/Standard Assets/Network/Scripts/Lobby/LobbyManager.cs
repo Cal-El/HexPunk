@@ -336,29 +336,24 @@ namespace UnityStandardAssets.Network
                 if (lobbyPlayer.connectionId == conn.connectionId)
                 {
                     GameObject prefab = null;
-                    Transform spawnPoint;
+                    Vector3 spawnPoint = Vector3.zero;
                     switch (lobbyPlayer.selectedClass)
                     {
                         case 0:
-                            spawnPoint = GameObject.Find("ConduitSpawn").transform;
                             prefab = Instantiate(lobbyPlayer.conduitPrefab) as GameObject;
                             break;
                         case 1:
-                            spawnPoint = GameObject.Find("AethersmithSpawn").transform;
                             prefab = Instantiate(lobbyPlayer.aethersmithPrefab) as GameObject;
                             break;
                         case 2:
-                            spawnPoint = GameObject.Find("CalderaSpawn").transform;
                             prefab = Instantiate(lobbyPlayer.calderaPrefab) as GameObject;
                             break;
                         case 3:
-                            spawnPoint = GameObject.Find("ShardSpawn").transform;
                             prefab = Instantiate(lobbyPlayer.shardPrefab) as GameObject;
                             break;
                     }
                     if (prefab != null)
                     {
-                        Debug.Log("Method Id: " + conn.connectionId + ", Lobby player ID: " + lobbyPlayer.playerControllerId + ", spawned: " + prefab.name);
                         playerObjects.Add(conn.connectionId, prefab);
                         return prefab;
                     }
@@ -370,6 +365,10 @@ namespace UnityStandardAssets.Network
 
         public override void ServerChangeScene(string sceneName)
         {
+            foreach (var obj in playerObjects.Values)
+            {
+                Destroy(obj.GetComponent<NetworkSyncPosition>());
+            }
             base.ServerChangeScene(sceneName);
         }
 
@@ -377,33 +376,27 @@ namespace UnityStandardAssets.Network
         {
             foreach (var obj in playerObjects.Values)
             {
-                Vector3 spawnPoint = Vector3.zero;
-
-                if (obj.name.Contains("Conduit"))
-                {
-                    spawnPoint = GameObject.Find("ConduitSpawn").transform.position;
-                }
-                else if (obj.name.Contains("Aethersmith"))
-                {
-                    spawnPoint = GameObject.Find("AethersmithSpawn").transform.position;
-                }
-                else if (obj.name.Contains("Caldera"))
-                {
-                    spawnPoint = GameObject.Find("CalderaSpawn").transform.position;
-                }
-                else if (obj.name.Contains("Shard"))
-                {
-                    spawnPoint = GameObject.Find("ShardSpawn").transform.position;
-                }
-
-                if (spawnPoint != null)
-                {
-                    obj.transform.position = spawnPoint;
-                    obj.GetComponent<NetworkSyncPosition>().RpcServerSetPosition(spawnPoint);
-                }
+                if(obj.GetComponent<NetworkSyncPosition>() == null)
+                    obj.AddComponent<NetworkSyncPosition>();
             }
 
             base.OnServerSceneChanged(sceneName);
+        }
+
+        public override void OnClientSceneChanged(NetworkConnection conn)
+        {
+            foreach (var ca in FindObjectsOfType<ClassAbilities>())
+            {
+                var obj = ca.gameObject;
+                var nsp = obj.GetComponent<NetworkSyncPosition>();
+                if (nsp == null)
+                {
+                    Destroy(nsp);
+                    obj.AddComponent<NetworkSyncPosition>();
+                }
+            }
+
+            base.OnClientSceneChanged(conn);
         }
 
         // --- Countdown management
