@@ -13,10 +13,21 @@ public class Room : MonoBehaviour {
     public List<Spawner> spawners;
     [TextArea(2,10)]
     public string message;
+    public AudioClip bossTalk;
+    private AudioSource ads;
     private List<Character> enemys;
 
     void Start() {
         enemys = new List<Character>();
+        if(bossTalk != null)
+        {
+            ads = gameObject.AddComponent<AudioSource>();
+            ads.clip = bossTalk;
+            ads.loop = false;
+            ads.spatialBlend = 0;
+            ads.volume = 1;
+            ads.playOnAwake = false;
+        }
     }
 
     void Update() {
@@ -39,6 +50,10 @@ public class Room : MonoBehaviour {
                 if(c != null) {
                     enemys.Add(c);
                 }
+            }
+            if(ads != null)
+            {
+                ads.Play();
             }
         }
     }
