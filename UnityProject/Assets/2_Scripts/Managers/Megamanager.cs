@@ -7,6 +7,7 @@ public class Megamanager : MonoBehaviour {
     public static Megamanager MM;
     public ClassAbilities[] players;
     public List<Character> characters;
+    public bool SceneHasChanged = false;
     [System.Serializable]
     public class RoomConnection {
         public Room r1;
@@ -34,6 +35,7 @@ public class Megamanager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+
         players = FindObjectsOfType<ClassAbilities>();
 
         if (characters.Count == 0 && AllRoomsUnlocked()) Victory();
@@ -70,6 +72,7 @@ public class Megamanager : MonoBehaviour {
     }
 
     void OnDestroy() {
+        MM.SceneHasChanged = true;
         MM.roomTree = this.roomTree;
     }
 

@@ -35,7 +35,7 @@ public class MeleeEnemyAnimations : NetworkBehaviour
                 case MeleeAIBehaviour.STATES.Chasing:
                     ani.Play(Chasing);
                     break;
-                case MeleeAIBehaviour.STATES.Attacking:
+                case MeleeAIBehaviour.STATES.MeleeAttacking:
                     ani.Play(Attacking);
                     break;
                 case MeleeAIBehaviour.STATES.Dead:

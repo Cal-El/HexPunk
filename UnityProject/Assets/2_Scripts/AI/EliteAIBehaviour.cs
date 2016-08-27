@@ -1,22 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class EliteAIBehaviour : Character {
-
-    private const float TIME_FOR_NAVMESH_UPDATE = 0.5f;
-
-    //State machine variables
-    public enum STATES { Idle, Battlecry, Chasing, MeleeAttacking, RangedAttacking, Dead}
-    public STATES agentState = STATES.Idle;
-    public STATES animationState = STATES.Idle;
-
-    public SkinnedMeshRenderer mr;
+public class EliteAIBehaviour : AIBehaviour {
 
     public AIEliteAudioManager am;
-
-    //Health Values
-    private float health;
-    public float maxHealth = 5;
 
     //Attack Statistics
     
@@ -38,14 +25,6 @@ public class EliteAIBehaviour : Character {
     private GameObject warningEffect;
     [SerializeField]
     private GameObject beamEffect;
-
-    //Battlecry Variable
-    [Header("Battlecry Attributes")]
-    public char[] battleTriggers;           //The char triggers that can override this AI to begin attacking
-    public float battlecryTime = 1.5f;      //Time it takes to complete a battlecry
-    private float battlecryTimer = 0.0f;    //Timer for use while battlecry is triggering
-    public float battlecryRange = 2.0f;     //Range in which the battlecry triggers others around it
-    public float playerPerceptionRange = 5.0f;
 
     //Pathfinding Variables
     private ClassAbilities target;
@@ -137,8 +116,8 @@ public class EliteAIBehaviour : Character {
         if(battlecryTimer <= 0) {
             RaycastHit[] hits = Physics.SphereCastAll(transform.position, battlecryRange, transform.forward, 0);
             foreach(RaycastHit hit in hits) {
-                if (hit.transform.GetComponent<MeleeAIBehaviour>() != null) {
-                    hit.transform.GetComponent<MeleeAIBehaviour>().HearBattlecry();
+                if (hit.transform.GetComponent<AIBehaviour>() != null) {
+                    hit.transform.GetComponent<AIBehaviour>().HearBattlecry();
                 }
             }
             FindTarget();
@@ -277,11 +256,6 @@ public class EliteAIBehaviour : Character {
         
     }
 
-    private void StartBattlecry() {
-        battlecryTimer = battlecryTime;
-        agentState = STATES.Battlecry;
-    }
-
     private void StartChase() {
         inactiveTimer = TIME_FOR_NAVMESH_UPDATE;
         navObst.enabled = false;
@@ -299,22 +273,6 @@ public class EliteAIBehaviour : Character {
         base.Destroyed();
         agentState = STATES.Dead;
         Destroy(gameObject, 5);
-    }
-
-    public void ReceiveMessage(char a) {
-        if (agentState == STATES.Idle) {
-            foreach (char c in battleTriggers) {
-                if (c == a) {
-                    StartBattlecry();
-                }
-            }
-        }
-    }
-
-    public void HearBattlecry() {
-        if (agentState == STATES.Idle) {
-            StartBattlecry();
-        }
     }
 
     public override float GetHealth() {
