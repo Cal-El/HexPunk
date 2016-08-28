@@ -93,9 +93,7 @@ public class AIBehaviour : Character {
         ClassAbilities[] pms = GameObject.FindObjectsOfType<ClassAbilities>();
         ClassAbilities closest = null;
         foreach (ClassAbilities pm in pms) {
-            if (pm.IsInvulnerable()) {
-                
-            } else {
+            if (!pm.IsInvulnerable() && pm.IsAlive) {
                 if (closest == null) {
                     closest = pm;
                 }
@@ -110,11 +108,13 @@ public class AIBehaviour : Character {
     public void Retagetting() {
         //Debug.Log((target.GetType() == typeof(ShardAbilities)) + " " + target.GetComponent<ShardAbilities>().isMist);
         if (target != null) {
-            Debug.Log(target.name + " is invulnerable: " + target.IsInvulnerable());
             float threshold = Vector3.Distance(this.transform.position, target.transform.position) * 0.8f;
             if (target.currentState == ClassAbilities.ANIMATIONSTATES.Dead || target.IsInvulnerable()) threshold = 1000;
             foreach (ClassAbilities p in Megamanager.MM.players) {
-                if (!target.IsInvulnerable() && Vector3.Distance(this.transform.position, p.transform.position) <= threshold && p.currentState != ClassAbilities.ANIMATIONSTATES.Dead) {
+                //Debug.Log(p.name + " is " + Vector3.Distance(this.transform.position, p.transform.position) + " and is Invulnerable (" + p.IsInvulnerable() + "). Is a valid target: " + (!target.IsInvulnerable() && Vector3.Distance(this.transform.position, p.transform.position) <= threshold && p.currentState != ClassAbilities.ANIMATIONSTATES.Dead));
+                if (!p.IsInvulnerable() && 
+                    Vector3.Distance(this.transform.position, p.transform.position) <= threshold && 
+                    p.currentState != ClassAbilities.ANIMATIONSTATES.Dead) {
                     target = p;
                 }
             }
