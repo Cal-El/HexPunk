@@ -242,7 +242,7 @@ public class ConduitAbilities : ClassAbilities {
             if (!alreadyHit.Contains(h.transform.gameObject))
             {
                 var ch = h.transform.GetComponent<Character>();
-                if (ch.stacks != null && h.transform != transform && !ch.IsInvulnerable())
+                if (ch != null && ch.stacks != null && h.transform != transform && !ch.IsInvulnerable())
                     h.transform.GetComponent<ConduitStacks>().AddStack();
                 alreadyHit.Add(h.transform.gameObject);
             }
