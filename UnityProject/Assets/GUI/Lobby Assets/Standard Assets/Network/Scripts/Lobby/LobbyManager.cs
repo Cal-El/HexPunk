@@ -336,34 +336,31 @@ namespace UnityStandardAssets.Network
                 if (lobbyPlayer.connectionId == conn.connectionId)
                 {
                     GameObject prefab = null;
-                    Transform spawnPoint;
+                    Vector3 spawnPoint = Vector3.zero;
                     switch (lobbyPlayer.selectedClass)
                     {
                         case 0:
-                            spawnPoint = GameObject.Find("ConduitSpawn").transform;
                             prefab = Instantiate(lobbyPlayer.conduitPrefab) as GameObject;
                             break;
                         case 1:
-                            spawnPoint = GameObject.Find("AethersmithSpawn").transform;
                             prefab = Instantiate(lobbyPlayer.aethersmithPrefab) as GameObject;
                             break;
                         case 2:
-                            spawnPoint = GameObject.Find("CalderaSpawn").transform;
                             prefab = Instantiate(lobbyPlayer.calderaPrefab) as GameObject;
                             break;
                         case 3:
-                            spawnPoint = GameObject.Find("ShardSpawn").transform;
                             prefab = Instantiate(lobbyPlayer.shardPrefab) as GameObject;
                             break;
                     }
                     if (prefab != null)
                     {
-                        Debug.Log("Method Id: " + conn.connectionId + ", Lobby player ID: " + lobbyPlayer.playerControllerId + ", spawned: " + prefab.name);
+                        spawnPoint = FindSpawnPoint(prefab);
+                        prefab.transform.position = spawnPoint;
                         playerObjects.Add(conn.connectionId, prefab);
                         return prefab;
                     }
                 }
-            }            
+            }
 
             return base.OnLobbyServerCreateGamePlayer(conn, playerControllerId);
         }
@@ -374,36 +371,56 @@ namespace UnityStandardAssets.Network
         }
 
         public override void OnServerSceneChanged(string sceneName)
-        {
-            foreach (var obj in playerObjects.Values)
+        {            
+            base.OnServerSceneChanged(sceneName);
+            GameObject obj = playerObjects[client.connection.connectionId];
+
+            Vector3 spawnPoint = FindSpawnPoint(obj);
+            if (spawnPoint != null)
             {
-                Vector3 spawnPoint = Vector3.zero;
+                obj.transform.position = spawnPoint;
+                obj.GetComponent<NetworkSyncPosition>().RpcServerSetPosition(spawnPoint);
+                Debug.Log(spawnPoint);
+                Debug.Log(obj);
+            }            
+        }
 
-                if (obj.name.Contains("Conduit"))
+        public override void OnClientSceneChanged(NetworkConnection conn)
+        {
+            base.OnClientSceneChanged(conn);
+            foreach(var ca in FindObjectsOfType<ClassAbilities>())
+            {
+                var obj = ca.gameObject;
+                if (obj.GetComponent<NetworkIdentity>().localPlayerAuthority)
                 {
-                    spawnPoint = GameObject.Find("ConduitSpawn").transform.position;
-                }
-                else if (obj.name.Contains("Aethersmith"))
-                {
-                    spawnPoint = GameObject.Find("AethersmithSpawn").transform.position;
-                }
-                else if (obj.name.Contains("Caldera"))
-                {
-                    spawnPoint = GameObject.Find("CalderaSpawn").transform.position;
-                }
-                else if (obj.name.Contains("Shard"))
-                {
-                    spawnPoint = GameObject.Find("ShardSpawn").transform.position;
-                }
-
-                if (spawnPoint != null)
-                {
-                    obj.transform.position = spawnPoint;
-                    obj.GetComponent<NetworkSyncPosition>().RpcServerSetPosition(spawnPoint);
+                    var spawnPoint = FindSpawnPoint(obj);
+                    obj.GetComponent<NetworkSyncPosition>().CmdClientSetServerPos(spawnPoint);
                 }
             }
+        }
 
-            base.OnServerSceneChanged(sceneName);
+        private Vector3 FindSpawnPoint(GameObject obj)
+        {
+            Vector3 spawnPoint = Vector3.zero;
+
+            if (obj.name.Contains("Conduit"))
+            {
+                spawnPoint = GameObject.Find("ConduitSpawn").transform.position;
+            }
+            else if (obj.name.Contains("Aethersmith"))
+            {
+                spawnPoint = GameObject.Find("AethersmithSpawn").transform.position;
+            }
+            else if (obj.name.Contains("Caldera"))
+            {
+                spawnPoint = GameObject.Find("CalderaSpawn").transform.position;
+            }
+            else if (obj.name.Contains("Shard"))
+            {
+                spawnPoint = GameObject.Find("ShardSpawn").transform.position;
+            }
+
+            return spawnPoint;
         }
 
         // --- Countdown management

@@ -1,12 +1,17 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 
-public class HealthPickup : MonoBehaviour {
+public class HealthPickup : NetworkBehaviour {
 
     public enum TYPE { Health, XP}
     public TYPE pickupType = TYPE.Health;
 
     public GameObject particleEffect;
+
+    [SyncVar]
+    private Vector3 syncPosition;
+    private  float lerp = 15;
 
     [SerializeField]
     private float healVal = 5;
@@ -27,20 +32,41 @@ public class HealthPickup : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        transform.Rotate(0, Time.deltaTime * 180, 0);
-        if (target != null) {
-            velocity += (target.position + Vector3.up - transform.position).normalized * ATTRACTIONRANGE / Mathf.Pow((target.position+Vector3.up - transform.position).magnitude, 2) * Time.deltaTime;
-            velocity = Vector3.ClampMagnitude(velocity, MAXSPEED);
-            transform.position += velocity;
-            if (Vector3.Distance(target.position, transform.position) < 1f)
-                TriggerPickup(target);
+        ServerUpdatePosition();
+    }
 
-        } else {
-            transform.position = originalPos + Vector3.up * Mathf.Sin(Time.timeSinceLevelLoad*0.5f * Mathf.PI * 2)*0.1f;
-            target = FindClosestPlayer();
-            
+    [ServerCallback]
+    void ServerUpdatePosition()
+    {
+        Transform t = UpdatePosition();
+        RpcUpdatePosition(t.position, t.rotation);
+    }
+
+    [ClientRpc]
+    void RpcUpdatePosition(Vector3 pos, Quaternion rot)
+    {
+        transform.position = pos;
+        transform.rotation = rot;
+    }
+
+    Transform UpdatePosition()
+    {
+        Transform t = transform;
+        t.Rotate(0, Time.deltaTime * 180, 0);
+        if (target != null)
+        {
+            velocity += (target.position + Vector3.up - t.position).normalized * ATTRACTIONRANGE / Mathf.Pow((target.position + Vector3.up - t.position).magnitude, 2) * Time.deltaTime;
+            velocity = Vector3.ClampMagnitude(velocity, MAXSPEED);
+            t.position += velocity;
+
         }
-	}
+        else
+        {
+            t.position = originalPos + Vector3.up * Mathf.Sin(Time.timeSinceLevelLoad * 0.5f * Mathf.PI * 2) * 0.1f;
+            target = FindClosestPlayer();
+        }
+        return t;
+    }
 
     void OnTriggerEnter(Collider e) {
         if(e.tag == "Player") {

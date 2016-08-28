@@ -1,8 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
 
 public class NetworkSyncPosition : NetworkBehaviour {
+
+    [HideInInspector]
+    public string currentSceneName;
 
     [SyncVar][HideInInspector]
     public Vector3 syncPos;
@@ -21,7 +25,7 @@ public class NetworkSyncPosition : NetworkBehaviour {
     }
 	
 	void FixedUpdate () {
-        TransmitPosition();
+        TransmitPosition();        
     }
 
     void LerpPosition()
@@ -41,17 +45,33 @@ public class NetworkSyncPosition : NetworkBehaviour {
     [ClientCallback]
     void TransmitPosition()
     {
-        if (isLocalPlayer && Vector3.Distance(myTransform.position, lastPos) > threshold)
+        if (isLocalPlayer)
         {
-            CmdProvidePositionToServer(myTransform.position);
-            lastPos = myTransform.position;
+            if (Vector3.Distance(myTransform.position, lastPos) > threshold)
+            {
+                CmdProvidePositionToServer(myTransform.position);
+                lastPos = myTransform.position;
+            }
         }
+    }
+
+    [Command]
+    public void CmdClientSetServerPos(Vector3 pos)
+    {
+        if (!isClient)
+        {
+            myTransform.position = pos;
+            CmdProvidePositionToServer(pos);
+            lastPos = pos;
+        }
+        RpcServerSetPosition(pos);
     }
 
     [ClientRpc]
     public void RpcServerSetPosition(Vector3 pos)
     {
-        transform.position = pos;
-        syncPos = pos;
+        myTransform.position = pos;
+        CmdProvidePositionToServer(pos);
+        lastPos = pos;
     }
 }
