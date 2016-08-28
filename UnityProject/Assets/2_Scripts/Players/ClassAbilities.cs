@@ -2,6 +2,7 @@
 using UnityEngine.Networking;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 public class ClassAbilities : Character {
 
@@ -372,5 +373,10 @@ public class ClassAbilities : Character {
         get {
             return new Vector3(transform.position.x, transform.position.y+1, transform.position.z);
         }
+    }
+
+    public override bool IsInvulnerable()
+    {
+        return false;
     }
 }

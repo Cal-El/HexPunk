@@ -124,4 +124,9 @@ public class AIBehaviour : Character {
             FindTarget();
         }
     }
+
+    public override bool IsInvulnerable()
+    {
+        return false;
+    }
 }
