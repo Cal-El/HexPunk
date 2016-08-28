@@ -67,7 +67,8 @@ public class BomberAIBehaviour : AIBehaviour {
                             mr.material.SetColor("_EmissionColor", Color.red);
                             Retagetting();
                             animationState = STATES.Chasing;
-                            ChasingBehaviour();
+                            if (target != null)
+                                ChasingBehaviour();
                             break;
                         case STATES.MeleeAttacking:
                             mr.material.SetColor("_EmissionColor", Color.white);
@@ -151,7 +152,7 @@ public class BomberAIBehaviour : AIBehaviour {
                 StartChase();
                 return;
             }
-            if (!target.IsAlive) {
+            if (!target.IsAlive || target.IsInvulnerable()) {
                 Retagetting();
             }
             if(attackTimer <= 0) {              //Ready to attack again

@@ -109,14 +109,12 @@ public class AIBehaviour : Character {
 
     public void Retagetting() {
         //Debug.Log((target.GetType() == typeof(ShardAbilities)) + " " + target.GetComponent<ShardAbilities>().isMist);
-        if (target != null && target.IsInvulnerable()) {
-            target = null;
-        }
         if (target != null) {
+            Debug.Log(target.name + " is invulnerable: " + target.IsInvulnerable());
             float threshold = Vector3.Distance(this.transform.position, target.transform.position) * 0.8f;
-            if (target.currentState == ClassAbilities.ANIMATIONSTATES.Dead) threshold = 1000;
+            if (target.currentState == ClassAbilities.ANIMATIONSTATES.Dead || target.IsInvulnerable()) threshold = 1000;
             foreach (ClassAbilities p in Megamanager.MM.players) {
-                if (Vector3.Distance(this.transform.position, p.transform.position) <= threshold && p.currentState != ClassAbilities.ANIMATIONSTATES.Dead) {
+                if (!target.IsInvulnerable() && Vector3.Distance(this.transform.position, p.transform.position) <= threshold && p.currentState != ClassAbilities.ANIMATIONSTATES.Dead) {
                     target = p;
                 }
             }
