@@ -38,7 +38,7 @@ public class Spawner : NetworkBehaviour {
     [ServerCallback]
     private GameObject ServerSpawn(GameObject o, Vector3 pos, Quaternion rot)
     {
-        GameObject spawn = Instantiate(goodSpawn, transform.position, transform.rotation) as GameObject;
+        GameObject spawn = Instantiate(o, transform.position, transform.rotation) as GameObject;
 
         NetworkServer.Spawn(spawn);
         return spawn;

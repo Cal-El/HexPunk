@@ -93,25 +93,30 @@ public class AIBehaviour : Character {
         ClassAbilities[] pms = GameObject.FindObjectsOfType<ClassAbilities>();
         ClassAbilities closest = null;
         foreach (ClassAbilities pm in pms) {
-            if (closest == null) {
-                closest = pm;
-            }
-            if (Vector3.Distance(this.transform.position, pm.transform.position) < Vector3.Distance(this.transform.position, closest.transform.position)) {
-                closest = pm;
+            if (pm.IsInvulnerable()) {
+                
+            } else {
+                if (closest == null) {
+                    closest = pm;
+                }
+                if (Vector3.Distance(this.transform.position, pm.transform.position) < Vector3.Distance(this.transform.position, closest.transform.position)) {
+                    closest = pm;
+                }
             }
         }
         target = closest;
     }
 
     public void Retagetting() {
+        //Debug.Log((target.GetType() == typeof(ShardAbilities)) + " " + target.GetComponent<ShardAbilities>().isMist);
+        if (target != null && target.IsInvulnerable()) {
+            target = null;
+        }
         if (target != null) {
             float threshold = Vector3.Distance(this.transform.position, target.transform.position) * 0.8f;
             if (target.currentState == ClassAbilities.ANIMATIONSTATES.Dead) threshold = 1000;
             foreach (ClassAbilities p in Megamanager.MM.players) {
-                if(p.GetType() == typeof(ShardAbilities) && p.GetComponent<ShardAbilities>().isMist) {
-                    continue;
-                }
-                else if (Vector3.Distance(this.transform.position, p.transform.position) <= threshold && p.currentState != ClassAbilities.ANIMATIONSTATES.Dead) {
+                if (Vector3.Distance(this.transform.position, p.transform.position) <= threshold && p.currentState != ClassAbilities.ANIMATIONSTATES.Dead) {
                     target = p;
                 }
             }

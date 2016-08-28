@@ -401,4 +401,8 @@ public class ShardAbilities : ClassAbilities {
             if (health > 0) pam.PlayTakeDamageAudio();
         }
     }
+
+    public override bool IsInvulnerable() {
+        return isMist;
+    }
 }
