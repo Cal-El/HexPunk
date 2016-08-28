@@ -172,7 +172,7 @@ public class BomberAIBehaviour : AIBehaviour {
         deathTimer += Time.deltaTime;
         if(deathTimer >= timeToDie) {
             foreach (Character c in Megamanager.GetAllCharacters()) {
-                if(Vector3.Distance(c.transform.position, transform.position) <= blastRadius) {
+                if(c != null && Vector3.Distance(c.transform.position, transform.position) <= blastRadius) {
                     c.Knockback((c.transform.position - transform.position).normalized * 500, 1);
                     c.TakeDmg(bombDamage);
                     

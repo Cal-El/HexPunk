@@ -34,6 +34,8 @@ public class EliteAIBehaviour : AIBehaviour {
     void Awake () {
         base.Initialise();
 
+        agentState = STATES.Idle;
+
         am = GetComponentInChildren<AIEliteAudioManager>();
 
         warningEffect.SetActive(false);
@@ -43,7 +45,7 @@ public class EliteAIBehaviour : AIBehaviour {
         navObst = this.GetComponent<NavMeshObstacle>();
 
         navAgent.speed = navAgent.speed * Random.Range(0.5f, 1.0f);
-        navAgent.avoidancePriority = Random.Range(1,99);
+        navAgent.avoidancePriority = Random.Range(90,99);
         health = maxHealth;
 	}
 	
@@ -52,7 +54,7 @@ public class EliteAIBehaviour : AIBehaviour {
             Vector3 prePos = transform.position;
             if (inactiveTimer <= 0) {
                 if (transform.parent == null || transform.parent.GetComponent<Room>().roomUnlocked) {
-                    if (agentState != STATES.RangedAttacking) {
+                    if (agentState != STATES.RangedAttacking && agentState != STATES.Idle && agentState != STATES.Battlecry) {
                         if (rangeAttack.attackTimer <= 0) {
                             agentState = STATES.RangedAttacking;
                         } else {
