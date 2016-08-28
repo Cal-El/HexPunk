@@ -23,9 +23,11 @@ public class ClassAbilities : Character {
     protected float level = 0;
 
     private bool isAlive = true;
-    public float percentHealthOnRevive;
+    public float flatMaxHealthReviveCost = 10;
+    public float percentHealthOnRevive = 20;
     public bool IsReviving { get; set; }
-    protected Ability Revive;
+    public Ability Revive = new Ability(5,0,1,0.25f,0,1,0);
+    private GameObject reviveCapsule;
 
     private float knockbackTimer = 0;
 
@@ -98,15 +100,7 @@ public class ClassAbilities : Character {
         pam = GetComponentInChildren<PlayerAudioManager>();
         myGUI = pm.playerCamera.GetComponentInChildren<PlayerGUICanvas>();
         myHud = myGUI.myHud;
-
-        //Setup revive ability which is used by all classes
-        Revive = new Ability();
-
-        Revive.abilityNum = 5;
-        Revive.castingTime = 1f;
-        Revive.cooldown = 0.25f;
-        Revive.range = 1.0f;
-
+        reviveCapsule = transform.FindChild("ReviveCapsule").gameObject;
         base.Initialise();
     }
 
@@ -262,7 +256,7 @@ public class ClassAbilities : Character {
         if (enabled) health = healthMax * percentHealthOnRevive;
         var cc = GetComponent<CharacterController>();
         if (cc != null) cc.enabled = enabled;
-
+        reviveCapsule.SetActive(!enabled);
         if (pm != null) pm.ControlEnabled = enabled;
     }
 
@@ -288,13 +282,30 @@ public class ClassAbilities : Character {
         //Put death animation and stuff here
     }
 
+    protected void Ability5()
+    {
+        foreach (var hit in Physics.SphereCastAll(new Vector3(transform.position.x, 0, transform.position.z), 2, transform.forward, Revive.range))
+        {
+            Debug.Log(hit.transform.gameObject);
+            if (hit.transform.tag == "Player" && !hit.transform.GetComponent<ClassAbilities>().IsAlive)
+            {
+                CmdCallRevive(hit.transform.gameObject);
+            }
+        }
+    }
+
     [Command]
     protected void CmdCallRevive(GameObject o)
     {
         if (!isClient)
         {
             var ca = o.GetComponent<ClassAbilities>();
-            ca.IsReviving = true;
+            if (ca != null)
+            {
+                healthMax -= flatMaxHealthReviveCost;
+                ca.IsReviving = true;
+                ca.health = healthMax * percentHealthOnRevive;
+            }
         }
         RpcCallRevive(o);
     }
@@ -302,10 +313,13 @@ public class ClassAbilities : Character {
     [ClientRpc]
     protected void RpcCallRevive(GameObject o)
     {
-
         var ca = o.GetComponent<ClassAbilities>();
-        ca.IsReviving = true;
-        ca.health = healthMax * percentHealthOnRevive;
+        if (ca != null)
+        {
+            healthMax -= flatMaxHealthReviveCost;
+            ca.IsReviving = true;
+            ca.health = healthMax * percentHealthOnRevive;
+        }
     }
 
     [Command]

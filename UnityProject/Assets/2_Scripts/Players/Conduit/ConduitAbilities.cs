@@ -327,7 +327,7 @@ public class ConduitAbilities : ClassAbilities {
                 var ch = o.GetComponent<Character>();
                 if (ch != null && !ch.IsInvulnerable()) ch.stacks.Discharge();
             }
-            else RpcDischargeStacks(o);
+            RpcDischargeStacks(o);
         }
     }
 
@@ -380,23 +380,6 @@ public class ConduitAbilities : ClassAbilities {
     private void RpcStartAbility4()
     {
         StartAbility4();
-    }
-
-    #endregion
-
-    #region Ability 5 (Revive)
-
-    private void Ability5()
-    {
-        Ray ray = new Ray(transform.position + Vector3.up, transform.forward);
-        RaycastHit hit;
-        if (Physics.Raycast(ray, out hit, Revive.range))
-        {
-            if (hit.transform.tag == "Player" && hit.transform.GetComponent<ClassAbilities>().health <= 0)
-            {
-                CmdCallRevive(hit.transform.gameObject);
-            }
-        }        
     }
 
     #endregion

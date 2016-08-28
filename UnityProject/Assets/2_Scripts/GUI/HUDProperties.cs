@@ -27,7 +27,7 @@ public class HUDProperties : MonoBehaviour {
 
     public void ShowIconCooldown(int abilityNumber, float abilityCooldown)
     {
-        if (abilityCooldown != 0)
+        if (abilityCooldown != 0 && abilityNumber < 5)
         {
             abilityNumber -= 1;
             abilityCds[abilityNumber] = abilityCooldown;
@@ -38,7 +38,7 @@ public class HUDProperties : MonoBehaviour {
 
     public void ShowIconNotEnoughEnergy(int abilityNumber, float abilityEnergyCost, float currentEnergy)
     {
-        if (abilityEnergyCost != 0)
+        if (abilityEnergyCost != 0 && abilityNumber < 5)
         {
             abilityNumber -= 1;
 

@@ -348,23 +348,6 @@ public class ShardAbilities : ClassAbilities {
 
     #endregion
 
-    #region Ability 5 (Revive)
-
-    private void Ability5()
-    {
-        Ray ray = new Ray(transform.position + Vector3.up, transform.forward);
-        RaycastHit hit;
-        if (Physics.Raycast(ray, out hit, Revive.range))
-        {
-            if (hit.transform.tag == "Player" && hit.transform.GetComponent<ClassAbilities>().health <= 0)
-            {
-                CmdCallRevive(hit.transform.gameObject);
-            }
-        }
-    }
-
-    #endregion
-
     private void ShardUseAbility(Ability a, bool start = false, bool launch = false)
     {
         if (launch && startedCasting)
