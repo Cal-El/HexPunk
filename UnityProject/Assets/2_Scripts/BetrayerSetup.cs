@@ -6,7 +6,7 @@ using System.Collections.Generic;
 public class BetrayerSetup : NetworkBehaviour
 {
     public float percentChanceToBeBetrayer = 5;
-    private GameObject[] players;
+    private GameObject[] players = new GameObject[1];
     private List<GameObject> playersOnTrigger = new List<GameObject>();
     private bool betrayerChosen = false;
 
@@ -21,8 +21,11 @@ public class BetrayerSetup : NetworkBehaviour
     {
         if (!betrayerChosen)
         {
-            players = GameObject.FindGameObjectsWithTag("Player");
-            if (players.Length != 0)
+            if (players.Length < 4)
+            {
+                players = GameObject.FindGameObjectsWithTag("Player");
+            }
+            else
             {
                 if (playersOnTrigger.Count >= players.Length) StartBetrayerSetup();
             }
