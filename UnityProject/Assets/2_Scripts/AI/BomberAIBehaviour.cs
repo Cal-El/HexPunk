@@ -14,7 +14,6 @@ public class BomberAIBehaviour : AIBehaviour {
     public float range = 2;                     //Range/Reach of the attack
 
     //Pathfinding Variables
-    private ClassAbilities target;
     [HideInInspector]public NavMeshAgent navAgent;
     private NavMeshObstacle navObst;
     private float inactiveTimer = 0.0f;
@@ -244,32 +243,6 @@ public class BomberAIBehaviour : AIBehaviour {
         foreach(ClassAbilities p in Megamanager.MM.players) {
             if(Vector3.Distance(p.transform.position, transform.position) <= playerPerceptionRange) {
                 StartBattlecry();
-            }
-        }
-    }
-
-    public void FindTarget() {
-        ClassAbilities[] pms = GameObject.FindObjectsOfType<ClassAbilities>();
-        ClassAbilities closest = null;
-        foreach (ClassAbilities pm in pms) {
-            if (closest == null) {
-                closest = pm;
-            }
-            if (Vector3.Distance(this.transform.position, pm.transform.position) < Vector3.Distance(this.transform.position, closest.transform.position)) {
-                closest = pm;
-            }
-        }
-        target = closest;
-    }
-
-    public void Retagetting()
-    {
-        float threshold = Vector3.Distance(this.transform.position, target.transform.position) * 0.8f;
-        if (target.currentState == ClassAbilities.ANIMATIONSTATES.Dead) threshold = 1000;
-        foreach (ClassAbilities p in Megamanager.MM.players)
-        {
-            if (Vector3.Distance(this.transform.position, p.transform.position) <= threshold && p.currentState != ClassAbilities.ANIMATIONSTATES.Dead){
-                target = p;
             }
         }
     }

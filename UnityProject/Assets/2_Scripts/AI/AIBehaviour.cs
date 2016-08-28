@@ -14,6 +14,7 @@ public class AIBehaviour : Character {
     public STATES animationState = STATES.Idle;
 
     public SkinnedMeshRenderer mr;
+    protected ClassAbilities target;
 
     //Health Values
     [SyncVar]
@@ -86,5 +87,36 @@ public class AIBehaviour : Character {
     public override void Knockback(Vector3 force, float timer)
     {
         throw new NotImplementedException();
+    }
+
+    public void FindTarget() {
+        ClassAbilities[] pms = GameObject.FindObjectsOfType<ClassAbilities>();
+        ClassAbilities closest = null;
+        foreach (ClassAbilities pm in pms) {
+            if (closest == null) {
+                closest = pm;
+            }
+            if (Vector3.Distance(this.transform.position, pm.transform.position) < Vector3.Distance(this.transform.position, closest.transform.position)) {
+                closest = pm;
+            }
+        }
+        target = closest;
+    }
+
+    public void Retagetting() {
+        if (target != null) {
+            float threshold = Vector3.Distance(this.transform.position, target.transform.position) * 0.8f;
+            if (target.currentState == ClassAbilities.ANIMATIONSTATES.Dead) threshold = 1000;
+            foreach (ClassAbilities p in Megamanager.MM.players) {
+                if(p.GetType() == typeof(ShardAbilities) && p.GetComponent<ShardAbilities>().isMist) {
+                    continue;
+                }
+                else if (Vector3.Distance(this.transform.position, p.transform.position) <= threshold && p.currentState != ClassAbilities.ANIMATIONSTATES.Dead) {
+                    target = p;
+                }
+            }
+        } else {
+            FindTarget();
+        }
     }
 }
