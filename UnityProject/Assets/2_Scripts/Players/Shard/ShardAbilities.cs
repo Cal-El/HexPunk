@@ -13,6 +13,8 @@ public class ShardAbilities : ClassAbilities {
     public GameObject iciclePrefab;
     public GameObject iceFieldPrefab;
     public GameObject mistCloud;
+    [SyncVar]
+    public bool isMist;
     public GameObject iceRamPrefab;
     private SkinnedMeshRenderer playerRenderer;
     public Transform projectileCastPoint;
@@ -107,13 +109,11 @@ public class ShardAbilities : ClassAbilities {
         //Abilities
         if (IsAlive)
         {
-            
-            
             if (Input.GetButtonDown("Ability 1"))
             {
                 ShardUseAbility(IceLance, true);
             }
-            if (Input.GetButtonUp("Ability 1") && startedCasting)
+            if (!Input.GetButton("Ability 1") && startedCasting)
             {
                 ShardUseAbility(IceLance, false, true);
             }
@@ -122,7 +122,7 @@ public class ShardAbilities : ClassAbilities {
                 ShardUseAbility(IceLance);
             }
             if (GetAxisDown1("Ability 2")) ShardUseAbility(Icefield);
-            if (Input.GetButtonUp("Ability 3") || energy <= 0) StopMistCloud();
+            if (!Input.GetButton("Ability 3") || energy <= 0) StopMistCloud();
             else if (Input.GetButton("Ability 3") && energy > 0) ShardUseAbility(MistCloud);
             if (GetAxisDown2("Ability 4")) ShardUseAbility(IceRam);
 
@@ -309,6 +309,7 @@ public class ShardAbilities : ClassAbilities {
     {
         if (!mistCloud.activeInHierarchy)
         {
+            isMist = true;
             mistCloud.SetActive(true);
             playerRenderer.enabled = false;
         }
@@ -318,8 +319,12 @@ public class ShardAbilities : ClassAbilities {
 
     private void StopMistCloud()
     {
-        playerRenderer.enabled = true;
-        mistCloud.SetActive(false);
+        if (mistCloud.activeSelf)
+        {
+            isMist = false;
+            playerRenderer.enabled = true;
+            mistCloud.SetActive(false);
+        }
     }
 
     #endregion
@@ -386,5 +391,18 @@ public class ShardAbilities : ClassAbilities {
                 base.UseAbility(a);
             }
         }
+    }
+
+    public override void TakeDmg(float dmg, DamageType damageType = DamageType.Standard)
+    {
+        if (!isMist)
+        {
+            health = Mathf.Clamp(health - dmg, 0, healthMax);
+            if (health > 0) pam.PlayTakeDamageAudio();
+        }
+    }
+
+    public override bool IsInvulnerable() {
+        return isMist;
     }
 }

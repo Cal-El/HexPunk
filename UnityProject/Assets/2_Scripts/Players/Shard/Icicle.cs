@@ -38,7 +38,7 @@ public class Icicle : MonoBehaviour {
             if (col.gameObject != owner && col != null)
             {
                 Character ch = col.GetComponent<Character>();
-                if (ch != null)
+                if (ch != null && !ch.IsInvulnerable())
                 {
                     ch.TakeDmg(damage);
                 }

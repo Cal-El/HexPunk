@@ -192,7 +192,7 @@ public class ConduitAbilities : ClassAbilities {
         RaycastHit hit;
         if(Physics.Raycast(ray, out hit, LightingPunch.range)) {
             Character ch = hit.transform.GetComponent<Character>();
-            if (ch != null) {
+            if (ch != null && !ch.IsInvulnerable()) {
                 Instantiate(punchBang, punchBangPoint.position, punchBangPoint.rotation);
                 
                 if (ch.stacks.Stacks > 0) {
@@ -241,7 +241,8 @@ public class ConduitAbilities : ClassAbilities {
         foreach(RaycastHit h in hits) {
             if (!alreadyHit.Contains(h.transform.gameObject))
             {
-                if (h.transform.GetComponent<ConduitStacks>() != null && h.transform != transform)
+                var ch = h.transform.GetComponent<Character>();
+                if (ch.stacks != null && h.transform != transform && !ch.IsInvulnerable())
                     h.transform.GetComponent<ConduitStacks>().AddStack();
                 alreadyHit.Add(h.transform.gameObject);
             }
@@ -273,21 +274,23 @@ public class ConduitAbilities : ClassAbilities {
                 }
                 else
                 {
-
-                    if (LightningDash.range * energy - hit[i].distance < 0.5f)
+                    if (!ch.IsInvulnerable())
                     {
-                        telePos = ray.origin + (ray.direction * (hit[i].distance - 0.5f));
-                    }
-                    else if (LightningDash.range * energy - hit[i].distance >= 0.5f && LightningDash.range * energy - hit[i].distance < 1.5f)
-                    {
-                        telePos = ray.origin + (ray.direction * (hit[i].distance + 1.5f));
-                        ch.stacks.AddStack();
-                        ch.TakeDmg(LightningDash.baseDmg, DamageType.FireElectric);
-                    }
-                    else
-                    {
-                        ch.stacks.AddStack();
-                        ch.TakeDmg(LightningDash.baseDmg, DamageType.FireElectric);
+                        if (LightningDash.range * energy - hit[i].distance < 0.5f)
+                        {
+                            telePos = ray.origin + (ray.direction * (hit[i].distance - 0.5f));
+                        }
+                        else if (LightningDash.range * energy - hit[i].distance >= 0.5f && LightningDash.range * energy - hit[i].distance < 1.5f)
+                        {
+                            telePos = ray.origin + (ray.direction * (hit[i].distance + 1.5f));
+                            ch.stacks.AddStack();
+                            ch.TakeDmg(LightningDash.baseDmg, DamageType.FireElectric);
+                        }
+                        else
+                        {
+                            ch.stacks.AddStack();
+                            ch.TakeDmg(LightningDash.baseDmg, DamageType.FireElectric);
+                        }
                     }
                 }
             }
@@ -305,7 +308,7 @@ public class ConduitAbilities : ClassAbilities {
     {
         if (lightningLists != null)
         foreach(Character c in lightningLists) {
-                if (c != null)
+                if (c != null && !c.IsInvulnerable())
                 {
                     float stks = c.stacks.Stacks;
                     CmdDischargeStacks(c.gameObject);
@@ -319,7 +322,11 @@ public class ConduitAbilities : ClassAbilities {
     {
         if (o != null)
         {
-            if (!isClient) o.GetComponent<Character>().stacks.Discharge();
+            if (!isClient)
+            {
+                var ch = o.GetComponent<Character>();
+                if (ch != null && !ch.IsInvulnerable()) ch.stacks.Discharge();
+            }
             else RpcDischargeStacks(o);
         }
     }
@@ -327,8 +334,11 @@ public class ConduitAbilities : ClassAbilities {
     [ClientRpc]
     private void RpcDischargeStacks(GameObject o)
     {
-        if(o!=null)
-            o.GetComponent<Character>().stacks.Discharge();
+        if (o != null)
+        {
+            var ch = o.GetComponent<Character>();
+            if (ch != null && !ch.IsInvulnerable()) ch.stacks.Discharge();
+        }
     }
 
     private void StartAbility4()
@@ -340,7 +350,7 @@ public class ConduitAbilities : ClassAbilities {
         lightningList.Add(gameObject);
         for (int i = 0; i < things.Length; i++)
         {
-            if (things[i].stacks.Stacks > 0)
+            if (things[i].stacks.Stacks > 0 && !things[i].IsInvulnerable())
             {
                 GameObject g = new GameObject("Point");
                 g.transform.position = things[i].transform.position;
@@ -386,8 +396,7 @@ public class ConduitAbilities : ClassAbilities {
             {
                 CmdCallRevive(hit.transform.gameObject);
             }
-        }
-        
+        }        
     }
 
     #endregion

@@ -57,4 +57,9 @@ public class DestructibleObject : Character
 
         Destroy(gameObject);
     }
+    
+    public override bool IsInvulnerable()
+    {
+        return false;
+    }
 }

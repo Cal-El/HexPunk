@@ -96,13 +96,7 @@ public class AethersmithAbilities : ClassAbilities {
 	}
 
     #region Networking Helpers
-
-    //[Command]
-    //private void CmdTakeDmg(GameObject o, float damage)
-    //{
-    //    o.SendMessage("TakeDmg", damage, SendMessageOptions.DontRequireReceiver);
-    //}
-
+    
     #region Ability Commands
 
     [Command]
@@ -188,17 +182,20 @@ public class AethersmithAbilities : ClassAbilities {
 
     private void Ability2() {
         RaycastHit hit;
-        if (Physics.SphereCast(transform.position, 0.5f, transform.forward, out hit)) {
+        if (Physics.SphereCast(transform.position, 0.5f, transform.forward, out hit))
+        {
             Character c = hit.transform.GetComponent<Character>();
-            if (c != null) {
+            if (c != null && !c.IsInvulnerable())
+            {
                 c.Knockback(transform.forward * SpectralSpear.knockbackStr, 1);
                 c.TakeDmg(SpectralSpear.baseDmg);
             }
             GameObject g = Instantiate(javalinPrefab, javalinParticle.transform.position, Quaternion.identity) as GameObject;
             g.transform.LookAt(new Vector3(hit.point.x, 1, hit.point.z));
             g.transform.localScale = new Vector3(1, 1, hit.distance);
-
-        } else {
+        }
+        else
+        {
             GameObject g = Instantiate(javalinPrefab, javalinParticle.transform.position, Quaternion.identity) as GameObject;
             g.transform.LookAt(javalinVisual.transform.position + transform.forward);
             g.transform.localScale = new Vector3(1, 1, SpectralSpear.range);

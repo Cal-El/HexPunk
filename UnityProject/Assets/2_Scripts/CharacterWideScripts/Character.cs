@@ -37,4 +37,5 @@ public abstract class Character : NetworkBehaviour {
 
     public abstract void Knockback(Vector3 force, float timer);
 
+    public abstract bool IsInvulnerable();
 }

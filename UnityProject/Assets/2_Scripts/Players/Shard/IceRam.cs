@@ -39,7 +39,7 @@ public class IceRam : MonoBehaviour {
         if (!col.isTrigger && col != null)
         {
             Character ch = col.GetComponent<Character>();
-            if (ch != null)
+            if (ch != null && !ch.IsInvulnerable())
             {
                 if (col.gameObject != owner)
                 {

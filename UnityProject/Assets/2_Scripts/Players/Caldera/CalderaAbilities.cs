@@ -264,11 +264,16 @@ public class CalderaAbilities : ClassAbilities {
             if (col != null && col.gameObject != gameObject)
             {
                 Character ch = col.GetComponent<Character>();
-                if (ch != null)
+                if (ch != null && !ch.IsInvulnerable())
                 {
                     Vector3 dir = (col.transform.position - transform.position).normalized;
                     ch.TakeDmg(Eruption.baseDmg * (Vector3.Distance(col.transform.position, transform.position)) / Eruption.range, DamageType.FireElectric);
                     ch.Knockback((new Vector3(dir.x, 0, dir.z) * Eruption.knockbackStr), 1);
+                    if (ch.gameObject != gameObject)
+                    {
+                        if (ch.burn != null)
+                            ch.burn.IsBurning = true;
+                    }
                 }
             }
         }
