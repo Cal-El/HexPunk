@@ -1,8 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
 
 public class NetworkSyncPosition : NetworkBehaviour {
+
+    [HideInInspector]
+    public string currentSceneName;
 
     [SyncVar][HideInInspector]
     public Vector3 syncPos;
@@ -15,23 +19,13 @@ public class NetworkSyncPosition : NetworkBehaviour {
     private Vector3 lastPos;
     private float threshold = 0.1f;
 
-    void Start()
-    {
-        if (!isLocalPlayer) return;
-        myTransform = transform;
-        var pos = FindSpawnPoint();
-        myTransform.position = pos;
-        CmdProvidePositionToServer(pos);
-        lastPos = pos;
-    }
-
     void Update()
     {
         LerpPosition();
     }
 	
 	void FixedUpdate () {
-        TransmitPosition();
+        TransmitPosition();        
     }
 
     void LerpPosition()
@@ -51,34 +45,33 @@ public class NetworkSyncPosition : NetworkBehaviour {
     [ClientCallback]
     void TransmitPosition()
     {
-        if (isLocalPlayer && Vector3.Distance(myTransform.position, lastPos) > threshold)
+        if (isLocalPlayer)
         {
-            CmdProvidePositionToServer(myTransform.position);
-            lastPos = myTransform.position;
+            if (Vector3.Distance(myTransform.position, lastPos) > threshold)
+            {
+                CmdProvidePositionToServer(myTransform.position);
+                lastPos = myTransform.position;
+            }
         }
     }
 
-    private Vector3 FindSpawnPoint()
+    [Command]
+    public void CmdClientSetServerPos(Vector3 pos)
     {
-        Vector3 spawnPoint = Vector3.zero;
+        if (!isClient)
+        {
+            myTransform.position = pos;
+            CmdProvidePositionToServer(pos);
+            lastPos = pos;
+        }
+        RpcServerSetPosition(pos);
+    }
 
-        if (name.Contains("Conduit"))
-        {
-            spawnPoint = GameObject.Find("ConduitSpawn").transform.position;
-        }
-        else if (name.Contains("Aethersmith"))
-        {
-            spawnPoint = GameObject.Find("AethersmithSpawn").transform.position;
-        }
-        else if (name.Contains("Caldera"))
-        {
-            spawnPoint = GameObject.Find("CalderaSpawn").transform.position;
-        }
-        else if (name.Contains("Shard"))
-        {
-            spawnPoint = GameObject.Find("ShardSpawn").transform.position;
-        }
-
-        return spawnPoint;
+    [ClientRpc]
+    public void RpcServerSetPosition(Vector3 pos)
+    {
+        myTransform.position = pos;
+        CmdProvidePositionToServer(pos);
+        lastPos = pos;
     }
 }

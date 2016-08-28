@@ -354,49 +354,73 @@ namespace UnityStandardAssets.Network
                     }
                     if (prefab != null)
                     {
+                        spawnPoint = FindSpawnPoint(prefab);
+                        prefab.transform.position = spawnPoint;
                         playerObjects.Add(conn.connectionId, prefab);
                         return prefab;
                     }
                 }
-            }            
+            }
 
             return base.OnLobbyServerCreateGamePlayer(conn, playerControllerId);
         }
 
         public override void ServerChangeScene(string sceneName)
         {
-            foreach (var obj in playerObjects.Values)
-            {
-                Destroy(obj.GetComponent<NetworkSyncPosition>());
-            }
             base.ServerChangeScene(sceneName);
         }
 
         public override void OnServerSceneChanged(string sceneName)
-        {
-            foreach (var obj in playerObjects.Values)
-            {
-                if(obj.GetComponent<NetworkSyncPosition>() == null)
-                    obj.AddComponent<NetworkSyncPosition>();
-            }
-
+        {            
             base.OnServerSceneChanged(sceneName);
+            GameObject obj = playerObjects[client.connection.connectionId];
+
+            Vector3 spawnPoint = FindSpawnPoint(obj);
+            if (spawnPoint != null)
+            {
+                obj.transform.position = spawnPoint;
+                obj.GetComponent<NetworkSyncPosition>().RpcServerSetPosition(spawnPoint);
+                Debug.Log(spawnPoint);
+                Debug.Log(obj);
+            }            
         }
 
         public override void OnClientSceneChanged(NetworkConnection conn)
         {
-            foreach (var ca in FindObjectsOfType<ClassAbilities>())
+            base.OnClientSceneChanged(conn);
+            foreach(var ca in FindObjectsOfType<ClassAbilities>())
             {
                 var obj = ca.gameObject;
-                var nsp = obj.GetComponent<NetworkSyncPosition>();
-                if (nsp == null)
+                if (obj.GetComponent<NetworkIdentity>().localPlayerAuthority)
                 {
-                    Destroy(nsp);
-                    obj.AddComponent<NetworkSyncPosition>();
+                    var spawnPoint = FindSpawnPoint(obj);
+                    obj.GetComponent<NetworkSyncPosition>().CmdClientSetServerPos(spawnPoint);
                 }
             }
+        }
 
-            base.OnClientSceneChanged(conn);
+        private Vector3 FindSpawnPoint(GameObject obj)
+        {
+            Vector3 spawnPoint = Vector3.zero;
+
+            if (obj.name.Contains("Conduit"))
+            {
+                spawnPoint = GameObject.Find("ConduitSpawn").transform.position;
+            }
+            else if (obj.name.Contains("Aethersmith"))
+            {
+                spawnPoint = GameObject.Find("AethersmithSpawn").transform.position;
+            }
+            else if (obj.name.Contains("Caldera"))
+            {
+                spawnPoint = GameObject.Find("CalderaSpawn").transform.position;
+            }
+            else if (obj.name.Contains("Shard"))
+            {
+                spawnPoint = GameObject.Find("ShardSpawn").transform.position;
+            }
+
+            return spawnPoint;
         }
 
         // --- Countdown management
