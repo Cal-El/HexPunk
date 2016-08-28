@@ -31,7 +31,7 @@ public class BasementMusic : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        lerper = Mathf.Lerp(lerper, Megamanager.GetAllCharacters().Length, Time.deltaTime * 10);
+        lerper = Mathf.Lerp(lerper, Megamanager.GetAllCharacters().Length, Time.deltaTime);
         foreach (MusicTrack m in tracks) {
             m.adsc.volume = m.volumeCurve.Evaluate(lerper);
         }
