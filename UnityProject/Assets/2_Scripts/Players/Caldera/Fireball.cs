@@ -36,17 +36,17 @@ public class Fireball : MonoBehaviour {
     }
 
     void OnTriggerEnter(Collider col)
-    {
-        if (!col.isTrigger)
+    {        
+        if (col != null && !col.isTrigger)
         {
             Character ch = col.GetComponent<Character>();
             //Give the owner a safeWindow
             if (col.gameObject != owner && col != null)
             {
-                if (ch != null)
+                if (ch != null && !ch.IsInvulnerable())
                 {
                     ch.TakeDmg(damage, Character.DamageType.FireElectric);
-                    if(ch.burn != null)
+                    if (ch.burn != null)
                         ch.burn.IsBurning = true;
                 }
                 Splash(transform.position);
@@ -80,10 +80,10 @@ public class Fireball : MonoBehaviour {
 
         foreach (var target in targets)
         {
-            if (target != null)
+            if (target != null && !target.isTrigger)
             {
                 Character ch = target.GetComponent<Character>();
-                if (ch != null)
+                if (ch != null && !ch.IsInvulnerable())
                 {
                     if (target.gameObject == owner)
                     {

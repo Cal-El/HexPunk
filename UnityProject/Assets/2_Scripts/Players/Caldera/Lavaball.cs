@@ -41,7 +41,7 @@ public class Lavaball : MonoBehaviour {
         if (!col.isTrigger && col != null)
         {
             Character ch = col.GetComponent<Character>();
-            if (ch != null)
+            if (ch != null && !ch.IsInvulnerable())
             {
                 if (col.gameObject != owner)
                 {
@@ -79,7 +79,7 @@ public class Lavaball : MonoBehaviour {
             if (target != null)
             {
                 Character ch = target.GetComponent<Character>();
-                if (ch != null)
+                if (ch != null && !ch.IsInvulnerable())
                 {
                     if (target.gameObject == owner)
                     {
