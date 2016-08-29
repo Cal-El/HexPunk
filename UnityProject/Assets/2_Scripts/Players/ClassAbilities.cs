@@ -14,6 +14,7 @@ public class ClassAbilities : Character {
     protected PlayerMovement pm;
     protected PlayerGUICanvas myGUI;
     protected HUDProperties myHud;
+    [SyncVar (hook = "OnMaxHealthChanged")]
     public float healthMax = 100;
     [SyncVar (hook = "OnHealthChanged")]
     public float health;
@@ -25,7 +26,8 @@ public class ClassAbilities : Character {
     private bool isAlive = true;
     public float flatMaxHealthReviveCost = 10;
     public float percentHealthOnRevive = 20;
-    public bool IsReviving { get; set; }
+    [SyncVar (hook = "OnRevive")]
+    public bool IsReviving = false;
     public Ability Revive = new Ability(5,0,1,0.25f,0,1,0);
     private GameObject reviveCapsule;
 
@@ -118,18 +120,17 @@ public class ClassAbilities : Character {
                 rb.isKinematic = true;
             }
         }
-
-        CmdSetHealth(Mathf.Max(Mathf.Min(health, healthMax), 0f));
+        
         energy = (Mathf.Max(Mathf.Min(energy, energyMax), 0f));
 
         //Used for testing
         if (Input.GetKeyDown(KeyCode.O))
         {
-            CmdAddHealth(10);
+            AddHealth(10);
         }
         if (Input.GetKeyDown(KeyCode.L))
         {
-            CmdAddHealth(-10);
+            AddHealth(-10);
         }
 
         //FAKE IT TIL WE MAKE IT
@@ -179,6 +180,20 @@ public class ClassAbilities : Character {
         return level;
     }
 
+    [Command]
+    protected virtual void CmdSetMaxHealth(float value)
+    {
+        healthMax = value;
+        healthMax = Mathf.Max(healthMax, 0f);
+        CmdSetHealth(Mathf.Min(health, healthMax));
+    }
+
+    protected virtual void OnMaxHealthChanged(float value)
+    {
+        healthMax = value;
+        healthMax = Mathf.Max(healthMax, 0f);
+    }
+
     public override float GetHealth() {
         return health;
     }
@@ -187,11 +202,13 @@ public class ClassAbilities : Character {
     protected virtual void CmdSetHealth(float value)
     {
         health = value;
+        health = Mathf.Max(Mathf.Min(health, healthMax), 0f);
     }
 
     protected virtual void OnHealthChanged(float value)
     {
         health = value;
+        health = Mathf.Max(Mathf.Min(health, healthMax), 0f);
     }
 
     public override void TakeDmg(float dmg, DamageType damageType = DamageType.Standard) {
@@ -219,17 +236,9 @@ public class ClassAbilities : Character {
     }
 
     //Used for testing
-    [Command]
-    private void CmdAddHealth(float hp)
+    private void AddHealth(float hp)
     {
-        if (!isClient) health += hp;
-        RpcAddHealth(hp);
-    }
-
-    [ClientRpc]
-    private void RpcAddHealth(float hp)
-    {
-        health += hp;
+        CmdSetHealth(health + hp);
     }
 
     [Command]
@@ -258,13 +267,17 @@ public class ClassAbilities : Character {
         {
             EnableCharacter(value);
             isAlive = value;
+            if (value)
+            {
+                CmdSetIsReviving(false);
+            }
         }
 
     }
 
     protected virtual void EnableCharacter(bool enabled)
     {
-        if (enabled) CmdSetHealth(healthMax * percentHealthOnRevive);
+        if (enabled) CmdSetHealth(healthMax * percentHealthOnRevive / 100);
         var cc = GetComponent<CharacterController>();
         if (cc != null) cc.enabled = enabled;
         reviveCapsule.SetActive(!enabled);
@@ -308,45 +321,27 @@ public class ClassAbilities : Character {
     [Command]
     protected void CmdCallRevive(GameObject o)
     {
-        if (!isClient)
-        {
-            var ca = o.GetComponent<ClassAbilities>();
-            if (ca != null)
-            {
-                healthMax -= flatMaxHealthReviveCost;
-                ca.IsReviving = true;
-                ca.health = healthMax * percentHealthOnRevive;
-            }
-        }
-        RpcCallRevive(o);
-    }
-
-    [ClientRpc]
-    protected void RpcCallRevive(GameObject o)
-    {
         var ca = o.GetComponent<ClassAbilities>();
         if (ca != null)
         {
-            healthMax -= flatMaxHealthReviveCost;
-            ca.IsReviving = true;
-            ca.health = healthMax * percentHealthOnRevive;
+            CmdSetMaxHealth(healthMax - flatMaxHealthReviveCost);
+            ca.CmdSetIsReviving(true);
         }
     }
 
     [Command]
-    protected void CmdRevive()
+    protected virtual void CmdSetIsReviving(bool value)
     {
-        if (!isClient)
-        {
-            IsAlive = true;
-        }
-        RpcRevive();
+        IsReviving = value;
     }
 
-    [ClientRpc]
-    protected void RpcRevive()
+    protected virtual void OnRevive(bool value)
     {
-        IsAlive = true;
+        IsReviving = value;
+        if (value)
+        {
+            IsAlive = value;
+        }
     }
 
     #endregion

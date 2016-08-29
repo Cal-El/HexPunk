@@ -9,6 +9,7 @@ public class PlayerGUICanvas : MonoBehaviour
 
     private GameObject myPlayer;
     private ClassAbilities playerStats;
+    private float startingMaxHealth;
 
     public GameObject betrayerCanvas;
     private bool isBetrayer = false;
@@ -34,7 +35,7 @@ public class PlayerGUICanvas : MonoBehaviour
 
         myPlayer = transform.parent.GetComponent<PlayerCamera>().myPlayer;
         playerStats = myPlayer.GetComponent<ClassAbilities>();
-
+        startingMaxHealth = playerStats.healthMax;
         string name = myPlayer.gameObject.name;
         
         SetHUDs(name, "Conduit");
@@ -82,7 +83,7 @@ public class PlayerGUICanvas : MonoBehaviour
         visEP = Mathf.Lerp(visEP, playerStats.energy, Time.deltaTime * 10);
         visXP = Mathf.Lerp(visXP, playerStats.GetLevel(), Time.deltaTime * 10);
 
-        myHud.healthBar.fillAmount = visHP / 100;
+        myHud.healthBar.fillAmount = visHP / startingMaxHealth;
         myHud.energyBar.fillAmount = visEP / playerStats.energyMax;
 
         var xpBar = myHud.xpBar;

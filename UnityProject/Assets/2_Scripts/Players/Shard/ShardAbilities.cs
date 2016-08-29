@@ -104,8 +104,6 @@ public class ShardAbilities : ClassAbilities {
         //Death
         if (health <= 0 && IsAlive) CmdDeath();
 
-        if (IsReviving && !IsAlive) CmdRevive();
-
         //Abilities
         if (IsAlive)
         {
