@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.Networking;
 using System.Collections.Generic;
 
-public class Megamanager : MonoBehaviour {
+public class Megamanager : NetworkBehaviour { 
 
     public static Megamanager MM;
     public ClassAbilities[] players;
@@ -35,8 +36,8 @@ public class Megamanager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-
-        //players = FindObjectsOfType<ClassAbilities>();
+        
+        if(players.Length < 4) players = FindObjectsOfType<ClassAbilities>();
 
         if (characters.Count == 0 && AllRoomsUnlocked()) Victory();
 
@@ -50,15 +51,17 @@ public class Megamanager : MonoBehaviour {
 
     }
     
-    private void Defeated()
+    [ServerCallback]
+    public void Defeated()
     {
         foreach(ClassAbilities player in players)
         {
             player.GetComponent<PlayerCommands>().Defeat = true;
         }
     }
-
-    private void Victory()
+    
+    [ServerCallback]
+    public void Victory()
     {
         foreach (ClassAbilities player in players)
         {

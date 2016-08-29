@@ -7,8 +7,10 @@ public class PlayerCommands : NetworkBehaviour {
     private GameObject playerCamera;
 
     private bool isBetrayer = false;
-    private bool victory = false;
-    private bool defeat = false;
+    [SyncVar(hook = "OnVictory")]
+    public bool Victory = false;
+    [SyncVar (hook = "OnDefeat")]
+    public bool Defeat = false;
     
     // Use this for initialization
     void Start () {
@@ -39,37 +41,19 @@ public class PlayerCommands : NetworkBehaviour {
         }
     }
 
-    public bool Victory
+    private void OnDefeat(bool value)
     {
-        get
+        if (isLocalPlayer)
         {
-            return victory;
-        }
-
-        set
-        {
-            if (isLocalPlayer)
-            {
-                playerCamera.GetComponentInChildren<PlayerGUICanvas>().Victory = value;
-                victory = value;
-            }
+            playerCamera.GetComponentInChildren<PlayerGUICanvas>().Defeat = value;
         }
     }
 
-    public bool Defeat
+    private void OnVictory(bool value)
     {
-        get
+        if (isLocalPlayer)
         {
-            return defeat;
-        }
-
-        set
-        {
-            if (isLocalPlayer)
-            {
-                playerCamera.GetComponentInChildren<PlayerGUICanvas>().Defeat = value;
-                defeat = value;
-            }
+            playerCamera.GetComponentInChildren<PlayerGUICanvas>().Victory = value;
         }
     }
 }
