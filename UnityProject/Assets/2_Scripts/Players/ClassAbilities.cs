@@ -120,7 +120,7 @@ public class ClassAbilities : Character {
         }
 
         CmdSetHealth(Mathf.Max(Mathf.Min(health, healthMax), 0f));
-        CmdSetHealth(Mathf.Max(Mathf.Min(energy, energyMax), 0f));
+        energy = (Mathf.Max(Mathf.Min(energy, energyMax), 0f));
 
         //Used for testing
         if (Input.GetKeyDown(KeyCode.O))
