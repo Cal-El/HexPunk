@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 
 public class EliteAIBehaviour : AIBehaviour {
@@ -46,7 +47,7 @@ public class EliteAIBehaviour : AIBehaviour {
 
         navAgent.speed = navAgent.speed * Random.Range(0.5f, 1.0f);
         navAgent.avoidancePriority = Random.Range(90,99);
-        health = maxHealth;
+        SetHealth(maxHealth);
 	}
 	
 	void Update () {
@@ -281,16 +282,34 @@ public class EliteAIBehaviour : AIBehaviour {
         return health;
     }
 
+    [ServerCallback]
+    protected override void SetHealth(float value)
+    {
+        base.SetHealth(value);
+        if (health <= 0)
+        {
+            StartDeath();
+        }
+    }
+
+    protected override void OnHealthChanged(float value)
+    {
+        base.OnHealthChanged(value);
+        if (health <= 0)
+        {
+            StartDeath();
+        }
+    }
+
     public override void Heal(float healVal) {
-        health = Mathf.Clamp(health + healVal, 0, maxHealth);
+        SetHealth(Mathf.Clamp(health + healVal, 0, maxHealth));
     }
 
     public override void TakeDmg(float dmg, DamageType damageType = DamageType.Standard) {
-        health = Mathf.Clamp(health - dmg, 0, maxHealth);
+        SetHealth(Mathf.Clamp(health - dmg, 0, maxHealth));
         if (agentState == STATES.Idle)
             StartBattlecry();
         if (health <= 0) {
-            StartDeath();
             if (damageType == DamageType.FireElectric)
             {
                 am.PlayDeathBurnElectricAudio();

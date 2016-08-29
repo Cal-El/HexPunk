@@ -15,7 +15,7 @@ public class ClassAbilities : Character {
     protected PlayerGUICanvas myGUI;
     protected HUDProperties myHud;
     public float healthMax = 100;
-    [SyncVar]
+    [SyncVar (hook = "OnHealthChanged")]
     public float health;
     public float energyMax = 100;
     [SyncVar]
@@ -95,7 +95,7 @@ public class ClassAbilities : Character {
 
     protected void Initialize() {
         DontDestroyOnLoad(gameObject);
-        health = healthMax;
+        SetHealth(healthMax);
         pm = GetComponent<PlayerMovement>();
         pam = GetComponentInChildren<PlayerAudioManager>();
         myGUI = pm.playerCamera.GetComponentInChildren<PlayerGUICanvas>();
@@ -119,8 +119,8 @@ public class ClassAbilities : Character {
             }
         }
 
-        health = Mathf.Max(Mathf.Min(health, healthMax), 0f);
-        energy = Mathf.Max(Mathf.Min(energy, energyMax), 0f);
+        SetHealth(Mathf.Max(Mathf.Min(health, healthMax), 0f));
+        SetHealth(Mathf.Max(Mathf.Min(energy, energyMax), 0f));
 
         //Used for testing
         if (Input.GetKeyDown(KeyCode.O))
@@ -183,13 +183,24 @@ public class ClassAbilities : Character {
         return health;
     }
 
+    [Command]
+    protected virtual void SetHealth(float value)
+    {
+        health = value;
+    }
+
+    protected virtual void OnHealthChanged(float value)
+    {
+        health = value;
+    }
+
     public override void TakeDmg(float dmg, DamageType damageType = DamageType.Standard) {
-        health = Mathf.Clamp(health - dmg, 0, healthMax);
+        SetHealth(Mathf.Clamp(health - dmg, 0, healthMax));
         if (health > 0) pam.PlayTakeDamageAudio();
     }
 
     public override void Heal(float addedHP) {
-        health = Mathf.Clamp(health + addedHP, 0, healthMax);
+        SetHealth(Mathf.Clamp(health + addedHP, 0, healthMax));
     }
 
     public override void Knockback(Vector3 force, float timer) {
@@ -253,7 +264,7 @@ public class ClassAbilities : Character {
 
     protected virtual void EnableCharacter(bool enabled)
     {
-        if (enabled) health = healthMax * percentHealthOnRevive;
+        if (enabled) SetHealth(healthMax * percentHealthOnRevive);
         var cc = GetComponent<CharacterController>();
         if (cc != null) cc.enabled = enabled;
         reviveCapsule.SetActive(!enabled);

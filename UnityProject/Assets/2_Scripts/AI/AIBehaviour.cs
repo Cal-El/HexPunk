@@ -17,7 +17,7 @@ public class AIBehaviour : Character {
     protected ClassAbilities target;
 
     //Health Values
-    [SyncVar]
+    [SyncVar (hook = "OnHealthChanged")]
     protected float health;
     public float maxHealth = 5;
 
@@ -73,9 +73,20 @@ public class AIBehaviour : Character {
         return health;
     }
 
+    [ServerCallback]
+    protected virtual void SetHealth(float value)
+    {
+        health = value;
+    }
+
+    protected virtual void OnHealthChanged(float value)
+    {
+        health = value;
+    }
+
     public override void Heal(float healVal)
     {
-        health = Mathf.Clamp(health + healVal, 0, maxHealth);
+        SetHealth(Mathf.Clamp(health + healVal, 0, maxHealth));
     }
 
     public override void TakeDmg(float dmg, DamageType damageType = DamageType.Standard)

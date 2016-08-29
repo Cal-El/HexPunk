@@ -54,9 +54,9 @@ public class AethersmithAbilities : ClassAbilities {
         }
 
         //Death
-        if (health <= 0) CmdDeath();
+        if (health <= 0 && IsAlive) CmdDeath();
 
-        if (IsReviving) CmdRevive();
+        if (IsReviving && !IsAlive) CmdRevive();
 
         //Abilities
         if (IsAlive) {

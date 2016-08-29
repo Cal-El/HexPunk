@@ -11,6 +11,7 @@ public class DestructibleObject : Character
 
     [SerializeField]
     private float maxHealth;
+    [SyncVar (hook = "OnHealthChanged")]
     private float health;
 
     void Start() {
@@ -20,27 +21,48 @@ public class DestructibleObject : Character
     // Use this for initialization
     protected void Initialize()
     {
-        health = maxHealth;
+        SetHealth(maxHealth);
         base.Initialise();
     }
 
     public override void TakeDmg(float dmg, DamageType damageType = DamageType.Standard)
     {
-        health -= dmg;
-        if (health <= 0) {
-            if (particleEffect != null) {
-                GameObject.Instantiate(particleEffect, this.transform.position, this.transform.rotation);
-            }
-            Destruct();
-        }
+        SetHealth(health - dmg);        
     }
 
     public override float GetHealth() {
         return health;
     }
 
+    [ServerCallback]
+    protected void SetHealth(float value)
+    {
+        health = value;
+        if (health <= 0)
+        {
+            if (particleEffect != null)
+            {
+                GameObject.Instantiate(particleEffect, this.transform.position, this.transform.rotation);
+            }
+            Destruct();
+        }
+    }
+
+    protected void OnHealthChanged(float value)
+    {
+        health = value;
+        if (health <= 0)
+        {
+            if (particleEffect != null)
+            {
+                GameObject.Instantiate(particleEffect, this.transform.position, this.transform.rotation);
+            }
+            Destruct();
+        }
+    }
+
     public override void Heal(float healVal) {
-        health += healVal;
+        SetHealth(health + healVal);
     }
 
     public override void Knockback(Vector3 force, float timer) {

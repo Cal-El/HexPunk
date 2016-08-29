@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 
 public class BomberAIBehaviour : AIBehaviour {
@@ -38,7 +39,7 @@ public class BomberAIBehaviour : AIBehaviour {
 
         navAgent.speed = navAgent.speed * Random.Range(0.5f, 1.0f);
         navAgent.avoidancePriority = Random.Range(1,99);
-        health = maxHealth;
+        SetHealth(maxHealth);
 	}
 	
 	void Update () {
@@ -203,12 +204,11 @@ public class BomberAIBehaviour : AIBehaviour {
 
     public override void TakeDmg(float dmg, DamageType damageType = DamageType.Standard)
     {
-        health = Mathf.Clamp(health - dmg, 0, maxHealth);
+        SetHealth(Mathf.Clamp(health - dmg, 0, maxHealth));
         if (agentState == STATES.Idle)
             StartBattlecry();
         if (health <= 0)
         {
-            StartDeath();
             if (damageType == DamageType.FireElectric)
             {
                 am.PlayDeathBurnElectricAudio();
@@ -221,6 +221,25 @@ public class BomberAIBehaviour : AIBehaviour {
         else
         {
             am.PlayTakeDamageAudio();
+        }
+    }
+
+    [ServerCallback]
+    protected override void SetHealth(float value)
+    {
+        base.SetHealth(value);
+        if (health <= 0)
+        {
+            StartDeath();
+        }
+    }
+
+    protected override void OnHealthChanged(float value)
+    {
+        base.OnHealthChanged(value);
+        if (health <= 0)
+        {
+            StartDeath();
         }
     }
 

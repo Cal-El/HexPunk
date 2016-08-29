@@ -46,6 +46,7 @@ public class PlayerCommands : NetworkBehaviour {
         if (isLocalPlayer)
         {
             playerCamera.GetComponentInChildren<PlayerGUICanvas>().Defeat = value;
+            Defeat = value;
         }
     }
 
@@ -54,6 +55,7 @@ public class PlayerCommands : NetworkBehaviour {
         if (isLocalPlayer)
         {
             playerCamera.GetComponentInChildren<PlayerGUICanvas>().Victory = value;
+            Victory = value;
         }
     }
 }

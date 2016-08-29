@@ -380,7 +380,7 @@ public class ShardAbilities : ClassAbilities {
     {
         if (!isMist)
         {
-            health = Mathf.Clamp(health - dmg, 0, healthMax);
+            SetHealth(Mathf.Clamp(health - dmg, 0, healthMax));
             if (health > 0) pam.PlayTakeDamageAudio();
         }
     }
