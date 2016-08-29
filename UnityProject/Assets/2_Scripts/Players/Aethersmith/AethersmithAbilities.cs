@@ -243,7 +243,7 @@ public class AethersmithAbilities : ClassAbilities {
     }
 
     public override void TakeDmg(float dmg, DamageType damageType = DamageType.Standard) {
-        health = Mathf.Clamp(health - (dmg - dmg*((energy*0.5f)/energyMax)),0,healthMax);
+        CmdSetHealth(Mathf.Clamp(health - (dmg - dmg*((energy*0.5f)/energyMax)),0,healthMax));
         if (health > 0) pam.PlayTakeDamageAudio();
     }
 

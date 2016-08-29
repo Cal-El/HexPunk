@@ -95,7 +95,7 @@ public class ClassAbilities : Character {
 
     protected void Initialize() {
         DontDestroyOnLoad(gameObject);
-        SetHealth(healthMax);
+        CmdSetHealth(healthMax);
         pm = GetComponent<PlayerMovement>();
         pam = GetComponentInChildren<PlayerAudioManager>();
         myGUI = pm.playerCamera.GetComponentInChildren<PlayerGUICanvas>();
@@ -119,8 +119,8 @@ public class ClassAbilities : Character {
             }
         }
 
-        SetHealth(Mathf.Max(Mathf.Min(health, healthMax), 0f));
-        SetHealth(Mathf.Max(Mathf.Min(energy, energyMax), 0f));
+        CmdSetHealth(Mathf.Max(Mathf.Min(health, healthMax), 0f));
+        CmdSetHealth(Mathf.Max(Mathf.Min(energy, energyMax), 0f));
 
         //Used for testing
         if (Input.GetKeyDown(KeyCode.O))
@@ -184,7 +184,7 @@ public class ClassAbilities : Character {
     }
 
     [Command]
-    protected virtual void SetHealth(float value)
+    protected virtual void CmdSetHealth(float value)
     {
         health = value;
     }
@@ -195,12 +195,12 @@ public class ClassAbilities : Character {
     }
 
     public override void TakeDmg(float dmg, DamageType damageType = DamageType.Standard) {
-        SetHealth(Mathf.Clamp(health - dmg, 0, healthMax));
+        CmdSetHealth(Mathf.Clamp(health - dmg, 0, healthMax));
         if (health > 0) pam.PlayTakeDamageAudio();
     }
 
     public override void Heal(float addedHP) {
-        SetHealth(Mathf.Clamp(health + addedHP, 0, healthMax));
+        CmdSetHealth(Mathf.Clamp(health + addedHP, 0, healthMax));
     }
 
     public override void Knockback(Vector3 force, float timer) {
@@ -264,7 +264,7 @@ public class ClassAbilities : Character {
 
     protected virtual void EnableCharacter(bool enabled)
     {
-        if (enabled) SetHealth(healthMax * percentHealthOnRevive);
+        if (enabled) CmdSetHealth(healthMax * percentHealthOnRevive);
         var cc = GetComponent<CharacterController>();
         if (cc != null) cc.enabled = enabled;
         reviveCapsule.SetActive(!enabled);
