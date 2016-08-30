@@ -8,20 +8,73 @@ public class MainMenuManager : MonoBehaviour {
     public static MainMenuManager singleton;
 
     public enum MENUSTATES {All, MainMenu, LobbyScreen, SettingsScreen};
-    [HideInInspector]
-    public MENUSTATES currState = MENUSTATES.MainMenu;
+    private MENUSTATES currState = MENUSTATES.MainMenu;
     public GameObject lobbyManager;
     private string startScene;
 
     [System.Serializable]
     public class MenuElement {
+        [Tooltip("Drag the menu element here")]
         public RectTransform tr;
-        public float timeToTransition;
+        [Tooltip("The time is takes to transition. Must be positive and not zero")]
+        public float timeToTransition = 1;
+        [Tooltip("A position offscreen so the menu element doesn't appear at the wrong time.")]
         public Vector2 offScreenPos;
+        [Tooltip("The place onscreen you want the menu element to appear.")]
         public Vector2 onScreenPos;
+        [Tooltip("The state you want the menu element to appear in.")]
         public MENUSTATES appearInState;
-        [HideInInspector] public bool isOnScreen;
-        [HideInInspector] public bool isTransitioning;
+
+        private bool isAButton = false;
+        private bool isOnScreen = false;
+        private Button myButton = null;
+        private bool isTransitioning = false;
+        private float transitionTimer = 0;
+
+        public void Start() {
+            isOnScreen = false;
+            transitionTimer = timeToTransition;
+            tr.anchoredPosition = offScreenPos;
+            myButton = tr.GetComponent<Button>();
+            if (myButton != null) isAButton = true;
+            else isAButton = false;
+
+            ChangeState(MENUSTATES.MainMenu);
+        }
+
+        public void Update() {
+            if(transitionTimer < timeToTransition) {
+                transitionTimer += Time.deltaTime;
+                isTransitioning = true;
+            } else {
+                isTransitioning = false;
+            }
+
+            if (isTransitioning) {
+                if (isOnScreen) {
+                    tr.anchoredPosition = Vector3.Lerp(offScreenPos, onScreenPos, singleton.transitionAnimation.Evaluate(transitionTimer / timeToTransition));
+                } else {
+                    tr.anchoredPosition = Vector3.Lerp(onScreenPos, offScreenPos, singleton.transitionAnimation.Evaluate(transitionTimer / timeToTransition));
+                }
+            }
+        }
+
+        public void ChangeState(MENUSTATES newState) {
+            if (appearInState == MENUSTATES.All) return;
+            if (isOnScreen && newState != appearInState) {
+                transitionTimer = 0;
+                isOnScreen = false;
+                if (isAButton) {
+                    myButton.interactable = false;
+                }
+            } else if(!isOnScreen && newState == appearInState) {
+                transitionTimer = 0;
+                isOnScreen = true;
+                if (isAButton) {
+                    myButton.interactable = true;
+                }
+            }
+        }
     }
 
     [SerializeField] MenuElement[] menuElements;
@@ -40,58 +93,42 @@ public class MainMenuManager : MonoBehaviour {
         {
             Destroy(gameObject);
         }
+
+        foreach(MenuElement m in menuElements) {
+            m.Start();
+        }
 	}
 	
 	// Update is called once per frame
 	void Update () {
         if (SceneManager.GetActiveScene().name != startScene) Destroy(gameObject);
-        transitionTimer += Time.deltaTime;
 	    foreach (MenuElement m in menuElements) {
-            if (m.appearInState == MENUSTATES.All) {
-                m.isOnScreen = true;
-                m.tr.anchoredPosition = Vector3.Lerp(m.offScreenPos, m.onScreenPos, transitionAnimation.Evaluate(Time.timeSinceLevelLoad / m.timeToTransition));
-            } else {
-                m.isOnScreen = (currState == m.appearInState);
-                //if (m.isTransitioning) {
-                    if (m.isOnScreen) {
-                        m.tr.anchoredPosition = Vector3.Lerp(m.offScreenPos, m.onScreenPos, transitionAnimation.Evaluate(transitionTimer / m.timeToTransition));
-                    } else {
-                        m.tr.anchoredPosition = Vector3.Lerp(m.onScreenPos, m.offScreenPos, transitionAnimation.Evaluate(transitionTimer / m.timeToTransition));
-                    }
-                //}
-            }
+            m.Update();
         }
 	}
 
     public void Play()
     {
-        foreach(var element in menuElements)
-        {
-            if(element.appearInState == MENUSTATES.LobbyScreen)
-            {
-                element.timeToTransition = 1.75f;
-            }
-        }
-        transitionTimer = 0;
         currState = MENUSTATES.LobbyScreen;
+        foreach (MenuElement m in menuElements) {
+            m.ChangeState(currState);
+        }
+        
     }
 
     public void Settings()
     {
-        foreach (var element in menuElements)
-        {
-            if (element.appearInState == MENUSTATES.SettingsScreen)
-            {
-                element.timeToTransition = 1.75f;
-            }
-        }
-        transitionTimer = 0;
         currState = MENUSTATES.SettingsScreen;
+        foreach (MenuElement m in menuElements) {
+            m.ChangeState(currState);
+        }
     }
 
     public void Back() {
-        transitionTimer = 0;
         currState = MENUSTATES.MainMenu;
+        foreach (MenuElement m in menuElements) {
+            m.ChangeState(currState);
+        }
     }
 
     public void Quit() {
