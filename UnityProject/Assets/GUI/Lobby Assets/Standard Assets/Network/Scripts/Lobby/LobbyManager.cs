@@ -108,9 +108,9 @@ namespace UnityStandardAssets.Network
             }
             else
             {
-                ChangeTo(null);
+                gameMainMenu.SetActive(false);
 
-                Destroy(GameObject.Find("MainMenuUI(Clone)"));
+                ChangeTo(null);
 
                 //backDelegate = StopGameClbk;
                 topPanel.isInGame = true;
@@ -127,6 +127,7 @@ namespace UnityStandardAssets.Network
 
             if (newPanel != null)
             {
+                if (!gameMainMenu.activeSelf) gameMainMenu.SetActive(true);
                 newPanel.gameObject.SetActive(true);
             }
 

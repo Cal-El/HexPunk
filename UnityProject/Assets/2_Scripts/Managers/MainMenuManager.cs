@@ -83,8 +83,6 @@ public class MainMenuManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        DontDestroyOnLoad(gameObject);
-        startScene = SceneManager.GetActiveScene().name;
         if (singleton == null)
         {
             singleton = this;
@@ -101,8 +99,7 @@ public class MainMenuManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (SceneManager.GetActiveScene().name != startScene) Destroy(gameObject);
-	    foreach (MenuElement m in menuElements) {
+        foreach (MenuElement m in menuElements) {
             m.Update();
         }
 	}
