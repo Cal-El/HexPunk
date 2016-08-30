@@ -30,6 +30,7 @@ public class ClassAbilities : Character {
     public bool IsReviving = false;
     public Ability Revive = new Ability(5,0,1,0.25f,0,1,0);
     private GameObject reviveCapsule;
+    protected RaycastHit reviveTarget;
 
     private float knockbackTimer = 0;
 
@@ -306,16 +307,9 @@ public class ClassAbilities : Character {
         //Put death animation and stuff here
     }
 
-    protected void Ability5()
+    protected void Ability5(RaycastHit hit)
     {
-        foreach (var hit in Physics.SphereCastAll(new Vector3(transform.position.x, 0, transform.position.z), 2, transform.forward, Revive.range))
-        {
-            Debug.Log(hit.transform.gameObject);
-            if (hit.transform.tag == "Player" && !hit.transform.GetComponent<ClassAbilities>().IsAlive)
-            {
-                CmdCallRevive(hit.transform.gameObject);
-            }
-        }
+        CmdCallRevive(hit.transform.gameObject);
     }
 
     [Command]

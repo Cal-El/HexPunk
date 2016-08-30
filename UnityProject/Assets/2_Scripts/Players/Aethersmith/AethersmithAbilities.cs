@@ -64,8 +64,20 @@ public class AethersmithAbilities : ClassAbilities {
             else if (GetAxisDown2("Ability 4")) UseAbility(Maelstrom);
 
             //Revive
-            else if (Input.GetKeyDown(KeyCode.E)) {
-                UseAbility(Revive);
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                bool hasRevived = false;
+                foreach (var hit in Physics.SphereCastAll(new Vector3(transform.position.x, 0, transform.position.z), 2, transform.forward, Revive.range))
+                {
+                    if (hasRevived) return;
+                    Debug.Log(hit.transform.gameObject);
+                    if (hit.transform.tag == "Player" && !hit.transform.GetComponent<ClassAbilities>().IsAlive)
+                    {
+                        hasRevived = true;
+                        reviveTarget = hit;
+                        UseAbility(Revive);
+                    }
+                }
             }
 
             if (waitingForAbility != 0 && castingTimer <= 0) {
@@ -83,7 +95,7 @@ public class AethersmithAbilities : ClassAbilities {
                         CmdAbility4();
                         break;
                     case 5:
-                        Ability5();
+                        if (reviveTarget.transform != null) Ability5(reviveTarget);
                         break;
                 }
                 waitingForAbility = 0;
