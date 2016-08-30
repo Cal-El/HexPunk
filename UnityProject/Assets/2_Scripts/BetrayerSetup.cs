@@ -56,7 +56,9 @@ public class BetrayerSetup : NetworkBehaviour
 
         if (betrayerRoll > percentChanceToBeBetrayer) //5% chance of there not to be a betrayer
         {
-            var betrayer = players[Random.Range(0, players.Length - 1)];
+            var betrayer = players[Random.Range(0, players.Length)];
+            betrayer.GetComponent<PlayerStats>().isBetrayer = true;
+            betrayer.GetComponent<PlayerCommands>().IsBetrayer = true;
             RpcSetup(betrayer);
         }
     }
@@ -64,16 +66,8 @@ public class BetrayerSetup : NetworkBehaviour
     [ClientRpc]
     void RpcSetup(GameObject betrayer)
     {
-
-        var betrayerBehaviour = betrayer.AddComponent<BetrayerBehaviour>();
+        betrayer.GetComponent<PlayerStats>().isBetrayer = true;
         betrayer.GetComponent<PlayerCommands>().IsBetrayer = true;
-        foreach (var player in players)
-        {
-            if (player != betrayer)
-            {
-                betrayerBehaviour.players.Add(player);
-            }
-        }
         betrayerChosen = true;
     }
 }
