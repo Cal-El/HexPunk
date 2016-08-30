@@ -23,7 +23,7 @@ public class MaelstromScript : MonoBehaviour {
 
         foreach (Character g in Megamanager.GetAllCharacters()) {
             if (g.transform != transform.parent && area.bounds.Contains(g.transform.position)) {
-                g.TakeDmg(DoT * Time.deltaTime);
+                g.TakeDmg(DoT * Time.deltaTime, Character.DamageType.Standard, transform.parent.GetComponent<PlayerStats>());
             }
         }
 	}

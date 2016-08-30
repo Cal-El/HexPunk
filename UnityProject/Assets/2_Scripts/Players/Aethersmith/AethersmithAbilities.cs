@@ -175,7 +175,7 @@ public class AethersmithAbilities : ClassAbilities {
                 if (c != null) {
                     energy += 5;
                     c.Knockback(transform.forward * HammerSwing.knockbackStr, 1);
-                    c.TakeDmg(HammerSwing.baseDmg);
+                    c.TakeDmg(HammerSwing.baseDmg, DamageType.Standard, playerStats);
                     
                 }
                 
@@ -198,7 +198,7 @@ public class AethersmithAbilities : ClassAbilities {
             if (c != null && !c.IsInvulnerable())
             {
                 c.Knockback(transform.forward * SpectralSpear.knockbackStr, 1);
-                c.TakeDmg(SpectralSpear.baseDmg);
+                c.TakeDmg(SpectralSpear.baseDmg, DamageType.Standard, playerStats);
             }
             GameObject g = Instantiate(javalinPrefab, javalinParticle.transform.position, Quaternion.identity) as GameObject;
             g.transform.LookAt(new Vector3(hit.point.x, 1, hit.point.z));
@@ -252,9 +252,16 @@ public class AethersmithAbilities : ClassAbilities {
         }
     }
 
-    public override void TakeDmg(float dmg, DamageType damageType = DamageType.Standard) {
+    public override void TakeDmg(float dmg, DamageType damageType = DamageType.Standard, PlayerStats attacker = null) {
         CmdSetHealth(Mathf.Clamp(health - (dmg - dmg*((energy*0.5f)/energyMax)),0,healthMax));
-        if (health > 0) pam.PlayTakeDamageAudio();
+        if (attacker != null) attacker.CmdAddDamageDealt(dmg);
+        playerStats.CmdAddDamageTaken(dmg);
+        if (health > 0)
+        {
+            if (attacker != null) attacker.CmdAddKills(1);
+            playerStats.CmdAddDeaths(1);
+            pam.PlayTakeDamageAudio();
+        }
     }
 
     public override void GainXP(float xp) {

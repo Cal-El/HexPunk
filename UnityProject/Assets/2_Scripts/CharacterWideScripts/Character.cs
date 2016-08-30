@@ -33,7 +33,7 @@ public abstract class Character : NetworkBehaviour {
 
     public abstract void Heal(float healVal);
 
-    public abstract void TakeDmg(float dmg, DamageType damageType = DamageType.Standard);
+    public abstract void TakeDmg(float dmg, DamageType damageType = DamageType.Standard, PlayerStats attacker = null);
 
     public abstract void Knockback(Vector3 force, float timer);
 

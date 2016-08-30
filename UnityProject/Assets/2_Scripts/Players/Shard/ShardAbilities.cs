@@ -302,7 +302,7 @@ public class ShardAbilities : ClassAbilities {
                 if (ch != null)
                 {
                     Vector3 dir = (col.transform.position - transform.position).normalized;
-                    ch.TakeDmg(Icefield.baseDmg);
+                    ch.TakeDmg(Icefield.baseDmg, DamageType.Standard, playerStats);
                 }
             }
         }
@@ -385,12 +385,19 @@ public class ShardAbilities : ClassAbilities {
         }
     }
 
-    public override void TakeDmg(float dmg, DamageType damageType = DamageType.Standard)
-    {
+    public override void TakeDmg(float dmg, DamageType damageType = DamageType.Standard, PlayerStats attacker = null)
+    {        
         if (!isMist)
-        {
+        {            
             CmdSetHealth(Mathf.Clamp(health - dmg, 0, healthMax));
-            if (health > 0) pam.PlayTakeDamageAudio();
+            if (attacker != null) attacker.CmdAddDamageDealt(dmg);
+            playerStats.CmdAddDamageTaken(dmg);
+            if (health > 0)
+            {
+                if (attacker != null) attacker.CmdAddKills(1);
+                playerStats.CmdAddDeaths(1);
+                pam.PlayTakeDamageAudio();
+            }
         }
     }
 

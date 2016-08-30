@@ -4,7 +4,8 @@ using System.Collections;
 [RequireComponent(typeof(Character))]
 
 public class CalderaBurnDamage : MonoBehaviour {
-    
+
+    private PlayerStats calderaStats;
     private bool isBurning = false;
     public float dotTimer = 1;
     private float timer;
@@ -15,14 +16,18 @@ public class CalderaBurnDamage : MonoBehaviour {
 
     void Start () {
         c = GetComponent<Character>();
+        calderaStats = FindObjectOfType<CalderaAbilities>().gameObject.GetComponent<PlayerStats>();
     }
 
 	// Update is called once per frame
 	void Update ()
     {
-	    if(Time.time > timer && currentTick < numberOfTicks)
+        if(calderaStats == null)
+            calderaStats = FindObjectOfType<CalderaAbilities>().gameObject.GetComponent<PlayerStats>();
+        if (Time.time > timer && currentTick < numberOfTicks)
         {
-            c.TakeDmg(tickDamage, Character.DamageType.FireElectric);
+            if(calderaStats != null) c.TakeDmg(tickDamage, Character.DamageType.FireElectric, calderaStats);
+            else c.TakeDmg(tickDamage, Character.DamageType.FireElectric);
             currentTick++;
             if (currentTick >= numberOfTicks) isBurning = false;
             timer += dotTimer;

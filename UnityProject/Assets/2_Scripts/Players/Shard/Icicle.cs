@@ -4,6 +4,7 @@ using System.Collections;
 public class Icicle : MonoBehaviour {
     [HideInInspector]
     public GameObject owner;
+    private PlayerStats ownerStats;
     [HideInInspector]
     public float damage;
     [HideInInspector]
@@ -15,11 +16,14 @@ public class Icicle : MonoBehaviour {
     void Start()
     {
         startPos = transform.position;
+        ownerStats = owner.GetComponent<PlayerStats>();
     }
 	
 	// Update is called once per frame
 	void Update ()
     {
+        if(ownerStats == null)
+            ownerStats = owner.GetComponent<PlayerStats>();
         transform.Translate(Vector3.forward * Time.deltaTime * speed);
         if (Vector3.Distance(startPos, transform.position) > range)
         {
@@ -40,7 +44,7 @@ public class Icicle : MonoBehaviour {
                 Character ch = col.GetComponent<Character>();
                 if (ch != null && !ch.IsInvulnerable())
                 {
-                    ch.TakeDmg(damage);
+                    ch.TakeDmg(damage, Character.DamageType.Standard, ownerStats);
                 }
                 p.transform.parent = null;
                 p.enableEmission = false;

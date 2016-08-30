@@ -215,7 +215,7 @@ public class ConduitAbilities : ClassAbilities {
                         hits[i].stacks.AddStack();
                         if (i > 0)
                         {
-                            hits[i].TakeDmg(LightingPunch.baseDmg / 2, DamageType.FireElectric);
+                            hits[i].TakeDmg(LightingPunch.baseDmg / 2, DamageType.FireElectric, playerStats);
                         }
                         if (hits[i] == null)
                         {
@@ -234,7 +234,7 @@ public class ConduitAbilities : ClassAbilities {
                 } else {
                     ch.stacks.AddStack();
                 }
-                ch.TakeDmg(LightingPunch.baseDmg);
+                ch.TakeDmg(LightingPunch.baseDmg, DamageType.Standard, playerStats);
             }
         }
     }
@@ -293,12 +293,12 @@ public class ConduitAbilities : ClassAbilities {
                         {
                             telePos = ray.origin + (ray.direction * (hit[i].distance + 1.5f));
                             ch.stacks.AddStack();
-                            ch.TakeDmg(LightningDash.baseDmg, DamageType.FireElectric);
+                            ch.TakeDmg(LightningDash.baseDmg, DamageType.FireElectric, playerStats);
                         }
                         else
                         {
                             ch.stacks.AddStack();
-                            ch.TakeDmg(LightningDash.baseDmg, DamageType.FireElectric);
+                            ch.TakeDmg(LightningDash.baseDmg, DamageType.FireElectric, playerStats);
                         }
                     }
                 }
@@ -321,7 +321,7 @@ public class ConduitAbilities : ClassAbilities {
                 {
                     float stks = c.stacks.Stacks;
                     CmdDischargeStacks(c.gameObject);
-                    c.TakeDmg(Discharge.baseDmg * stks, DamageType.FireElectric);
+                    c.TakeDmg(Discharge.baseDmg * stks, DamageType.FireElectric, playerStats);
                 }
             }
     }

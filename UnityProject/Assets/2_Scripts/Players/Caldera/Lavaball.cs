@@ -5,6 +5,7 @@ public class Lavaball : MonoBehaviour {
 
     [HideInInspector]
     public GameObject owner;
+    private PlayerStats ownerStats;
     [HideInInspector]
     public float damage;
     [HideInInspector]
@@ -20,11 +21,14 @@ public class Lavaball : MonoBehaviour {
     {
         startPos = transform.position;
         safeWindow = Time.time;
+        ownerStats = owner.GetComponent<PlayerStats>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (ownerStats == null)
+            ownerStats = owner.GetComponent<PlayerStats>();
         transform.Translate(Vector3.forward * Time.deltaTime * speed);
         if (Vector3.Distance(startPos, transform.position) > range)
         {
@@ -45,7 +49,7 @@ public class Lavaball : MonoBehaviour {
             {
                 if (col.gameObject != owner)
                 {
-                    ch.TakeDmg(damage * Time.deltaTime * damageModifyer, Character.DamageType.FireElectric);
+                    ch.TakeDmg(damage * Time.deltaTime * damageModifyer, Character.DamageType.FireElectric, ownerStats);
                     if (ch.burn != null)
                         ch.burn.IsBurning = true;
                 }
@@ -53,7 +57,7 @@ public class Lavaball : MonoBehaviour {
                 {
                     if (Time.time > safeWindow)
                     {
-                        ch.TakeDmg(damage * Time.deltaTime * damageModifyer / 2, Character.DamageType.FireElectric);
+                        ch.TakeDmg(damage * Time.deltaTime * damageModifyer / 2, Character.DamageType.FireElectric, ownerStats);
                     }
                 }
             }
@@ -83,11 +87,11 @@ public class Lavaball : MonoBehaviour {
                 {
                     if (target.gameObject == owner)
                     {
-                        ch.TakeDmg(spashDamage / 2, Character.DamageType.FireElectric);
+                        ch.TakeDmg(spashDamage / 2, Character.DamageType.FireElectric, ownerStats);
                     }
                     else
                     {
-                        ch.TakeDmg(spashDamage, Character.DamageType.FireElectric);
+                        ch.TakeDmg(spashDamage, Character.DamageType.FireElectric, ownerStats);
                         if (ch.burn != null)
                             ch.burn.IsBurning = true;
                     }

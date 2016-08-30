@@ -276,7 +276,7 @@ public class CalderaAbilities : ClassAbilities {
                 if (ch != null && !ch.IsInvulnerable())
                 {
                     Vector3 dir = (col.transform.position - transform.position).normalized;
-                    ch.TakeDmg(Eruption.baseDmg * (Vector3.Distance(col.transform.position, transform.position)) / Eruption.range, DamageType.FireElectric);
+                    ch.TakeDmg(Eruption.baseDmg * (Vector3.Distance(col.transform.position, transform.position)) / Eruption.range, DamageType.FireElectric, playerStats);
                     ch.Knockback((new Vector3(dir.x, 0, dir.z) * Eruption.knockbackStr), 1);
                     if (ch.gameObject != gameObject)
                     {

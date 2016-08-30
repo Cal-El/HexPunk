@@ -1,22 +1,43 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 
-public class PlayerStats : MonoBehaviour {
+public class PlayerStats : NetworkBehaviour {
 
-    public bool isBetrayer; 
-    public float damageTaken;
-    public float damageDelt;
-    public float kills;
-    public float deaths;
-    public float revives;
+    public bool isBetrayer = false; 
+    public float damageTaken = 0;
+    public float damageDealt = 0;
+    public float kills = 0;
+    public float deaths = 0;
+    public float alliesRevived = 0;
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+    [Command]
+    public void CmdAddDamageTaken(float value)
+    {
+        damageTaken += value;
+    }
+
+    [Command]
+    public void CmdAddDamageDealt(float value)
+    {
+        damageDealt += value;
+    }
+
+    [Command]
+    public void CmdAddKills(float value)
+    {
+        kills += value;
+    }
+
+    [Command]
+    public void CmdAddDeaths(float value)
+    {
+        deaths += value;
+    }
+
+    [Command]
+    public void CmdAddRevives(float value)
+    {
+        alliesRevived += value;
+    }
 }

@@ -202,7 +202,7 @@ public class BomberAIBehaviour : AIBehaviour {
         agentState = STATES.Dead;
     }
 
-    public override void TakeDmg(float dmg, DamageType damageType = DamageType.Standard)
+    public override void TakeDmg(float dmg, DamageType damageType = DamageType.Standard, PlayerStats attacker = null)
     {
         SetHealth(Mathf.Clamp(health - dmg, 0, maxHealth));
         if (agentState == STATES.Idle)

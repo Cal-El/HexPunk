@@ -209,7 +209,7 @@ public class MeleeAIBehaviour : AIBehaviour {
         SetHealth(Mathf.Clamp(health + healVal, 0, maxHealth));
     }
 
-    public override void TakeDmg(float dmg, DamageType damageType = DamageType.Standard)
+    public override void TakeDmg(float dmg, DamageType damageType = DamageType.Standard, PlayerStats attacker = null)
     {
         SetHealth(Mathf.Clamp(health - dmg, 0, maxHealth));
         if (agentState == STATES.Idle)

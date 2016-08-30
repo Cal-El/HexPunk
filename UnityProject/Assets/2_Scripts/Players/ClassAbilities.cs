@@ -12,6 +12,7 @@ public class ClassAbilities : Character {
     public Transform graphicObj;
     protected PlayerAudioManager pam;
     protected PlayerMovement pm;
+    public PlayerStats playerStats;
     protected PlayerGUICanvas myGUI;
     protected HUDProperties myHud;
     [SyncVar (hook = "OnMaxHealthChanged")]
@@ -212,9 +213,16 @@ public class ClassAbilities : Character {
         health = Mathf.Max(Mathf.Min(health, healthMax), 0f);
     }
 
-    public override void TakeDmg(float dmg, DamageType damageType = DamageType.Standard) {
+    public override void TakeDmg(float dmg, DamageType damageType = DamageType.Standard, PlayerStats attacker = null) {
         CmdSetHealth(Mathf.Clamp(health - dmg, 0, healthMax));
-        if (health > 0) pam.PlayTakeDamageAudio();
+        if (attacker != null) attacker.CmdAddDamageDealt(dmg);
+        playerStats.CmdAddDamageTaken(dmg);
+        if (health > 0)
+        {
+            if (attacker != null) attacker.CmdAddKills(1);
+            playerStats.CmdAddDeaths(1);
+            pam.PlayTakeDamageAudio();
+        }
     }
 
     public override void Heal(float addedHP) {

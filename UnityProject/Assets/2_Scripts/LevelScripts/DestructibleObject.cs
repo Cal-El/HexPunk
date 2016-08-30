@@ -25,7 +25,7 @@ public class DestructibleObject : Character
         base.Initialise();
     }
 
-    public override void TakeDmg(float dmg, DamageType damageType = DamageType.Standard)
+    public override void TakeDmg(float dmg, DamageType damageType = DamageType.Standard, PlayerStats attacker = null)
     {
         SetHealth(health - dmg);        
     }
