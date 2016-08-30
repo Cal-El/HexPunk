@@ -30,10 +30,19 @@ public class SceneChangeTrigger : NetworkBehaviour {
     void OnTriggerEnter(Collider col)
     {
         if (col.gameObject.tag == "Player" && stage == 0) {
-            startTime = Time.time;
-            stage = 1;
-            FindObjectOfType<ScreenFader>().Fade(timeToChange, true);
+            Activate();
         }
+    }
+
+    void Activate() {
+        startTime = Time.time;
+        stage = 1;
+        FindObjectOfType<ScreenFader>().Fade(timeToChange, true);
+    }
+
+    public void OverrideActivate(string s) {
+        nextScene = s;
+        Activate();
     }
 
     [ServerCallback]
