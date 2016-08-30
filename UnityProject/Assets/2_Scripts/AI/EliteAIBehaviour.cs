@@ -309,9 +309,12 @@ public class EliteAIBehaviour : AIBehaviour {
     
     public override float TakeDmg(float dmg, DamageType damageType = DamageType.Standard, PlayerStats attacker = null) {
         SetHealth(Mathf.Clamp(health - dmg, 0, maxHealth));
+        if (attacker != null) attacker.CmdAddDamageDealt(dmg);
         if (agentState == STATES.Idle)
             StartBattlecry();
-        if (health <= 0) {
+        if (health <= 0)
+        {
+            if (attacker != null) attacker.CmdAddKills(1);
             if (damageType == DamageType.FireElectric)
             {
                 am.PlayDeathBurnElectricAudio();

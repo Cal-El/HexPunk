@@ -394,7 +394,11 @@ public class ShardAbilities : ClassAbilities {
             playerStats.CmdAddDamageTaken(dmg);
             if (health > 0)
             {
-                if (attacker != null) attacker.CmdAddKills(1);
+                if (attacker != null)
+                {
+                    attacker.CmdAddPlayerKills(1);
+                    attacker.CmdAddKills(1);
+                }
                 playerStats.CmdAddDeaths(1);
                 pam.PlayTakeDamageAudio();
             }

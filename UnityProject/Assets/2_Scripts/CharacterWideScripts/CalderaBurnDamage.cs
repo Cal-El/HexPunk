@@ -19,18 +19,24 @@ public class CalderaBurnDamage : MonoBehaviour {
         calderaStats = FindObjectOfType<CalderaAbilities>().gameObject.GetComponent<PlayerStats>();
     }
 
-	// Update is called once per frame
-	void Update ()
+    // Update is called once per frame
+    void Update()
     {
-        if(calderaStats == null)
-            calderaStats = FindObjectOfType<CalderaAbilities>().gameObject.GetComponent<PlayerStats>();
-        if (Time.time > timer && currentTick < numberOfTicks)
+        if (isBurning)
         {
-            if(calderaStats != null) c.TakeDmg(tickDamage, Character.DamageType.FireElectric, calderaStats);
-            else c.TakeDmg(tickDamage, Character.DamageType.FireElectric);
-            currentTick++;
-            if (currentTick >= numberOfTicks) isBurning = false;
-            timer += dotTimer;
+            if (calderaStats == null)
+                calderaStats = FindObjectOfType<CalderaAbilities>().gameObject.GetComponent<PlayerStats>();
+            else
+            {
+                if (Time.time > timer && currentTick < numberOfTicks)
+                {
+                    if (calderaStats != null) c.TakeDmg(tickDamage, Character.DamageType.FireElectric, calderaStats);
+                    else c.TakeDmg(tickDamage, Character.DamageType.FireElectric);
+                    currentTick++;
+                    if (currentTick >= numberOfTicks) isBurning = false;
+                    timer += dotTimer;
+                }
+            }
         }
 	}
 

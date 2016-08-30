@@ -28,6 +28,7 @@ public class DestructibleObject : Character
     public override float TakeDmg(float dmg, DamageType damageType = DamageType.Standard, PlayerStats attacker = null)
     {
         SetHealth(health - dmg);
+        if (attacker != null) attacker.CmdAddDamageDealt(dmg);
         return health;
     }
 

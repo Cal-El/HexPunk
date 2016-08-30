@@ -30,6 +30,12 @@ public class PlayerStats : NetworkBehaviour {
     }
 
     [Command]
+    public void CmdAddPlayerKills(float value)
+    {
+        kills += value;
+    }
+
+    [Command]
     public void CmdAddDeaths(float value)
     {
         deaths += value;
