@@ -252,16 +252,19 @@ public class AethersmithAbilities : ClassAbilities {
         }
     }
 
-    public override void TakeDmg(float dmg, DamageType damageType = DamageType.Standard, PlayerStats attacker = null) {
-        CmdSetHealth(Mathf.Clamp(health - (dmg - dmg*((energy*0.5f)/energyMax)),0,healthMax));
-        if (attacker != null) attacker.CmdAddDamageDealt(dmg);
-        playerStats.CmdAddDamageTaken(dmg);
-        if (health > 0)
-        {
-            if (attacker != null) attacker.CmdAddKills(1);
-            playerStats.CmdAddDeaths(1);
-            pam.PlayTakeDamageAudio();
+    public override float TakeDmg(float dmg, DamageType damageType = DamageType.Standard, PlayerStats attacker = null) {
+        if (!isActuallyGod) {
+            CmdSetHealth(Mathf.Clamp(health - (dmg - dmg * ((energy * 0.5f) / energyMax)), 0, healthMax));
+            if (attacker != null) attacker.CmdAddDamageDealt(dmg);
+            playerStats.CmdAddDamageTaken(dmg);
+            if (health > 0)
+            {
+                if (attacker != null) attacker.CmdAddKills(1);
+                playerStats.CmdAddDeaths(1);
+                pam.PlayTakeDamageAudio();
+            }
         }
+        return health;
     }
 
     public override void GainXP(float xp) {

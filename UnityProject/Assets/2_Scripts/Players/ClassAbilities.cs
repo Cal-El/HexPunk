@@ -24,6 +24,7 @@ public class ClassAbilities : Character {
     public float energy;
     protected float level = 0;
 
+    [HideInInspector] public bool isActuallyGod = false;
     private bool isAlive = true;
     public float flatMaxHealthReviveCost = 10;
     public float percentHealthOnRevive = 20;
@@ -110,6 +111,11 @@ public class ClassAbilities : Character {
 
     protected void BaseUpdate()
     {
+        if (isActuallyGod) {
+            health = healthMax;
+            energy = energyMax;
+        }
+
         if(myGUI == null || myHud == null)
         {
             myGUI = pm.playerCamera.GetComponentInChildren<PlayerGUICanvas>();
@@ -124,16 +130,6 @@ public class ClassAbilities : Character {
         }
         
         energy = (Mathf.Max(Mathf.Min(energy, energyMax), 0f));
-
-        //Used for testing
-        if (Input.GetKeyDown(KeyCode.O))
-        {
-            AddHealth(10);
-        }
-        if (Input.GetKeyDown(KeyCode.L))
-        {
-            AddHealth(-10);
-        }
 
         //FAKE IT TIL WE MAKE IT
         if (Input.GetKeyDown(KeyCode.Keypad1))
@@ -212,17 +208,19 @@ public class ClassAbilities : Character {
         health = value;
         health = Mathf.Max(Mathf.Min(health, healthMax), 0f);
     }
-
-    public override void TakeDmg(float dmg, DamageType damageType = DamageType.Standard, PlayerStats attacker = null) {
-        CmdSetHealth(Mathf.Clamp(health - dmg, 0, healthMax));
-        if (attacker != null) attacker.CmdAddDamageDealt(dmg);
-        playerStats.CmdAddDamageTaken(dmg);
-        if (health > 0)
-        {
-            if (attacker != null) attacker.CmdAddKills(1);
-            playerStats.CmdAddDeaths(1);
-            pam.PlayTakeDamageAudio();
+    public override float TakeDmg(float dmg, DamageType damageType = DamageType.Standard, PlayerStats attacker = null) {
+        if (!isActuallyGod) {
+            CmdSetHealth(Mathf.Clamp(health - dmg, 0, healthMax));
+            if (attacker != null) attacker.CmdAddDamageDealt(dmg);
+            playerStats.CmdAddDamageTaken(dmg);
+            if (health > 0)
+            {
+                if (attacker != null) attacker.CmdAddKills(1);
+                playerStats.CmdAddDeaths(1);
+                pam.PlayTakeDamageAudio();
+            }
         }
+        return health;
     }
 
     public override void Heal(float addedHP) {
@@ -242,6 +240,16 @@ public class ClassAbilities : Character {
         //rb.AddForce(force);
         //knockbackTimer = timer;
 
+    }
+
+    public void BecomeGod() {
+        if (!isActuallyGod) {
+            isActuallyGod = true;
+            health = healthMax;
+            energy = energyMax;
+        } else {
+            isActuallyGod = false;
+        }
     }
 
     //Used for testing
@@ -399,6 +407,6 @@ public class ClassAbilities : Character {
 
     public override bool IsInvulnerable()
     {
-        return false;
+        return isActuallyGod;
     }
 }

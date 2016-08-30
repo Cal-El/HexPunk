@@ -208,8 +208,8 @@ public class MeleeAIBehaviour : AIBehaviour {
     public override void Heal(float healVal) {
         SetHealth(Mathf.Clamp(health + healVal, 0, maxHealth));
     }
-
-    public override void TakeDmg(float dmg, DamageType damageType = DamageType.Standard, PlayerStats attacker = null)
+    
+    public override float TakeDmg(float dmg, DamageType damageType = DamageType.Standard, PlayerStats attacker = null)
     {
         SetHealth(Mathf.Clamp(health - dmg, 0, maxHealth));
         if (agentState == STATES.Idle)
@@ -229,6 +229,7 @@ public class MeleeAIBehaviour : AIBehaviour {
         {
             am.PlayTakeDamageAudio();
         }
+        return health;
     }
 
     public override void Knockback(Vector3 force, float timer) {

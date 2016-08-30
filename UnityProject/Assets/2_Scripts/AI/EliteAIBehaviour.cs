@@ -189,25 +189,26 @@ public class EliteAIBehaviour : AIBehaviour {
             target = null;
             foreach (ClassAbilities p in Megamanager.MM.players) {
                 bool inLOS = false;
-                Ray ray = new Ray(transform.position, (p.Position - transform.position).normalized);
-                RaycastHit[] hits = Physics.RaycastAll(ray, rangeAttack.range);
-                hits = Megamanager.SortByDistance(hits);
-                for (int i = 0; i < hits.Length; i++) {
-                    Character ch = hits[i].transform.GetComponent<Character>();
-                    Debug.Log(i + ": " + hits[i].transform.name);
-                    if (ch == p) {
-                        inLOS = true;
-                    } else if (ch != null) {
-                    } else { break; }
-                }
-                if (inLOS) {
-                    if (target == null) {
-                        target = p;
-                    } else if (Vector3.Distance(target.Position, transform.position) < Vector3.Distance(p.Position, transform.position)) {
-                        target = p;
+                if (!p.IsInvulnerable()) {
+                    Ray ray = new Ray(transform.position, (p.Position - transform.position).normalized);
+                    RaycastHit[] hits = Physics.RaycastAll(ray, rangeAttack.range);
+                    hits = Megamanager.SortByDistance(hits);
+                    for (int i = 0; i < hits.Length; i++) {
+                        Character ch = hits[i].transform.GetComponent<Character>();
+                        Debug.Log(i + ": " + hits[i].transform.name);
+                        if (ch == p) {
+                            inLOS = true;
+                        } else if (ch != null) {
+                        } else { break; }
+                    }
+                    if (inLOS) {
+                        if (target == null) {
+                            target = p;
+                        } else if (Vector3.Distance(target.Position, transform.position) < Vector3.Distance(p.Position, transform.position)) {
+                            target = p;
+                        } else { continue; }
                     } else { continue; }
                 } else { continue; }
-
             }
             //No Target found
             if (target == null) {
@@ -217,6 +218,7 @@ public class EliteAIBehaviour : AIBehaviour {
             } else {
                 rangeAttack.attackTimer = 0 + Time.deltaTime;
                 warningEffect.SetActive(true);
+                rangeTarget = target.Position;
             }
         } else if (rangeAttack.attackTimer >= rangeAttack.castingTime && target != null) {
             //Time to attack
@@ -304,8 +306,8 @@ public class EliteAIBehaviour : AIBehaviour {
     public override void Heal(float healVal) {
         SetHealth(Mathf.Clamp(health + healVal, 0, maxHealth));
     }
-
-    public override void TakeDmg(float dmg, DamageType damageType = DamageType.Standard, PlayerStats attacker = null) {
+    
+    public override float TakeDmg(float dmg, DamageType damageType = DamageType.Standard, PlayerStats attacker = null) {
         SetHealth(Mathf.Clamp(health - dmg, 0, maxHealth));
         if (agentState == STATES.Idle)
             StartBattlecry();
@@ -323,6 +325,8 @@ public class EliteAIBehaviour : AIBehaviour {
         {
             am.PlayTakeDamageAudio();
         }
+
+        return health;
     }
 
     public override void Knockback(Vector3 force, float timer) {

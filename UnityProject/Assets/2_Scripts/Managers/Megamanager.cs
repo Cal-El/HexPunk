@@ -22,6 +22,8 @@ public class Megamanager : NetworkBehaviour {
         }
     }
     public RoomConnection[] roomTree;
+    private bool allPlayersInList = false;
+
 
 	// Use this for initialization
 	void Awake () {
@@ -36,8 +38,16 @@ public class Megamanager : NetworkBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        
-        if(players.Length < 4) players = FindObjectsOfType<ClassAbilities>();
+
+        if (!allPlayersInList) {
+            players = FindObjectsOfType<ClassAbilities>();
+            if (players.Length >= FindObjectOfType<NetworkLobbyManager>().minPlayers) {
+                allPlayersInList = true;
+                for(int i = 0; i < players.Length; i++) {
+                    players[i].ID = i; 
+                }
+            }
+        }
 
         if (characters.Count == 0 && AllRoomsUnlocked()) Victory();
 
@@ -103,9 +113,10 @@ public class Megamanager : NetworkBehaviour {
         return null;
     }
 
-    public static void AddCharacterToList(Character c) {
-        if (MM.characters == null) MM.characters = new List<Character>();
+    public static int AddCharacterToList(Character c) {
+        if (MM.characters == null) { MM.characters = new List<Character>(); }
         MM.characters.Add(c);
+        return MM.characters.Count - 1;
     }
 
     public static void RemoveCharacterFromList(Character c) {

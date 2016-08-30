@@ -24,10 +24,11 @@ public class DestructibleObject : Character
         SetHealth(maxHealth);
         base.Initialise();
     }
-
-    public override void TakeDmg(float dmg, DamageType damageType = DamageType.Standard, PlayerStats attacker = null)
+    
+    public override float TakeDmg(float dmg, DamageType damageType = DamageType.Standard, PlayerStats attacker = null)
     {
-        SetHealth(health - dmg);        
+        SetHealth(health - dmg);
+        return health;
     }
 
     public override float GetHealth() {

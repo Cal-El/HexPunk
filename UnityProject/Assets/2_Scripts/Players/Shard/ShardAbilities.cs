@@ -385,10 +385,10 @@ public class ShardAbilities : ClassAbilities {
         }
     }
 
-    public override void TakeDmg(float dmg, DamageType damageType = DamageType.Standard, PlayerStats attacker = null)
-    {        
-        if (!isMist)
-        {            
+    public override float TakeDmg(float dmg, DamageType damageType = DamageType.Standard, PlayerStats attacker = null)
+    {
+        if (!isMist && !isActuallyGod)
+        {
             CmdSetHealth(Mathf.Clamp(health - dmg, 0, healthMax));
             if (attacker != null) attacker.CmdAddDamageDealt(dmg);
             playerStats.CmdAddDamageTaken(dmg);
@@ -399,9 +399,10 @@ public class ShardAbilities : ClassAbilities {
                 pam.PlayTakeDamageAudio();
             }
         }
+        return health;
     }
 
     public override bool IsInvulnerable() {
-        return isMist;
+        return isMist || isActuallyGod;
     }
 }
