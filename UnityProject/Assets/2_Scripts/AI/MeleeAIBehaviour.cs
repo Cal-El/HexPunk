@@ -14,7 +14,7 @@ public class MeleeAIBehaviour : AIBehaviour {
     public float cooldown = 1;                  //The time it between attacks
     private float attackTimer = 0;
     public float range = 2;                     //Range/Reach of the attack
-
+    public float deathTime = 2;
     //Pathfinding Variables
     [HideInInspector]public NavMeshAgent navAgent;
     private NavMeshObstacle navObst;
@@ -179,7 +179,7 @@ public class MeleeAIBehaviour : AIBehaviour {
         GetComponent<CapsuleCollider>().enabled = true;
         base.Destroyed();
         agentState = STATES.Dead;
-        Destroy(gameObject, 5);
+        Destroy(gameObject, deathTime);
     }
 
     public override float GetHealth() {
