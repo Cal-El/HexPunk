@@ -22,6 +22,7 @@ public class CalderaAbilities : ClassAbilities {
     public float afterburnerDuration = 2f;
     private float afterburnerTimer;
     public Ability Eruption = new Ability(4, 8, 1, 0.5f, 90, 5, 1000);
+    private bool pastPressureThreshold = false;
 
     private int playerNum = 0;
 
@@ -60,6 +61,11 @@ public class CalderaAbilities : ClassAbilities {
         {
             energy = energy - Time.deltaTime * energyDecay;
         }
+        else
+        {
+            pastPressureThreshold = true;
+            energy = energy + Time.deltaTime * energyDecay;
+        }
 
         //Energy
         if (energy < energyMax)
@@ -80,13 +86,17 @@ public class CalderaAbilities : ClassAbilities {
         //Abilities
         if (IsAlive)
         {
-            if (Input.GetButtonDown("Ability 1")) UseAbility(Fireball);
-            if (GetAxisDown1("Ability 2")) UseAbility(Lavaball);
-            if (Input.GetButtonDown("Ability 3")) UseAbility(Afterburner);
+            if (!pastPressureThreshold)
+            {
+                if (Input.GetButtonDown("Ability 1")) UseAbility(Fireball);
+                if (GetAxisDown1("Ability 2")) UseAbility(Lavaball);
+                if (Input.GetButtonDown("Ability 3")) UseAbility(Afterburner);
+            }
+
             if (GetAxisDown2("Ability 4")) UseAbility(Eruption);
 
             //Revive
-            if (Input.GetKeyDown(KeyCode.E))
+            if (Input.GetButton("Revive"))
             {
                 bool hasRevived = false;
                 foreach (var hit in Physics.SphereCastAll(new Vector3(transform.position.x, 0, transform.position.z), 2, transform.forward, Revive.range))
@@ -257,6 +267,7 @@ public class CalderaAbilities : ClassAbilities {
 
     private void Ability4()
     {
+        pastPressureThreshold = false;
         GameObject eruption = Instantiate(eruptionPrefab, transform.position, transform.rotation) as GameObject;
 
         Eruption script = eruption.GetComponent<Eruption>();

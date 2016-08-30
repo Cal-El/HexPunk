@@ -16,7 +16,11 @@ public class CalderaBurnDamage : MonoBehaviour {
 
     void Start () {
         c = GetComponent<Character>();
-        calderaStats = FindObjectOfType<CalderaAbilities>().gameObject.GetComponent<PlayerStats>();
+        var caldera = FindObjectOfType<CalderaAbilities>();
+        if (caldera != null)
+        {
+            calderaStats = FindObjectOfType<CalderaAbilities>().gameObject.GetComponent<PlayerStats>();
+        }
     }
 
     // Update is called once per frame

@@ -78,7 +78,7 @@ public class ConduitAbilities : ClassAbilities {
             if (GetAxisDown2("Ability 4")) UseAbility(Discharge);
 
             //Revive
-            if (Input.GetKeyDown(KeyCode.E))
+            if (Input.GetButton("Revive"))
             {
                 bool hasRevived = false;
                 foreach (var hit in Physics.SphereCastAll(new Vector3(transform.position.x, 0, transform.position.z), 2, transform.forward, Revive.range))

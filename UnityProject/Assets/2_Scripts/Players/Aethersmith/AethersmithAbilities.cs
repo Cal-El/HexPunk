@@ -64,7 +64,7 @@ public class AethersmithAbilities : ClassAbilities {
             else if (GetAxisDown2("Ability 4")) UseAbility(Maelstrom);
 
             //Revive
-            if (Input.GetKeyDown(KeyCode.E))
+            if (Input.GetButton("Revive"))
             {
                 bool hasRevived = false;
                 foreach (var hit in Physics.SphereCastAll(new Vector3(transform.position.x, 0, transform.position.z), 2, transform.forward, Revive.range))

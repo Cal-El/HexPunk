@@ -7,7 +7,8 @@ public class PlayerGUICanvas : MonoBehaviour
 {
     public HUDProperties myHud;
 
-    private GameObject myPlayer;
+    [HideInInspector]
+    public GameObject myPlayer;
     private ClassAbilities playerStats;
     private float startingMaxHealth;
 
@@ -20,8 +21,8 @@ public class PlayerGUICanvas : MonoBehaviour
     public GameObject defeatGUI;
     private bool defeat = false;
     public ScreenFader fader;
-
-    [Header ("Don't change the order")]
+    public GameObject helpGUI;
+    
     public GameObject[] huds = new GameObject[4];
 
     private float visHP;
@@ -67,6 +68,11 @@ public class PlayerGUICanvas : MonoBehaviour
                 }
             }
         }
+    }
+
+    public void ShowHelp(bool value)
+    {
+        helpGUI.SetActive(value);
     }
 
     // Update is called once per frame

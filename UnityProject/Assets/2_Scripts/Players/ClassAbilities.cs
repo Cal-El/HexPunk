@@ -153,6 +153,16 @@ public class ClassAbilities : Character {
         if (Input.GetKeyDown(KeyCode.K))
             Knockback(-transform.forward *1000, 1);
 
+        if (Input.GetButtonDown("HelpGUI") && !myGUI.helpGUI.activeSelf)
+        {
+            myGUI.ShowHelp(true);
+        }
+
+        if (Input.GetButtonUp("HelpGUI") && myGUI.helpGUI.activeSelf)
+        {
+            if (myGUI.helpGUI.activeSelf) myGUI.ShowHelp(false);
+        }
+
         if (currCooldown <= 0)
         {
             if (!isAlive)

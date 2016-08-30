@@ -20,7 +20,7 @@ public class Lavaball : MonoBehaviour {
     void Start()
     {
         startPos = transform.position;
-        safeWindow = Time.time;
+        safeWindow += Time.time;
         ownerStats = owner.GetComponent<PlayerStats>();
     }
 
