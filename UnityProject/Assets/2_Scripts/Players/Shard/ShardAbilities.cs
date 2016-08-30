@@ -390,17 +390,23 @@ public class ShardAbilities : ClassAbilities {
         if (!isMist && !isActuallyGod)
         {
             CmdSetHealth(Mathf.Clamp(health - dmg, 0, healthMax));
-            if (attacker != null) attacker.CmdAddDamageDealt(dmg);
+            if (attacker != null && isServer) attacker.CmdAddDamageDealt(dmg);
             playerStats.CmdAddDamageTaken(dmg);
             if (health > 0)
             {
-                if (attacker != null)
-                {
-                    attacker.CmdAddPlayerKills(1);
-                    attacker.CmdAddKills(1);
-                }
-                playerStats.CmdAddDeaths(1);
                 pam.PlayTakeDamageAudio();
+            }
+            else
+            {
+                if (IsAlive && isServer)
+                {
+                    if (attacker != null)
+                    {
+                        attacker.CmdAddPlayerKills(1);
+                        attacker.CmdAddKills(1);
+                    }
+                    playerStats.CmdAddDeaths(1);
+                }
             }
         }
         return health;
