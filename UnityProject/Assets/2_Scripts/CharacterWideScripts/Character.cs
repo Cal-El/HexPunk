@@ -6,19 +6,17 @@ public abstract class Character : NetworkBehaviour {
 
     public enum DamageType { Standard, FireElectric };
 
-    [HideInInspector]
-    public ConduitStacks stacks;
-    [HideInInspector]
-    public CalderaBurnDamage burn;
-    [HideInInspector]
-    public Rigidbody rb;
+    [HideInInspector] public ConduitStacks stacks;
+    [HideInInspector] public CalderaBurnDamage burn;
+    [HideInInspector] public Rigidbody rb;
     [HideInInspector] public Room myRoom;
+    [HideInInspector] public int ID;
 
     /// <summary>
     /// To be called by all start functions
     /// </summary>
     protected void Initialise() {
-        Megamanager.AddCharacterToList(this);
+        ID = Megamanager.AddCharacterToList(this);
         stacks = GetComponent<ConduitStacks>();
         burn = GetComponent<CalderaBurnDamage>();
         rb = GetComponent<Rigidbody>();
@@ -33,7 +31,7 @@ public abstract class Character : NetworkBehaviour {
 
     public abstract void Heal(float healVal);
 
-    public abstract void TakeDmg(float dmg, DamageType damageType = DamageType.Standard);
+    public abstract float TakeDmg(float dmg, DamageType damageType = DamageType.Standard);
 
     public abstract void Knockback(Vector3 force, float timer);
 

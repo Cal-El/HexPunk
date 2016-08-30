@@ -385,16 +385,17 @@ public class ShardAbilities : ClassAbilities {
         }
     }
 
-    public override void TakeDmg(float dmg, DamageType damageType = DamageType.Standard)
+    public override float TakeDmg(float dmg, DamageType damageType = DamageType.Standard)
     {
-        if (!isMist)
+        if (!isMist && !isActuallyGod)
         {
             CmdSetHealth(Mathf.Clamp(health - dmg, 0, healthMax));
             if (health > 0) pam.PlayTakeDamageAudio();
         }
+        return health;
     }
 
     public override bool IsInvulnerable() {
-        return isMist;
+        return isMist || isActuallyGod;
     }
 }

@@ -89,7 +89,7 @@ public class AIBehaviour : Character {
         SetHealth(Mathf.Clamp(health + healVal, 0, maxHealth));
     }
 
-    public override void TakeDmg(float dmg, DamageType damageType = DamageType.Standard)
+    public override float TakeDmg(float dmg, DamageType damageType = DamageType.Standard)
     {
         throw new NotImplementedException();
     }

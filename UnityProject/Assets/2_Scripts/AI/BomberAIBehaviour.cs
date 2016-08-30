@@ -202,7 +202,7 @@ public class BomberAIBehaviour : AIBehaviour {
         agentState = STATES.Dead;
     }
 
-    public override void TakeDmg(float dmg, DamageType damageType = DamageType.Standard)
+    public override float TakeDmg(float dmg, DamageType damageType = DamageType.Standard)
     {
         SetHealth(Mathf.Clamp(health - dmg, 0, maxHealth));
         if (agentState == STATES.Idle)
@@ -222,6 +222,7 @@ public class BomberAIBehaviour : AIBehaviour {
         {
             am.PlayTakeDamageAudio();
         }
+        return health;
     }
 
     [ServerCallback]
