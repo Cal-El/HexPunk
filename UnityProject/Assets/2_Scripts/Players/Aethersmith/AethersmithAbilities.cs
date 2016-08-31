@@ -289,7 +289,7 @@ public class AethersmithAbilities : ClassAbilities {
         } else if (preLevel < 4 && level >= 4) {
             HammerSwing.baseDmg *= 1.5f;
         } else if (preLevel < 5 && level >= 5) {
-            Maelstrom.range *= 1.2f;
+            Maelstrom.range *= 1.5f;
         }
     }
 }

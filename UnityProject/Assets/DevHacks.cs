@@ -143,6 +143,24 @@ public class DevHacks : MonoBehaviour {
                     debugLog.text += "\nNot a valid input. Type \"?\" to get a list of inputs";
                 }
                 break;
+            case "LevelUp":
+                if (brokenUp.Length == 2)
+                {
+                    debugLog.text += "\nAwarding +1 level...";
+                    try
+                    {
+                        LevelUp(int.Parse(brokenUp[1]));
+                    }
+                    catch
+                    {
+                        debugLog.text += "\nERROR: NaN";
+                    }
+                }
+                else
+                {
+                    debugLog.text += "\nNot a valid input. Type \"?\" to get a list of inputs";
+                }
+                break;
             case "DisableHacks":
                 child.SetActive(false);
                 hacksEnabled = false;
@@ -223,6 +241,21 @@ public class DevHacks : MonoBehaviour {
                 debugLog.text += "\n" + c.name + " is no longer a god";
             }
         } else {
+            debugLog.text += "\nNo player characters in scene";
+        }
+    }
+
+    public void LevelUp(int ID)
+    {
+        if (Megamanager.MM.players.Length > 0)
+        {
+            ClassAbilities c = Megamanager.MM.players[ID];
+            debugLog.text += "\nGiving " + c.name + " +1 level";
+            c.GainXP(1);
+            debugLog.text += "\n" + c.name + " is now level " + c.GetLevel();
+        }
+        else
+        {
             debugLog.text += "\nNo player characters in scene";
         }
     }
