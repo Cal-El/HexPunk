@@ -53,9 +53,6 @@ public class AethersmithAbilities : ClassAbilities {
             myHud.ShowIconNotEnoughEnergy(Maelstrom.abilityNum, Maelstrom.energyCost, energy);
         }
 
-        //Death
-        if (health <= 0 && IsAlive) CmdDeath();
-
         //Abilities
         if (IsAlive) {
             if (Input.GetButtonDown("Ability 1")) UseAbility(HammerSwing);

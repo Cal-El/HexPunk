@@ -66,9 +66,6 @@ public class ConduitAbilities : ClassAbilities {
             castingTimer = Mathf.Max(castingTimer - Time.deltaTime, 0);
         }
 
-        //Death
-        if (health <= 0 && IsAlive) CmdDeath();
-
         //Abilities
         if (IsAlive)
         {

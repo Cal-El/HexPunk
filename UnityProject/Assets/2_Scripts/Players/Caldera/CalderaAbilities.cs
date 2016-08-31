@@ -90,10 +90,7 @@ public class CalderaAbilities : ClassAbilities {
                 myHud.ShowCanCastAbility(Afterburner.abilityNum, false);
             }
             myHud.ShowIconNotEnoughEnergy(Eruption.abilityNum, Eruption.energyCost, energy);
-        }
-
-        //Death
-        if (health <= 0 && IsAlive) CmdDeath();
+        }        
 
         //Abilities
         if (IsAlive)

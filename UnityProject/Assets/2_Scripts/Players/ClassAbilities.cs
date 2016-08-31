@@ -1,4 +1,37 @@
-﻿using UnityEngine;
+﻿#region memes
+/*
+                  _
+             ,.-" "-.,
+            /   ===   \
+           /  =======  \
+        __|  (X)   (X)  |__      
+       / _|    .---.    |_ \         
+      | /.----/ O O \----.\ |       
+       \/     |     |     \/        
+       |                   |            
+       |                   |           
+       |                   |          
+       _\   -.,_____,.-   /_         
+   ,.-"  "-.,_________,.-"  "-.,
+  /          |       |          \  
+ |           l.     .l           | 
+ |            |     |            |
+ l.           |     |           .l             
+  |           l.   .l           | \,     
+  l.           |   |           .l   \,    
+   |           |   |           |      \,  
+   l.          |   |          .l        |
+    |          |   |          |         |
+    |          |---|          |         |
+    |          |   |          |         |
+    /"-.,__,.-"\   /"-.,__,.-"\"-.,_,.-"\
+   |            \ /            |         |
+   |             |             |         |
+    \__|__|__|__/ \__|__|__|__/ \_|__|__/  Rip Harambe
+ */
+#endregion
+
+using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
 using System.Collections.Generic;
@@ -25,7 +58,8 @@ public class ClassAbilities : Character {
     protected float level = 0;
 
     [HideInInspector] public bool isActuallyGod = false;
-    private bool isAlive = true;
+    [SyncVar (hook = "OnIsAliveChanged")]
+    public bool IsAlive = true;
     public float flatMaxHealthReviveCost = 10;
     public float percentHealthOnRevive = 20;
     [SyncVar (hook = "OnRevive")]
@@ -165,7 +199,7 @@ public class ClassAbilities : Character {
 
         if (currCooldown <= 0)
         {
-            if (!isAlive)
+            if (!IsAlive)
             {
                 currentState = ANIMATIONSTATES.Dead;
             }
@@ -217,6 +251,8 @@ public class ClassAbilities : Character {
     {
         health = value;
         health = Mathf.Max(Mathf.Min(health, healthMax), 0f);
+        //Death
+        if (isLocalPlayer && health <= 0 && IsAlive) CmdSetIsAlive(false);
     }
     public override float TakeDmg(float dmg, DamageType damageType = DamageType.Standard, PlayerStats attacker = null) {
         if (!isActuallyGod) {
@@ -293,23 +329,33 @@ public class ClassAbilities : Character {
 
     #region Death and Respawn
 
-    public bool IsAlive
+    [Command]
+    protected void CmdSetIsAlive(bool value)
     {
-        get
+        var megamanager = FindObjectOfType<Megamanager>();
+        if (megamanager != null) megamanager.AddDeadPlayer(value ? -1 : 1);
+        EnableCharacter(value);
+        IsAlive = value;
+        if (!value)
         {
-            return isAlive;
+            currentState = ANIMATIONSTATES.Dead;
+            pam.PlayDeathAudio();
         }
+    }
 
-        set
+    protected virtual void OnIsAliveChanged(bool value)
+    {
+        EnableCharacter(value);
+        IsAlive = value;
+        if (value)
         {
-            EnableCharacter(value);
-            isAlive = value;
-            if (value)
-            {
-                CmdSetIsReviving(false);
-            }
+            CmdSetIsReviving(false);
         }
-
+        else
+        {
+            currentState = ANIMATIONSTATES.Dead;
+            pam.PlayDeathAudio();
+        }
     }
 
     protected virtual void EnableCharacter(bool enabled)
@@ -322,25 +368,10 @@ public class ClassAbilities : Character {
     }
 
     [Command]
-    protected void CmdDeath()
+    protected void CmdAddDeathToMegaManager()
     {
-        if (!isClient)
-        {
-            currentState = ANIMATIONSTATES.Dead;
-            IsAlive = false;
-            pam.PlayDeathAudio();
-            //Put death animation and stuff here
-        }
-        RpcDeath();
-    }
-
-    [ClientRpc]
-    protected void RpcDeath()
-    {
-        currentState = ANIMATIONSTATES.Dead;
-        IsAlive = false;
-        pam.PlayDeathAudio();
-        //Put death animation and stuff here
+        var megamanager = FindObjectOfType<Megamanager>();
+        if (megamanager != null) megamanager.AddDeadPlayer(1);
     }
 
     protected void Ability5(RaycastHit hit)
@@ -370,7 +401,7 @@ public class ClassAbilities : Character {
         IsReviving = value;
         if (value)
         {
-            IsAlive = value;
+            CmdSetIsAlive(value);
         }
     }
 

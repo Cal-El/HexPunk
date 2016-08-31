@@ -7,6 +7,8 @@ public class Megamanager : NetworkBehaviour {
 
     public static Megamanager MM;
     public ClassAbilities[] players;
+    [SyncVar (hook = "OnDeadPlayersChanged")]
+    public int deadPlayers;
     public List<Character> characters;
     public bool SceneHasChanged = false;
     [System.Serializable]
@@ -48,17 +50,20 @@ public class Megamanager : NetworkBehaviour {
                 }
             }
         }
-        
-        int deadPlayers = 0;
-        foreach (ClassAbilities player in players)
-        {
-            if (!player.IsAlive) deadPlayers++;
-        }
-
-        if (deadPlayers == players.Length) Defeated();
-
     }
-    
+
+    [ServerCallback]
+    public void AddDeadPlayer(int value)
+    {
+        deadPlayers += value;
+    }
+
+    private void OnDeadPlayersChanged(int value)
+    {
+        deadPlayers = value;
+        if (deadPlayers == players.Length) Defeated();
+    }
+
     [ServerCallback]
     public void Defeated()
     {

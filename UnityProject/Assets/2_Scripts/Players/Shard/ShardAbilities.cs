@@ -101,9 +101,6 @@ public class ShardAbilities : ClassAbilities {
             myHud.ShowIconNotEnoughEnergy(IceRam.abilityNum, IceRam.energyCost, energy);
         }
 
-        //Death
-        if (health <= 0 && IsAlive) CmdDeath();
-
         //Abilities
         if (IsAlive)
         {
