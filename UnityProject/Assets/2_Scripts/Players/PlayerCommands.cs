@@ -1,21 +1,19 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
-
+/// <summary>
+/// Used to send information to the local player camera.
+/// </summary>
 public class PlayerCommands : NetworkBehaviour {
 
     private GameObject playerCamera;
 
-    private bool isBetrayer = false;
+    [SyncVar (hook = "OnBetrayerChanged")]
+    public bool IsBetrayer = false;
     [SyncVar(hook = "OnVictory")]
     public bool Victory = false;
     [SyncVar (hook = "OnDefeat")]
     public bool Defeat = false;
-    
-    // Use this for initialization
-    void Start () {
-	    
-	}
 	
 	// Update is called once per frame
 	void Update () {
@@ -23,21 +21,12 @@ public class PlayerCommands : NetworkBehaviour {
             playerCamera = gameObject.GetComponent<PlayerMovement>().playerCamera;
     }
 
-    //Used for betrayer setup
-    public bool IsBetrayer
+    private void OnBetrayerChanged(bool value)
     {
-        get
+        if (isLocalPlayer)
         {
-            return isBetrayer;
-        }
-
-        set
-        {
-            if (isLocalPlayer)
-            {
-                playerCamera.GetComponentInChildren<PlayerGUICanvas>().IsBetrayer = value;
-                isBetrayer = value;
-            }
+            playerCamera.GetComponentInChildren<PlayerGUICanvas>().IsBetrayer = value;
+            IsBetrayer = value;
         }
     }
 

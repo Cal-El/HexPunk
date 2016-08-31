@@ -4,6 +4,7 @@ using System.Collections;
 
 public class PlayerStats : NetworkBehaviour {
 
+    [SyncVar]
     public bool isBetrayer = false; 
     [SyncVar (hook = "OnDamageTakenChanged")]
     public float damageTaken = 0;

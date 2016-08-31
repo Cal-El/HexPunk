@@ -6,29 +6,16 @@ using System.Collections.Generic;
 public class BetrayerSetup : NetworkBehaviour
 {
     public float percentChanceToBeBetrayer = 5;
-    private GameObject[] players = new GameObject[1];
     private List<GameObject> playersOnTrigger = new List<GameObject>();
+    [SyncVar]
     private bool betrayerChosen = false;
-
-    // Use this for initialization
-    void Start()
-    {
-
-    }
 
     // Update is called once per frame
     void Update()
     {
         if (!betrayerChosen)
         {
-            if (players.Length < 4)
-            {
-                players = GameObject.FindGameObjectsWithTag("Player");
-            }
-            else
-            {
-                if (playersOnTrigger.Count >= players.Length) StartBetrayerSetup();
-            }
+            if (playersOnTrigger.Count >= 4) StartBetrayerSetup();
         }
     }
 
@@ -56,18 +43,10 @@ public class BetrayerSetup : NetworkBehaviour
 
         if (betrayerRoll > percentChanceToBeBetrayer) //5% chance of there not to be a betrayer
         {
-            var betrayer = players[Random.Range(0, players.Length)];
+            var betrayer = playersOnTrigger[Random.Range(0, playersOnTrigger.Count)];
             betrayer.GetComponent<PlayerStats>().isBetrayer = true;
             betrayer.GetComponent<PlayerCommands>().IsBetrayer = true;
-            RpcSetup(betrayer);
+            betrayerChosen = true;
         }
-    }
-
-    [ClientRpc]
-    void RpcSetup(GameObject betrayer)
-    {
-        betrayer.GetComponent<PlayerStats>().isBetrayer = true;
-        betrayer.GetComponent<PlayerCommands>().IsBetrayer = true;
-        betrayerChosen = true;
     }
 }
