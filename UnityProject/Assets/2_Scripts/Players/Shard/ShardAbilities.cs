@@ -263,7 +263,7 @@ public class ShardAbilities : ClassAbilities {
         if(currentIcicle != null && Time.time <= growthTimer)
         {
             currentIcicle.transform.localScale += Vector3.one * 0.01f;
-            icicleScript.damage += 0.05f;
+            icicleScript.damage += IceLance.baseDmg / 10;
             energy += Time.deltaTime * IceLance.energyChargeModifier;
         }
 
