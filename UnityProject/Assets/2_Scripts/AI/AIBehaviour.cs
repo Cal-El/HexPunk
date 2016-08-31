@@ -15,6 +15,8 @@ public class AIBehaviour : Character {
 
     public SkinnedMeshRenderer mr;
     protected ClassAbilities target;
+    [SerializeField]
+    protected GameObject xpItem;
 
     //Health Values
     [SyncVar (hook = "OnHealthChanged")]

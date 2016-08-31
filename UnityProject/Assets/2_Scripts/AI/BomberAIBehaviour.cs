@@ -219,6 +219,13 @@ public class BomberAIBehaviour : AIBehaviour {
             {
                 am.PlayDeathAudio();
             }
+
+            if (xpItem != null)
+            {
+                GameObject g = Instantiate(xpItem.gameObject, transform.position, transform.rotation) as GameObject;
+                if (attacker != null)
+                    g.GetComponent<HealthPickup>().SetTarget(attacker.transform);
+            }
         }
         else
         {

@@ -21,6 +21,7 @@ public class HealthPickup : NetworkBehaviour {
 
     private const float MAXSPEED = 5;
     private const float ATTRACTIONRANGE = 4;
+    private float forceModifier = 1;
     private Vector3 velocity;
     private Transform target;
     private Vector3 originalPos;
@@ -55,7 +56,9 @@ public class HealthPickup : NetworkBehaviour {
         t.Rotate(0, Time.deltaTime * 180, 0);
         if (target != null)
         {
-            velocity += (target.position + Vector3.up - t.position).normalized * ATTRACTIONRANGE / Mathf.Pow((target.position + Vector3.up - t.position).magnitude, 2) * Time.deltaTime;
+            forceModifier += Time.deltaTime;
+            velocity *= 0.8f;
+            velocity += (target.position + Vector3.up - t.position).normalized * forceModifier * ATTRACTIONRANGE / Mathf.Min(Mathf.Pow((target.position + Vector3.up - t.position).magnitude, 2), 5) * Time.deltaTime;
             velocity = Vector3.ClampMagnitude(velocity, MAXSPEED);
             t.position += velocity;
 
@@ -85,6 +88,11 @@ public class HealthPickup : NetworkBehaviour {
             Instantiate(particleEffect, this.transform.position, this.transform.rotation);
         }
         Destroy(this.gameObject);
+    }
+
+    public void SetTarget(Transform _target)
+    {
+        target = _target;
     }
 
     private Transform FindClosestPlayer() {

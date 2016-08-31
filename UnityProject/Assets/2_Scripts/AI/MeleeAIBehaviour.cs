@@ -172,13 +172,14 @@ public class MeleeAIBehaviour : AIBehaviour {
         agentState = STATES.Chasing;
     }
 
-    private void StartDeath() {
+    private void StartDeath(Transform whoKilledMe = null) {
         navObst.enabled = false;
         navAgent.enabled = false;
-        rb.isKinematic = false;
-        GetComponent<CapsuleCollider>().enabled = true;
+        rb.isKinematic = true;
+        GetComponent<CapsuleCollider>().enabled = false;
         base.Destroyed();
         agentState = STATES.Dead;
+
         Destroy(gameObject, deathTime);
     }
 
@@ -225,6 +226,13 @@ public class MeleeAIBehaviour : AIBehaviour {
             else
             {
                 am.PlayDeathAudio();
+            }
+
+            if (xpItem != null)
+            {
+                GameObject g = Instantiate(xpItem.gameObject, transform.position, transform.rotation) as GameObject;
+                if(attacker != null)
+                    g.GetComponent<HealthPickup>().SetTarget(attacker.transform);
             }
         }
         else
