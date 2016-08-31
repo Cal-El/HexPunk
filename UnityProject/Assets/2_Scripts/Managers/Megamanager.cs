@@ -48,9 +48,7 @@ public class Megamanager : NetworkBehaviour {
                 }
             }
         }
-
-        if (characters.Count == 0 && AllRoomsUnlocked()) Victory();
-
+        
         int deadPlayers = 0;
         foreach (ClassAbilities player in players)
         {
@@ -66,7 +64,18 @@ public class Megamanager : NetworkBehaviour {
     {
         foreach(ClassAbilities player in players)
         {
-            player.GetComponent<PlayerCommands>().Defeat = true;
+            var commands = player.GetComponent<PlayerCommands>();
+            if (commands != null)
+            {
+                if (commands.IsBetrayer)
+                {
+                    commands.Victory = true;
+                }
+                else
+                {
+                    commands.Defeat = true;
+                }
+            }
         }
     }
     
@@ -75,7 +84,18 @@ public class Megamanager : NetworkBehaviour {
     {
         foreach (ClassAbilities player in players)
         {
-            player.GetComponent<PlayerCommands>().Victory = true;
+            var commands = player.GetComponent<PlayerCommands>();
+            if (commands != null)
+            {
+                if (commands.IsBetrayer)
+                {
+                    commands.Defeat = true;
+                }
+                else
+                {
+                    commands.Victory = true;
+                }
+            }
         }
     }
 
