@@ -77,6 +77,18 @@ public class CalderaAbilities : ClassAbilities {
         //Hud ability indicators
         if (myHud != null)
         {
+            if (pastPressureThreshold)
+            {
+                myHud.ShowCanCastAbility(Fireball.abilityNum, true);
+                myHud.ShowCanCastAbility(Lavaball.abilityNum, true);
+                myHud.ShowCanCastAbility(Afterburner.abilityNum, true);
+            }
+            else
+            {
+                myHud.ShowCanCastAbility(Fireball.abilityNum, false);
+                myHud.ShowCanCastAbility(Lavaball.abilityNum, false);
+                myHud.ShowCanCastAbility(Afterburner.abilityNum, false);
+            }
             myHud.ShowIconNotEnoughEnergy(Eruption.abilityNum, Eruption.energyCost, energy);
         }
 

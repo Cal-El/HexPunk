@@ -52,4 +52,14 @@ public class HUDProperties : MonoBehaviour {
             }
         }
     }
+
+    public void ShowCanCastAbility(int abilityNumber, bool value)
+    {
+        if (abilityNumber < 5)
+        {
+            abilityNumber -= 1;
+            if (notEnoughEnergyIcons[abilityNumber].enabled != value)
+                notEnoughEnergyIcons[abilityNumber].enabled = value;
+        }
+    }
 }
