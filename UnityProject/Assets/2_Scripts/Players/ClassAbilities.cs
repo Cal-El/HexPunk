@@ -1,37 +1,4 @@
-﻿#region memes
-/*
-                  _
-             ,.-" "-.,
-            /   ===   \
-           /  =======  \
-        __|  (X)   (X)  |__      
-       / _|    .---.    |_ \         
-      | /.----/ O O \----.\ |       
-       \/     |     |     \/        
-       |                   |            
-       |                   |           
-       |                   |          
-       _\   -.,_____,.-   /_         
-   ,.-"  "-.,_________,.-"  "-.,
-  /          |       |          \  
- |           l.     .l           | 
- |            |     |            |
- l.           |     |           .l             
-  |           l.   .l           | \,     
-  l.           |   |           .l   \,    
-   |           |   |           |      \,  
-   l.          |   |          .l        |
-    |          |   |          |         |
-    |          |---|          |         |
-    |          |   |          |         |
-    /"-.,__,.-"\   /"-.,__,.-"\"-.,_,.-"\
-   |            \ /            |         |
-   |             |             |         |
-    \__|__|__|__/ \__|__|__|__/ \_|__|__/  Rip Harambe
- */
-#endregion
-
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
 using System.Collections.Generic;
@@ -48,6 +15,7 @@ public class ClassAbilities : Character {
     public PlayerStats playerStats;
     protected PlayerGUICanvas myGUI;
     protected HUDProperties myHud;
+    public GameObject EButtonPrompt;
     [SyncVar (hook = "OnMaxHealthChanged")]
     public float healthMax = 100;
     [SyncVar (hook = "OnHealthChanged")]
@@ -140,6 +108,7 @@ public class ClassAbilities : Character {
         myGUI = pm.playerCamera.GetComponentInChildren<PlayerGUICanvas>();
         myHud = myGUI.myHud;
         reviveCapsule = transform.FindChild("ReviveCapsule").gameObject;
+        EButtonPrompt.SetActive(false);
         base.Initialise();
     }
 
@@ -164,22 +133,6 @@ public class ClassAbilities : Character {
         }
         
         energy = (Mathf.Max(Mathf.Min(energy, energyMax), 0f));
-
-        //FAKE IT TIL WE MAKE IT
-        if (Input.GetKeyDown(KeyCode.Keypad1))
-            CmdChangeGraphicColour(Color.cyan);
-        if (Input.GetKeyDown(KeyCode.Keypad2))
-            CmdChangeGraphicColour(Color.yellow);
-        if (Input.GetKeyDown(KeyCode.Keypad3))
-            CmdChangeGraphicColour(Color.red);
-        if (Input.GetKeyDown(KeyCode.Keypad4))
-            CmdChangeGraphicColour(Color.green);
-        if (Input.GetKeyDown(KeyCode.Keypad5))
-            CmdChangeGraphicColour(Color.magenta);
-        if (Input.GetKeyDown(KeyCode.Keypad6))
-            CmdChangeGraphicColour(Color.blue);
-        if (Input.GetKeyDown(KeyCode.Keypad7))
-            CmdChangeGraphicColour(Color.black);
 
         if (Input.GetKeyDown(KeyCode.I))
             level += 0.1f;
