@@ -37,6 +37,11 @@ public class CalderaAbilities : ClassAbilities {
     // Update is called once per frame
     void Update()
     {
+        if (!IsAlive) {
+            EButtonPrompt.SetActive(true);
+        } else {
+            EButtonPrompt.SetActive(false);
+        }
         if (!isLocalPlayer)
         {
             return;
