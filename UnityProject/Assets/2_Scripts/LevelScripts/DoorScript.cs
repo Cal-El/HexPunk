@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 
-public class DoorScript : MonoBehaviour {
+public class DoorScript : NetworkBehaviour {
 
+    [SyncVar]
     public bool open = false;
     public float timeToOpen = 2.0f;
 

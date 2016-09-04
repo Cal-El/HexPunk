@@ -33,7 +33,6 @@ public class HUDProperties : MonoBehaviour {
     public void SetHealthBarPos(float healthBarPosX)
     {
         Vector3 newPos = new Vector2(healthBarPosX, healthBar.rectTransform.anchoredPosition.y);
-        Debug.Log(newPos);
         maxHealthBar.rectTransform.anchoredPosition = newPos;
         healthBar.rectTransform.anchoredPosition = newPos;
         healthBarEdge.rectTransform.anchoredPosition = newPos;

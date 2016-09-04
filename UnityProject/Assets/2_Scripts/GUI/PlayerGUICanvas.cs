@@ -102,7 +102,6 @@ public class PlayerGUICanvas : MonoBehaviour
             var currenMaxHpPerc = 1 - visMaxHp / startingMaxHealth;
             var healthbarDistance = myHud.healthBarEnd - myHud.healthBarStart;
             var healthBarPos = myHud.healthBarStart + healthbarDistance * currenMaxHpPerc;
-            Debug.Log(healthBarPos);
             myHud.SetHealthBarPos(healthBarPos);
         }
 
