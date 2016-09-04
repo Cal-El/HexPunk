@@ -116,7 +116,7 @@ public class EnemySpawner : DestructibleObject {
                     transform.position.y,
                     transform.position.z + Mathf.Sin((i + 0.0f) / newSpawns.Count * Mathf.PI * 2) * 2
                     );
-                newGuy.spawn = Instantiate(newSpawns[i].spawn, offsetPostition, transform.rotation) as GameObject;
+                newGuy.spawn = GeneralNetworking.ServerSpawn(newSpawns[i].spawn, offsetPostition, transform.rotation);
                 newGuy.severity = newSpawns[i].severity;
                 try { newGuy.spawn.GetComponent<Character>().TakeDmg(0.01f); }
                 catch { Debug.LogError("Spawning non-character Entity"); }

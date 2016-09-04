@@ -21,26 +21,17 @@ public class Spawner : NetworkBehaviour {
 	public GameObject ActivateSpawner(Room.ALIGNMENTS alignment) {
         switch (alignment) {
             case Room.ALIGNMENTS.Good:
-                return ServerSpawn(goodSpawn, transform.position, transform.rotation) as GameObject;
+                return GeneralNetworking.ServerSpawn(goodSpawn, transform.position, transform.rotation) as GameObject;
                 break;
             case Room.ALIGNMENTS.Neutral:
-                return ServerSpawn(neutralSpawn, transform.position, transform.rotation) as GameObject;
+                return GeneralNetworking.ServerSpawn(neutralSpawn, transform.position, transform.rotation) as GameObject;
                 break;
             case Room.ALIGNMENTS.Bad:
-                return ServerSpawn(evilSpawn, transform.position, transform.rotation) as GameObject;
+                return GeneralNetworking.ServerSpawn(evilSpawn, transform.position, transform.rotation) as GameObject;
                 break;
             default:
                 return null;
                 break;
         }
-    }
-
-    [ServerCallback]
-    private GameObject ServerSpawn(GameObject o, Vector3 pos, Quaternion rot)
-    {
-        GameObject spawn = Instantiate(o, transform.position, transform.rotation) as GameObject;
-
-        NetworkServer.Spawn(spawn);
-        return spawn;
-    }
+    }    
 }

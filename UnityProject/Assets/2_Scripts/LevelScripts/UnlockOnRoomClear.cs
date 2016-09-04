@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 using System.Collections.Generic;
 
 [RequireComponent(typeof (Room))]
 
-public class UnlockOnRoomClear : MonoBehaviour {
+public class UnlockOnRoomClear : NetworkBehaviour {
 
     private Room myRoom;
     [SerializeField] private int connectionID;
@@ -16,9 +17,13 @@ public class UnlockOnRoomClear : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if(myRoom.roomUnlocked && myRoom.Enemies().Count <= 0) {
-            Megamanager.MM.UnlockConnection(connectionID);
-            this.enabled = false;
+        if (isServer)
+        {
+            if (myRoom.roomUnlocked && myRoom.Enemies().Count <= 0)
+            {
+                Megamanager.MM.UnlockConnection(connectionID);
+                this.enabled = false;
+            }
         }
     }
 }
