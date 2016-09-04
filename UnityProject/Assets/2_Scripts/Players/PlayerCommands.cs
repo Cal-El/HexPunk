@@ -7,6 +7,7 @@ using System.Collections;
 public class PlayerCommands : NetworkBehaviour {
 
     private GameObject playerCamera;
+    private PlayerGUICanvas gui;
 
     [SyncVar (hook = "OnBetrayerChanged")]
     public bool IsBetrayer = false;
@@ -14,18 +15,36 @@ public class PlayerCommands : NetworkBehaviour {
     public bool Victory = false;
     [SyncVar (hook = "OnDefeat")]
     public bool Defeat = false;
+
+    void Start()
+    {
+        var movement = gameObject.GetComponent<PlayerMovement>();
+        if(movement != null) playerCamera = movement.playerCamera;
+        if(playerCamera != null) gui = playerCamera.GetComponentInChildren<PlayerGUICanvas>();
+    }
 	
 	// Update is called once per frame
 	void Update () {
         if (playerCamera == null)
             playerCamera = gameObject.GetComponent<PlayerMovement>().playerCamera;
+        if (gui == null)
+        {
+            gui = playerCamera.GetComponentInChildren<PlayerGUICanvas>();            
+        }
+        else
+        {
+            if (IsBetrayer && !gui.IsBetrayer)
+            {
+                gui.IsBetrayer = true;
+            }
+        }
     }
 
     private void OnBetrayerChanged(bool value)
     {
         if (isLocalPlayer)
         {
-            playerCamera.GetComponentInChildren<PlayerGUICanvas>().IsBetrayer = value;
+            if(gui != null) gui.IsBetrayer = value;
             IsBetrayer = value;
         }
     }
@@ -34,7 +53,7 @@ public class PlayerCommands : NetworkBehaviour {
     {
         if (isLocalPlayer)
         {
-            playerCamera.GetComponentInChildren<PlayerGUICanvas>().Defeat = value;
+            gui.Defeat = value;
             Defeat = value;
         }
     }
@@ -43,7 +62,7 @@ public class PlayerCommands : NetworkBehaviour {
     {
         if (isLocalPlayer)
         {
-            playerCamera.GetComponentInChildren<PlayerGUICanvas>().Victory = value;
+            gui.Victory = value;
             Victory = value;
         }
     }

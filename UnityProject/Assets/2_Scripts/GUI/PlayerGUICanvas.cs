@@ -22,6 +22,9 @@ public class PlayerGUICanvas : MonoBehaviour
     private bool defeat = false;
     public ScreenFader fader;
     public GameObject helpGUI;
+
+    public Image bloodEdge;
+    private float intensity;
     
     public GameObject[] huds = new GameObject[4];
 
@@ -85,6 +88,7 @@ public class PlayerGUICanvas : MonoBehaviour
         {
             isBetrayer = !isBetrayer;
         }
+        float preVisHP = visHP;
 
         visHP = Mathf.Lerp(visHP, playerStats.health, Time.deltaTime * 10);
         visMaxHp = Mathf.Lerp(visMaxHp, playerStats.healthMax, Time.deltaTime * 10);
@@ -119,6 +123,11 @@ public class PlayerGUICanvas : MonoBehaviour
         } else {
             xpBar.fillAmount = 0.825f + 0.175f * (visXP - 5);
         }
+
+        intensity *= 0.99f;
+        intensity += (preVisHP - visHP) / visHP;
+
+        bloodEdge.color = Color.white - (Color.black * (1-intensity));
     }
 
     //Set up the betrayer GUI
