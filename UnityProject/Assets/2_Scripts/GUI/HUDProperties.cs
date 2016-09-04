@@ -7,7 +7,11 @@ public class HUDProperties : MonoBehaviour {
     public Image icon;
     public Sprite standardIcon;
     public Sprite betrayerIcon;
+    public Image maxHealthBar;
     public Image healthBar;
+    public Image healthBarEdge;
+    public float healthBarStart;
+    public float healthBarEnd;
     public Image energyBar;
     public Image xpBar;
     private float[] abilityCds = new float[4];
@@ -16,7 +20,8 @@ public class HUDProperties : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	    for(int i = 0; i < abilityCooldownIcons.Length; i++)
+
+        for(int i = 0; i < abilityCooldownIcons.Length; i++)
         {
             if(abilityCooldownIcons[i].fillAmount > 0)
             {
@@ -24,6 +29,15 @@ public class HUDProperties : MonoBehaviour {
             }
         }
 	}
+
+    public void SetHealthBarPos(float healthBarPosX)
+    {
+        Vector3 newPos = new Vector2(healthBarPosX, healthBar.rectTransform.anchoredPosition.y);
+        Debug.Log(newPos);
+        maxHealthBar.rectTransform.anchoredPosition = newPos;
+        healthBar.rectTransform.anchoredPosition = newPos;
+        healthBarEdge.rectTransform.anchoredPosition = newPos;
+    }
 
     public void ShowIconCooldown(int abilityNumber, float abilityCooldown)
     {

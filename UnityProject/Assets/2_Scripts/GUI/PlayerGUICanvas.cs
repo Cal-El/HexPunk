@@ -29,6 +29,7 @@ public class PlayerGUICanvas : MonoBehaviour
     public GameObject[] huds = new GameObject[4];
 
     private float visHP;
+    private float visMaxHp;
     private float visEP;
     private float visXP;
 
@@ -36,7 +37,6 @@ public class PlayerGUICanvas : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-
         myPlayer = transform.parent.GetComponent<PlayerCamera>().myPlayer;
         playerStats = myPlayer.GetComponent<ClassAbilities>();
         startingMaxHealth = playerStats.healthMax;
@@ -48,6 +48,7 @@ public class PlayerGUICanvas : MonoBehaviour
         SetHUDs(name, "Shard");
         
         visHP = playerStats.health;
+        visMaxHp = playerStats.healthMax;
         visEP = playerStats.energy;
 
         guiList = new[] { betrayerCanvas.transform.FindChild("OtherPlayerGUI1").GetComponent<OtherPlayerGUI>(),
@@ -90,10 +91,21 @@ public class PlayerGUICanvas : MonoBehaviour
         float preVisHP = visHP;
 
         visHP = Mathf.Lerp(visHP, playerStats.health, Time.deltaTime * 10);
+        visMaxHp = Mathf.Lerp(visMaxHp, playerStats.healthMax, Time.deltaTime * 10);
         visEP = Mathf.Lerp(visEP, playerStats.energy, Time.deltaTime * 10);
         visXP = Mathf.Lerp(visXP, playerStats.GetLevel(), Time.deltaTime * 10);
 
-        myHud.healthBar.fillAmount = visHP / startingMaxHealth;
+        myHud.healthBar.fillAmount = visHP / visMaxHp;
+
+        if (startingMaxHealth != 0)
+        {
+            var currenMaxHpPerc = 1 - visMaxHp / startingMaxHealth;
+            var healthbarDistance = myHud.healthBarEnd - myHud.healthBarStart;
+            var healthBarPos = myHud.healthBarStart + healthbarDistance * currenMaxHpPerc;
+            Debug.Log(healthBarPos);
+            myHud.SetHealthBarPos(healthBarPos);
+        }
+
         myHud.energyBar.fillAmount = visEP / playerStats.energyMax;
 
         var xpBar = myHud.xpBar;
@@ -153,7 +165,7 @@ public class PlayerGUICanvas : MonoBehaviour
             }
         }
     }
-    
+
     public bool Victory
     {
         get
