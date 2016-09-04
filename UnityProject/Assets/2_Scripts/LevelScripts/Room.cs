@@ -1,12 +1,15 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 
-public class Room : MonoBehaviour {
+public class Room : NetworkBehaviour {
 
     public int ID;
+    [SyncVar]
     public bool roomActive;
+    [SyncVar]
     public bool roomUnlocked;
     public enum ALIGNMENTS { Good, Neutral, Bad}
     public ALIGNMENTS roomAlignment = ALIGNMENTS.Neutral;
@@ -18,7 +21,7 @@ public class Room : MonoBehaviour {
     private List<Character> enemys;
 
     void Start() {
-        enemys = new List<Character>();
+        if(isServer) enemys = new List<Character>();
         if(bossTalk != null)
         {
             ads = gameObject.AddComponent<AudioSource>();
@@ -31,37 +34,50 @@ public class Room : MonoBehaviour {
     }
 
     void Update() {
-        int i = 0;
-        while (i < enemys.Count) {
-            if (enemys[i] == null) enemys.Remove(enemys[i]);
-            else { i++; }
+        if (isServer)
+        {
+            int i = 0;
+            while (i < enemys.Count)
+            {
+                if (enemys[i] == null) enemys.Remove(enemys[i]);
+                else { i++; }
+            }
         }
     }
-
+        
     public void UnlockRoom() {
-        if (!roomUnlocked) {
-            if(message.Length > 0) {
-                FindObjectOfType<TextMessage>().SendText(message);
-            }
-            roomUnlocked = true;
-            roomActive = true;
-            foreach (Spawner s in spawners) {
-                Character c = s.ActivateSpawner(roomAlignment).GetComponent<Character>();
-                if(c != null) {
-                    enemys.Add(c);
+        if (!roomUnlocked) {            
+            if (isServer)
+            {
+                roomUnlocked = true;
+                roomActive = true;
+                foreach (Spawner s in spawners)
+                {
+                    Character c = s.ActivateSpawner(roomAlignment).GetComponent<Character>();
+                    if (c != null)
+                    {
+                        enemys.Add(c);
+                    }
                 }
             }
-            if(ads != null)
+
+            if (message.Length > 0)
+            {
+                FindObjectOfType<TextMessage>().SendText(message);
+            }
+
+            if (ads != null)
             {
                 ads.Play();
             }
         }
     }
 
+    [ServerCallback]
     public void RemoveCharacter(Character c) {
         enemys.Remove(c);
     }
-
+        
     public void AddSpawner(Spawner s) {
         if(spawners == null) {
             spawners = new List<Spawner>();
