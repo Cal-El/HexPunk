@@ -214,21 +214,23 @@ public class ConduitAbilities : ClassAbilities {
                     GameObject lightningBolts = Instantiate(lightningBoltPathPrefab);
                     for (int i = 0; i < hits.Count; i++)
                     {
-                        hits[i].stacks.AddStack();
-                        if (i > 0)
-                        {
-                            hits[i].TakeDmg(LightingPunch.baseDmg / 2, DamageType.FireElectric, playerStats);
+                        try {
+                            hits[i].stacks.AddStack();
+                            if (i > 0) {
+                                hits[i].TakeDmg(LightingPunch.baseDmg / 2, DamageType.FireElectric, playerStats);
+                            }
+                            if (hits[i] == null) {
+                                hits.Remove(hits[i]);
+                                continue;
+                            }
+                            GameObject g = new GameObject("Point");
+                            g.transform.position = hits[i].transform.position;
+                            g.transform.rotation = hits[i].transform.rotation;
+                            g.transform.parent = lightningBolts.transform;
+                            copies.Add(g);
+                        } catch {
+                            break;
                         }
-                        if (hits[i] == null)
-                        {
-                            hits.Remove(hits[i]);
-                            continue;
-                        }
-                        GameObject g = new GameObject("Point");
-                        g.transform.position = hits[i].transform.position;
-                        g.transform.rotation = hits[i].transform.rotation;
-                        g.transform.parent = lightningBolts.transform;
-                        copies.Add(g);
                     }
                     lightningBolts.GetComponent<DigitalRuby.ThunderAndLightning.LightningBoltPathScript>().LightningPath.List = copies;
                     lightningBolts.GetComponent<DigitalRuby.ThunderAndLightning.LightningBoltPathScript>().AllowOrthographicMode = false;
@@ -319,11 +321,14 @@ public class ConduitAbilities : ClassAbilities {
     {
         if (lightningLists != null)
         foreach(Character c in lightningLists) {
-                if (c != null && !c.IsInvulnerable())
-                {
-                    float stks = c.stacks.Stacks;
-                    CmdDischargeStacks(c.gameObject);
-                    c.TakeDmg(Discharge.baseDmg * stks, DamageType.FireElectric, playerStats);
+                try {
+                    if (c != null && c.stacks != null && !c.IsInvulnerable()) {
+                        float stks = c.stacks.Stacks;
+                        CmdDischargeStacks(c.gameObject);
+                        c.TakeDmg(Mathf.Pow(Discharge.baseDmg * stks, 2), DamageType.FireElectric, playerStats);
+                    }
+                } catch {
+                    break;
                 }
             }
     }

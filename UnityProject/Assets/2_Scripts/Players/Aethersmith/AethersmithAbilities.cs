@@ -214,7 +214,7 @@ public class AethersmithAbilities : ClassAbilities {
         }
         javalinVisual.SetActive(false);
         javalinParticle.enableEmission = false;
-        energy -= 10;
+        energy -= SpectralSpear.energyCost;
         //Shoot a spear that has almost no travel time
         //Large Single-target knockback
     }
