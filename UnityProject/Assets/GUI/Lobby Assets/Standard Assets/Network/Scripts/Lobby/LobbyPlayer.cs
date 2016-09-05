@@ -96,7 +96,7 @@ namespace UnityStandardAssets.Network
         [Command]
         private void CmdSetIpAddress()
         {
-            ipAddressString = LocalIPAddress();
+            ipAddressString = string.Format("IP: {0}", LocalIPAddress());
             ipAddressText.text = ipAddressString;
         }
 
@@ -135,13 +135,14 @@ namespace UnityStandardAssets.Network
 
             foreach (var tile in classTiles)
             {
+                SetOTherPlayerClassImages(tile, false);
                 tile.GetComponent<Image>().color = OtherClass;
                 tile.GetComponentInChildren<Text>().color = OtherClass;
             }
 
             foreach (var player in FindObjectsOfType<LobbyPlayer>())
             {
-                if (player != this && player != null)
+                if (player != null && player != this)
                 {
                     player.ChangeReadyButtonColor(player.selectedClass < 0 ? NotReadyColor : ReadyColor);
                 }
@@ -158,6 +159,13 @@ namespace UnityStandardAssets.Network
         {
             CmdSelectedClass(-1);
             CheckRemoveButton();
+
+            foreach (var tile in classTiles)
+            {
+                SetOTherPlayerClassImages(tile, true);
+                tile.GetComponent<Image>().color = Color.white;
+                tile.GetComponentInChildren<Text>().color = Color.white;
+            }
 
             ChangeReadyButtonColor(JoinColor);
 
@@ -336,6 +344,27 @@ namespace UnityStandardAssets.Network
             }
 
             classTiles[currentClass].SetActive(true);
+        }
+
+        void SetOTherPlayerClassImages(GameObject tile, bool isLocalP)
+        {
+            var tileImg = tile.GetComponent<Image>();
+            if (tile.name.Contains("Conduit"))
+            {
+                tileImg.sprite = isLocalP ? Conduit : ConduitGrey;
+            }
+            if (tile.name.Contains("Aethersmith"))
+            {
+                tileImg.sprite = isLocalP ? Aethersmith : AethersmithGrey;
+            }
+            if (tile.name.Contains("Caldera"))
+            {
+                tileImg.sprite = isLocalP ? Caldera : CalderaGrey;
+            }
+            if (tile.name.Contains("Shard"))
+            {
+                tileImg.sprite = isLocalP ? Shard : ShardGrey;
+            }
         }
 
         public void OnRemovePlayerClick()
