@@ -46,7 +46,6 @@ public class ClassAbilities : Character {
     [System.Serializable]
     public class Ability
     {
-        [HideInInspector]
         public int abilityNum;
         public float baseDmg;
         public float castingTime;

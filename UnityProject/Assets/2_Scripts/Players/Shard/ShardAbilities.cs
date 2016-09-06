@@ -122,7 +122,7 @@ public class ShardAbilities : ClassAbilities {
                 ShardUseAbility(IceLance);
             }
             if (GetAxisDown1("Ability 2")) ShardUseAbility(Icefield);
-            if (!Input.GetButton("Ability 3") || energy <= 0) StopMistCloud();
+            if (!Input.GetButton("Ability 3") || energy <= 0) CmdStopMistCloud();
             else if (Input.GetButton("Ability 3") && energy > 0) ShardUseAbility(MistCloud);
             if (GetAxisDown2("Ability 4")) ShardUseAbility(IceRam);
 
@@ -243,6 +243,30 @@ public class ShardAbilities : ClassAbilities {
     #endregion
 
     #region Ability 1 (IceLance)
+    
+    private void Ability1()
+    {
+        if (currentIcicle != null && Time.time <= growthTimer)
+        {
+            currentIcicle.transform.localScale += Vector3.one * 0.01f;
+            icicleScript.damage += IceLance.baseDmg / 10;
+            energy += Time.deltaTime * IceLance.energyChargeModifier;
+        }
+
+    }
+
+    [Command]
+    private void CmdStartIceLaunch()
+    {
+        if (!isClient) StartIceLaunch();
+        RpcStartIceLaunch();
+    }
+
+    [ClientRpc]
+    private void RpcStartIceLaunch()
+    {
+        StartIceLaunch();
+    }
 
     private void StartIceLaunch()
     {
@@ -260,15 +284,17 @@ public class ShardAbilities : ClassAbilities {
         energy += IceLance.energyAdded;
     }
 
-    private void Ability1()
+    [Command]
+    private void CmdLaunchIcicle()
     {
-        if(currentIcicle != null && Time.time <= growthTimer)
-        {
-            currentIcicle.transform.localScale += Vector3.one * 0.01f;
-            icicleScript.damage += IceLance.baseDmg / 10;
-            energy += Time.deltaTime * IceLance.energyChargeModifier;
-        }
+        if (!isClient) LaunchIcicle();
+        RpcLaunchIcicle();
+    }
 
+    [ClientRpc]
+    private void RpcLaunchIcicle()
+    {
+        LaunchIcicle();
     }
 
     private void LaunchIcicle()
@@ -338,9 +364,22 @@ public class ShardAbilities : ClassAbilities {
         }
     }
 
+    [Command]
+    private void CmdStopMistCloud()
+    {
+        if (!isClient) StopMistCloud();
+        RpcStopMistCloud();
+    }
+
+    [ClientRpc]
+    private void RpcStopMistCloud()
+    {
+        StopMistCloud();
+    }
+
     #endregion
 
-    #region Ability 4 (Iceram)
+        #region Ability 4 (Iceram)
 
     private void Ability4()
     {
@@ -366,7 +405,7 @@ public class ShardAbilities : ClassAbilities {
             currCooldown = 0;
             IceLance.cooldown = iceLanceCooldown;
             base.UseAbility(a);
-            LaunchIcicle();
+            CmdLaunchIcicle();
             startedCasting = false;
             IceLance.cooldown = Time.deltaTime;
         }
@@ -376,7 +415,7 @@ public class ShardAbilities : ClassAbilities {
             {
                 startedCasting = true;
                 IceLance.castingTime = iceLanceCast;
-                StartIceLaunch();
+                CmdStartIceLaunch();
                 base.UseAbility(a);
                 IceLance.castingTime = Time.deltaTime;
             }
