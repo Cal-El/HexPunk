@@ -40,12 +40,12 @@ public class PlayerGUICanvas : MonoBehaviour
         myPlayer = transform.parent.GetComponent<PlayerCamera>().myPlayer;
         playerStats = myPlayer.GetComponent<ClassAbilities>();
         startingMaxHealth = playerStats.healthMax;
-        string name = myPlayer.gameObject.name;
+        string playerName = myPlayer.gameObject.name;
         
-        SetHUDs(name, "Conduit");
-        SetHUDs(name, "Aethersmith");
-        SetHUDs(name, "Caldera");
-        SetHUDs(name, "Shard");
+        SetHUDs(playerName, "Conduit");
+        SetHUDs(playerName, "Aethersmith");
+        SetHUDs(playerName, "Caldera");
+        SetHUDs(playerName, "Shard");
         
         visHP = playerStats.health;
         visMaxHp = playerStats.healthMax;
@@ -141,7 +141,13 @@ public class PlayerGUICanvas : MonoBehaviour
         {
             SetBetrayerGUI();
             betrayerCanvas.SetActive(value);
-            myHud.icon.sprite = myHud.betrayerIcon;
+            if (myHud != null)
+            {
+                if (myHud.icon != null)
+                {
+                    myHud.icon.sprite = myHud.betrayerIcon;
+                }
+            }
             isBetrayer = value;
         }
     }
@@ -149,13 +155,13 @@ public class PlayerGUICanvas : MonoBehaviour
     private void SetBetrayerGUI()
     {
         var players = GameObject.FindGameObjectsWithTag("Player");
-
-        if (players.Length > 1)
+        
+        var x = 0;
+        foreach (var player in players)
         {
-            var x = 0;
-            foreach (var player in players)
+            if (player != null && player != myPlayer)
             {
-                if (player != myPlayer)
+                if (guiList[x] != null)
                 {
                     if (guiList[x].player == null)
                         guiList[x].player = player;
