@@ -37,8 +37,11 @@ public class PlayerStatsGUI : MonoBehaviour
         set
         {
             _isBetrayer = value;
-            betrayerText.SetActive(_isBetrayer);
-            SetBetrayerIcon(PlayerName);
+            if (_isBetrayer)
+            {
+                betrayerText.SetActive(true);
+                SetBetrayerIcon(PlayerName);
+            }
         }
     }
 
@@ -66,7 +69,7 @@ public class PlayerStatsGUI : MonoBehaviour
         {
             foreach (var icon in playerIcons)
             {
-                if (!icon.gameObject.name.Contains(className))
+                if (!icon.name.Contains(className))
                 {
                     Destroy(icon);
                 }

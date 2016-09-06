@@ -141,7 +141,13 @@ public class PlayerGUICanvas : MonoBehaviour
         {
             SetBetrayerGUI();
             betrayerCanvas.SetActive(value);
-            myHud.icon.sprite = myHud.betrayerIcon;
+            if (myHud != null)
+            {
+                if (myHud.icon != null)
+                {
+                    myHud.icon.sprite = myHud.betrayerIcon;
+                }
+            }
             isBetrayer = value;
         }
     }
@@ -149,13 +155,13 @@ public class PlayerGUICanvas : MonoBehaviour
     private void SetBetrayerGUI()
     {
         var players = GameObject.FindGameObjectsWithTag("Player");
-
-        if (players.Length > 1)
+        
+        var x = 0;
+        foreach (var player in players)
         {
-            var x = 0;
-            foreach (var player in players)
+            if (player != null && player != myPlayer)
             {
-                if (player != myPlayer)
+                if (guiList[x] != null)
                 {
                     if (guiList[x].player == null)
                         guiList[x].player = player;
