@@ -40,12 +40,12 @@ public class PlayerGUICanvas : MonoBehaviour
         myPlayer = transform.parent.GetComponent<PlayerCamera>().myPlayer;
         playerStats = myPlayer.GetComponent<ClassAbilities>();
         startingMaxHealth = playerStats.healthMax;
-        string name = myPlayer.gameObject.name;
+        string playerName = myPlayer.gameObject.name;
         
-        SetHUDs(name, "Conduit");
-        SetHUDs(name, "Aethersmith");
-        SetHUDs(name, "Caldera");
-        SetHUDs(name, "Shard");
+        SetHUDs(playerName, "Conduit");
+        SetHUDs(playerName, "Aethersmith");
+        SetHUDs(playerName, "Caldera");
+        SetHUDs(playerName, "Shard");
         
         visHP = playerStats.health;
         visMaxHp = playerStats.healthMax;
