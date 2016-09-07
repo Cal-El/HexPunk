@@ -338,25 +338,28 @@ namespace UnityStandardAssets.Network
                 {
                     GameObject prefab = null;
                     Vector3 spawnPoint = Vector3.zero;
+                    Quaternion spawnRot = Quaternion.Euler(0, 90, 0);
                     switch (lobbyPlayer.selectedClass)
                     {
                         case 0:
-                            prefab = Instantiate(lobbyPlayer.conduitPrefab) as GameObject;
+                            spawnPoint = FindSpawnPoint(lobbyPlayer.conduitPrefab);
+                            prefab = Instantiate(lobbyPlayer.conduitPrefab, spawnPoint, spawnRot) as GameObject;
                             break;
                         case 1:
-                            prefab = Instantiate(lobbyPlayer.aethersmithPrefab) as GameObject;
+                            spawnPoint = FindSpawnPoint(lobbyPlayer.aethersmithPrefab);
+                            prefab = Instantiate(lobbyPlayer.aethersmithPrefab, spawnPoint, spawnRot) as GameObject;
                             break;
                         case 2:
-                            prefab = Instantiate(lobbyPlayer.calderaPrefab) as GameObject;
+                            spawnPoint = FindSpawnPoint(lobbyPlayer.calderaPrefab);
+                            prefab = Instantiate(lobbyPlayer.calderaPrefab, spawnPoint, spawnRot) as GameObject;
                             break;
                         case 3:
-                            prefab = Instantiate(lobbyPlayer.shardPrefab) as GameObject;
+                            spawnPoint = FindSpawnPoint(lobbyPlayer.shardPrefab);
+                            prefab = Instantiate(lobbyPlayer.shardPrefab, spawnPoint, spawnRot) as GameObject;
                             break;
                     }
                     if (prefab != null)
                     {
-                        spawnPoint = FindSpawnPoint(prefab);
-                        prefab.transform.position = spawnPoint;
                         playerObjects.Add(conn.connectionId, prefab);
                         return prefab;
                     }
@@ -396,6 +399,7 @@ namespace UnityStandardAssets.Network
                 {
                     var spawnPoint = FindSpawnPoint(obj);
                     obj.GetComponent<NetworkSyncPosition>().CmdClientSetServerPos(spawnPoint);
+                    obj.GetComponent<NetworkSyncRotation>().CmdSetStartRot();
                 }
             }
         }

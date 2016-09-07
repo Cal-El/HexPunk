@@ -2,7 +2,8 @@
 using System.Collections;
 using UnityEngine.Networking;
 
-public class NetworkSyncRotation : NetworkBehaviour {
+public class NetworkSyncRotation : NetworkBehaviour
+{
 
     [SyncVar]
     private float syncPlayerRotation;
@@ -20,9 +21,10 @@ public class NetworkSyncRotation : NetworkBehaviour {
         LerpRotation();
     }
 
-	void FixedUpdate () {
+    void FixedUpdate()
+    {
         TransmitRotations();
-	}
+    }
 
     void LerpRotation()
     {
@@ -57,9 +59,9 @@ public class NetworkSyncRotation : NetworkBehaviour {
         }
     }
 
-    bool CheckIfBeyondThreshold (float rot1, float rot2)
+    bool CheckIfBeyondThreshold(float rot1, float rot2)
     {
-        if(Mathf.Abs(rot1 - rot2) > threshold)
+        if (Mathf.Abs(rot1 - rot2) > threshold)
         {
             return true;
         }
@@ -73,5 +75,25 @@ public class NetworkSyncRotation : NetworkBehaviour {
     void OnPlayerRotSync(float latestPlayerRot)
     {
         syncPlayerRotation = latestPlayerRot;
+    }
+
+    [Command]
+    public void CmdSetStartRot()
+    {
+        if (!isClient)
+        {
+            syncPlayerRotation = 90;
+            playerTransform.rotation = Quaternion.Euler(0, 90, 0);
+            lastRot = 90;
+        }
+        RpcSetStartRot();
+    }
+
+    [ClientRpc]
+    public void RpcSetStartRot()
+    {
+        syncPlayerRotation = 90;
+        playerTransform.rotation = Quaternion.Euler(0, 90, 0);
+        lastRot = 90;
     }
 }
