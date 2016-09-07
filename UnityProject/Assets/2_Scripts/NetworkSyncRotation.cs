@@ -93,6 +93,7 @@ public class NetworkSyncRotation : NetworkBehaviour
     public void RpcSetStartRot()
     {
         syncPlayerRotation = 90;
+        transform.rotation = Quaternion.Euler(0, 90, 0);
         playerTransform.rotation = Quaternion.Euler(0, 90, 0);
         lastRot = 90;
     }

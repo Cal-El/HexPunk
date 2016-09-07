@@ -95,7 +95,7 @@ public class PlayerGUICanvas : MonoBehaviour
         visEP = Mathf.Lerp(visEP, playerStats.energy, Time.deltaTime * 10);
         visXP = Mathf.Lerp(visXP, playerStats.GetLevel(), Time.deltaTime * 10);
 
-        myHud.healthBar.fillAmount = visHP / visMaxHp;
+        myHud.healthBar.fillAmount = visHP / 100;
 
         if (startingMaxHealth != 0)
         {

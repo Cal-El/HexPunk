@@ -360,6 +360,8 @@ namespace UnityStandardAssets.Network
                     }
                     if (prefab != null)
                     {
+                        prefab.GetComponent<NetworkSyncPosition>().RpcServerSetPosition(spawnPoint);
+                        prefab.GetComponent<NetworkSyncRotation>().RpcSetStartRot();
                         playerObjects.Add(conn.connectionId, prefab);
                         return prefab;
                     }
@@ -375,7 +377,7 @@ namespace UnityStandardAssets.Network
         }
 
         public override void OnServerSceneChanged(string sceneName)
-        {            
+        {
             base.OnServerSceneChanged(sceneName);
             GameObject obj = playerObjects[client.connection.connectionId];
 
@@ -386,15 +388,13 @@ namespace UnityStandardAssets.Network
                 obj.GetComponent<NetworkSyncPosition>().RpcServerSetPosition(spawnPoint);
                 Debug.Log(spawnPoint);
                 Debug.Log(obj);
-            }            
+            }
         }
 
         public override void OnClientSceneChanged(NetworkConnection conn)
         {
-            base.OnClientSceneChanged(conn);
-            foreach(var ca in FindObjectsOfType<ClassAbilities>())
+            foreach (var obj in GameObject.FindGameObjectsWithTag("Player"))
             {
-                var obj = ca.gameObject;
                 if (obj.GetComponent<NetworkIdentity>().localPlayerAuthority)
                 {
                     var spawnPoint = FindSpawnPoint(obj);
@@ -402,6 +402,7 @@ namespace UnityStandardAssets.Network
                     obj.GetComponent<NetworkSyncRotation>().CmdSetStartRot();
                 }
             }
+            base.OnClientSceneChanged(conn);
         }
 
         private Vector3 FindSpawnPoint(GameObject obj)
