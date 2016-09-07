@@ -19,19 +19,37 @@ public class Spawner : NetworkBehaviour {
     }
 	
 	public GameObject ActivateSpawner(Room.ALIGNMENTS alignment) {
+        GameObject obj = null;
         switch (alignment) {
             case Room.ALIGNMENTS.Good:
-                return GeneralNetworking.ServerSpawn(goodSpawn, transform.position, transform.rotation) as GameObject;
+                obj = ServerSpawn(goodSpawn, transform.position, transform.rotation) as GameObject;
                 break;
             case Room.ALIGNMENTS.Neutral:
-                return GeneralNetworking.ServerSpawn(neutralSpawn, transform.position, transform.rotation) as GameObject;
+                obj = ServerSpawn(neutralSpawn, transform.position, transform.rotation) as GameObject;
                 break;
             case Room.ALIGNMENTS.Bad:
-                return GeneralNetworking.ServerSpawn(evilSpawn, transform.position, transform.rotation) as GameObject;
+                obj = ServerSpawn(evilSpawn, transform.position, transform.rotation) as GameObject;
                 break;
             default:
-                return null;
+                obj = null;
                 break;
         }
-    }    
+        return obj;
+    }
+
+    [ServerCallback]
+    public GameObject ServerSpawn(GameObject o, Vector3 pos, Quaternion rot)
+    {
+        GameObject spawn = Instantiate(o, pos, rot) as GameObject;
+        NetworkServer.Spawn(spawn);
+        RpcAddMotion(spawn, pos, rot);
+        return spawn;
+    }
+
+    [ClientRpc]
+    void RpcAddMotion(GameObject o, Vector3 pos, Quaternion rot)
+    {
+        var move = o.AddComponent<NetworkObjectSyncMotion>();
+        move.SetTransform(pos, rot);
+    }
 }

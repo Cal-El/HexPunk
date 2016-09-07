@@ -104,18 +104,7 @@ public class Megamanager : NetworkBehaviour {
         }
     }
 
-    [ServerCallback]
-    public void UnlockConnection(int ID) {
-        if (roomTree[ID] != null)
-        {
-            roomTree[ID].UnlockConnection();
-            Debug.Log("Unlocking Connection " + ID);
-            RpcUnlockConnection(ID);
-        }
-    }
-
-    [ClientRpc]
-    private void RpcUnlockConnection(int ID)
+    public void UnlockConnection(int ID)
     {
         if (roomTree[ID] != null)
         {

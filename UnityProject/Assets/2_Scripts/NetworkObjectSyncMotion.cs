@@ -49,4 +49,29 @@ public class NetworkObjectSyncMotion : NetworkBehaviour {
         Vector3 newRot = new Vector3(0, syncYRot, 0);
         myTransform.rotation = Quaternion.Lerp(myTransform.rotation, Quaternion.Euler(newRot), Time.deltaTime * lerpRate);
     }
+
+    [ServerCallback]
+    public void SetTransform(Vector3 pos, Quaternion rot)
+    {
+        transform.position = pos;
+        lastPos = pos;
+        syncPos = pos;
+
+        transform.rotation = rot;
+        lastRot = rot;
+        syncYRot = rot.eulerAngles.y;
+        RpcSetTransform(pos, rot);
+    }
+
+    [ClientRpc]
+    private void RpcSetTransform(Vector3 pos, Quaternion rot)
+    {
+        transform.position = pos;
+        lastPos = pos;
+        syncPos = pos;
+
+        transform.rotation = rot;
+        lastRot = rot;
+        syncYRot = rot.eulerAngles.y;
+    }
 }

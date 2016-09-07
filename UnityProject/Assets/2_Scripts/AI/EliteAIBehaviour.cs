@@ -326,7 +326,7 @@ public class EliteAIBehaviour : AIBehaviour {
 
             if (xpItem != null)
             {
-                GameObject g = Instantiate(xpItem.gameObject, transform.position, transform.rotation) as GameObject;
+                GameObject g = GeneralNetworking.ServerSpawn(xpItem.gameObject, transform.position, transform.rotation) as GameObject;
                 if (attacker != null)
                     g.GetComponent<HealthPickup>().SetTarget(attacker.transform);
             }
