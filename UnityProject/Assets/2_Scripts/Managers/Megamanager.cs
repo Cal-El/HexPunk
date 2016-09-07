@@ -18,7 +18,7 @@ public class Megamanager : NetworkBehaviour {
         public DoorScript door;
 
         public void UnlockConnection() {
-            if(door != null) door.open = true;
+            if(door != null) door.UnlockDoor();
             if (r1 != null) r1.UnlockRoom();
             if (r2 != null) r2.UnlockRoom();
         }
