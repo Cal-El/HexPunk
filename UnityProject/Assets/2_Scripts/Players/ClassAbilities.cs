@@ -28,6 +28,8 @@ public class ClassAbilities : Character {
     [HideInInspector] public bool isActuallyGod = false;
     [SyncVar (hook = "OnIsAliveChanged")]
     public bool IsAlive = true;
+    public bool IsCasting = false;
+    public bool CanAimWhileCasting = false;
     public float flatMaxHealthReviveCost = 10;
     public float percentHealthOnRevive = 20;
     [SyncVar (hook = "OnRevive")]

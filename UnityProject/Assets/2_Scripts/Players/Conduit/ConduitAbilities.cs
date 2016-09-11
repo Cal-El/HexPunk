@@ -61,12 +61,14 @@ public class ConduitAbilities : ClassAbilities {
         //Cooldown
         if (currCooldown > 0) {
             currCooldown = Mathf.Max(currCooldown - Time.deltaTime, 0);
-            this.GetComponent<PlayerMovement>().IsCasting = true;
-        } else
-        {
-            if (IsAlive) this.GetComponent<PlayerMovement>().IsCasting = false;
-            
+            IsCasting = true;
+        } else {
+            if (IsAlive) {
+                IsCasting = false;
+                CanAimWhileCasting = false;
+            }
         }
+
         if (castingTimer > 0) {
             castingTimer = Mathf.Max(castingTimer - Time.deltaTime, 0);
         }
@@ -74,9 +76,9 @@ public class ConduitAbilities : ClassAbilities {
         //Abilities
         if (IsAlive)
         {
-            if (Input.GetButtonDown("Ability 1")) UseAbility(LightingPunch);
-            if (GetAxisDown1("Ability 2")) UseAbility(StaticStomp);
-            if (Input.GetButtonDown("Ability 3")) UseAbility(LightningDash);
+            if (Input.GetButtonDown("Ability 1")) { CanAimWhileCasting = true; UseAbility(LightingPunch); }
+            if (GetAxisDown1("Ability 2")) { CanAimWhileCasting = true; UseAbility(StaticStomp); }
+            if (Input.GetButtonDown("Ability 3")) { CanAimWhileCasting = true; UseAbility(LightningDash); }
             if (GetAxisDown2("Ability 4")) UseAbility(Discharge);
 
             //Revive

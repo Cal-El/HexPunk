@@ -47,16 +47,16 @@ public class CalderaAbilities : ClassAbilities {
             return;
         }
 
-        if (currCooldown > 0)
-        {
+        if (currCooldown > 0) {
             currCooldown = Mathf.Max(currCooldown - Time.deltaTime, 0);
-            this.GetComponent<PlayerMovement>().IsCasting = true;
+            IsCasting = true;
+        } else {
+            if (IsAlive) {
+                IsCasting = false;
+                CanAimWhileCasting = false;
+            }
         }
-        else
-        {
-            if (IsAlive) this.GetComponent<PlayerMovement>().IsCasting = false;
 
-        }
         if (castingTimer > 0)
         {
             castingTimer = Mathf.Max(castingTimer - Time.deltaTime, 0);
@@ -102,9 +102,9 @@ public class CalderaAbilities : ClassAbilities {
         {
             if (!pastPressureThreshold)
             {
-                if (Input.GetButtonDown("Ability 1")) UseAbility(Fireball);
-                if (GetAxisDown1("Ability 2")) UseAbility(Lavaball);
-                if (Input.GetButtonDown("Ability 3")) UseAbility(Afterburner);
+                if (Input.GetButtonDown("Ability 1")) { CanAimWhileCasting = true; UseAbility(Fireball); }
+                if (GetAxisDown1("Ability 2")) { CanAimWhileCasting = true; UseAbility(Lavaball); }
+                if (Input.GetButtonDown("Ability 3")) { CanAimWhileCasting = true; UseAbility(Afterburner); }
             }
 
             if (GetAxisDown2("Ability 4")) UseAbility(Eruption);

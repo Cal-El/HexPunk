@@ -123,10 +123,15 @@ public class PlayerGUICanvas : MonoBehaviour
             xpBar.fillAmount = 0.825f + 0.175f * (visXP - 5);
         }
 
-        intensity *= 0.99f;
-        intensity += (preVisHP - visHP) / visHP;
+        if (playerStats.IsAlive) {
+            intensity *= 0.99f;
+            intensity += (preVisHP - visHP) / visHP;
 
-        bloodEdge.color = Color.white - (Color.black * (1-intensity));
+            bloodEdge.color = Color.white - (Color.black * (1 - intensity));
+        } else {
+            bloodEdge.color = Color.Lerp(bloodEdge.color, Color.white, Time.deltaTime * 10);
+        }
+
     }
 
     //Set up the betrayer GUI

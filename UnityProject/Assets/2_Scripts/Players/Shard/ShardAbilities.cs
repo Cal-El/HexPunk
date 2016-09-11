@@ -76,19 +76,22 @@ public class ShardAbilities : ClassAbilities {
         if (currCooldown > 0)
         {
             currCooldown = Mathf.Max(currCooldown - Time.deltaTime, 0);
-            this.GetComponent<PlayerMovement>().IsCasting = true;
+            IsCasting = true;
         }
         else
         {
-            if (IsAlive) this.GetComponent<PlayerMovement>().IsCasting = false;
-
+            if (IsAlive) {
+                IsCasting = false;
+                CanAimWhileCasting = false;
+            }
         }
+
         if (castingTimer > 0)
         {
             castingTimer = Mathf.Max(castingTimer - Time.deltaTime, 0);
         }
 
-        if (energy < IceRam.energyCost)
+        if (energy < IceRam.energyCost && !startedCasting)
         {
             energy = energy - Time.deltaTime * energyDecay;
         }
@@ -109,22 +112,22 @@ public class ShardAbilities : ClassAbilities {
         //Abilities
         if (IsAlive)
         {
-            if (Input.GetButtonDown("Ability 1"))
+            if (Input.GetButtonDown("Ability 1") && !isMist)
             {
                 ShardUseAbility(IceLance, true);
             }
-            if (!Input.GetButton("Ability 1") && startedCasting)
+            if (!Input.GetButton("Ability 1") && startedCasting && !isMist)
             {
                 ShardUseAbility(IceLance, false, true);
             }
-            else if (Input.GetButton("Ability 1") && startedCasting)
+            else if (Input.GetButton("Ability 1") && startedCasting && !isMist)
             {
                 ShardUseAbility(IceLance);
             }
-            if (GetAxisDown1("Ability 2")) ShardUseAbility(Icefield);
+            if (GetAxisDown1("Ability 2") && !isMist) { CanAimWhileCasting = true; ShardUseAbility(Icefield); }
             if (!Input.GetButton("Ability 3") || energy <= 0) CmdStopMistCloud();
             else if (Input.GetButton("Ability 3") && energy > 0) ShardUseAbility(MistCloud);
-            if (GetAxisDown2("Ability 4")) ShardUseAbility(IceRam);
+            if (GetAxisDown2("Ability 4") && !isMist) { CanAimWhileCasting = true; ShardUseAbility(IceRam); }
 
             //Revive
             if (Input.GetButton("Revive"))
@@ -270,8 +273,10 @@ public class ShardAbilities : ClassAbilities {
 
     private void StartIceLaunch()
     {
-        this.GetComponent<PlayerMovement>().IsCasting = true;
+        CanAimWhileCasting = true;
+        IsCasting = true;
         currentIcicle = Instantiate(iciclePrefab, projectileCastPoint.position, transform.rotation) as GameObject;
+        currentIcicle.transform.parent = this.transform;
         icicleScript = currentIcicle.GetComponent<Icicle>();
         if (icicleScript != null)
         {
@@ -299,9 +304,11 @@ public class ShardAbilities : ClassAbilities {
 
     private void LaunchIcicle()
     {
-        if (icicleScript != null)
-        {
-            icicleScript.enabled = true;
+        if (currentIcicle != null) {
+            currentIcicle.transform.parent = null;
+            if (icicleScript != null) {
+                icicleScript.enabled = true;
+            }
         }
     }
 
@@ -379,7 +386,7 @@ public class ShardAbilities : ClassAbilities {
 
     #endregion
 
-        #region Ability 4 (Iceram)
+    #region Ability 4 (Iceram)
 
     private void Ability4()
     {

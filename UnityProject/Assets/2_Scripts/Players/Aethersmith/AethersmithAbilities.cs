@@ -41,11 +41,14 @@ public class AethersmithAbilities : ClassAbilities {
 
         if (currCooldown > 0) {
             currCooldown = Mathf.Max(currCooldown - Time.deltaTime, 0);
-            this.GetComponent<PlayerMovement>().IsCasting = true;
+            IsCasting = true;
         } else {
-            if (IsAlive) pm.IsCasting = false;
-
+            if (IsAlive) {
+                IsCasting = false;
+                CanAimWhileCasting = false;
+            }
         }
+
         if (castingTimer > 0) {
             castingTimer = Mathf.Max(castingTimer - Time.deltaTime, 0);
         }
@@ -60,9 +63,9 @@ public class AethersmithAbilities : ClassAbilities {
 
         //Abilities
         if (IsAlive) {
-            if (Input.GetButtonDown("Ability 1")) UseAbility(HammerSwing);
-            if (GetAxisDown1("Ability 2")) UseAbility(SpectralSpear);
-            else if (Input.GetButtonDown("Ability 3")) UseAbility(BubbleShield);
+            if (Input.GetButtonDown("Ability 1")) { UseAbility(HammerSwing); }
+            if (GetAxisDown1("Ability 2")) { CanAimWhileCasting = true; UseAbility(SpectralSpear); }
+            else if (Input.GetButtonDown("Ability 3")) { CanAimWhileCasting = true; UseAbility(BubbleShield); }
             else if (GetAxisDown2("Ability 4")) UseAbility(Maelstrom);
 
             //Revive
@@ -193,6 +196,8 @@ public class AethersmithAbilities : ClassAbilities {
     #region Ability 2 (SpectralSpear)
 
     private void Ability2() {
+        CanAimWhileCasting = true;
+
         RaycastHit hit;
         if (Physics.SphereCast(transform.position, 0.5f, transform.forward, out hit))
         {

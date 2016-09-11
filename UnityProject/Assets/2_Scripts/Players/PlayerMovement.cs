@@ -34,8 +34,8 @@ public class PlayerMovement : NetworkBehaviour {
 
 
 	void FixedUpdate() {
-
-        if (!isLocalPlayer || !controlEnabled || isCasting || !myPlayer.rb.isKinematic)
+        IsCasting = myPlayer.IsCasting;
+        if (!isLocalPlayer || !controlEnabled || (isCasting && !myPlayer.CanAimWhileCasting) || !myPlayer.rb.isKinematic)
         {
             return;
         }
@@ -51,15 +51,26 @@ public class PlayerMovement : NetworkBehaviour {
         }
 
         direction = ((myCam.transform.right * xAxis) + (Vector3.Cross(myCam.transform.right, Vector3.up) * yAxis));
-        Aim(direction + transform.position);
-        if (direction.magnitude >= 1)
-        {
+        if (direction.magnitude >= 1) {
             direction = direction.normalized;
         }
-        
-        controller.Move(direction * speed * Time.fixedDeltaTime);
-        if(transform.position.y > 0.1f || transform.position.y < 0.0f) {
-            transform.position = new Vector3(transform.position.x, 0, transform.position.z);
+
+        if (!(myPlayer.CanAimWhileCasting && isCasting)) {
+            Aim(direction + transform.position);
+
+            controller.Move(direction * speed * Time.fixedDeltaTime);
+            if (transform.position.y > 0.1f || transform.position.y < 0.0f) {
+                transform.position = new Vector3(transform.position.x, 0, transform.position.z);
+            }
+        } else {
+            Ray sh = myCam.ScreenPointToRay(Input.mousePosition);
+            Vector3 point = sh.origin + sh.direction * Mathf.Abs(sh.origin.y / sh.direction.y);
+            Aim(point);
+
+            controller.Move(direction * speed * 0.5f * Time.fixedDeltaTime);
+            if (transform.position.y > 0.1f || transform.position.y < 0.0f) {
+                transform.position = new Vector3(transform.position.x, 0, transform.position.z);
+            }
         }
     }
 
