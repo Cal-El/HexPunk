@@ -309,6 +309,9 @@ public class EliteAIBehaviour : AIBehaviour {
     
     public override float TakeDmg(float dmg, DamageType damageType = DamageType.Standard, PlayerStats attacker = null) {
         SetHealth(Mathf.Clamp(health - dmg, 0, maxHealth));
+
+        BloodSplatterer.MakeBlood(transform.position);
+
         if (attacker != null && isServer) attacker.CmdAddDamageDealt(dmg);
         if (agentState == STATES.Idle)
             StartBattlecry();

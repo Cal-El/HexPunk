@@ -280,6 +280,8 @@ public class AethersmithAbilities : ClassAbilities {
                     playerStats.CmdAddDeaths(1);
                 }
             }
+
+            BloodSplatterer.MakeBlood(transform.position);
         }
         return health;
     }

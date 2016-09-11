@@ -229,6 +229,8 @@ public class ClassAbilities : Character {
                     playerStats.CmdAddDeaths(1);
                 }
             }
+
+            BloodSplatterer.MakeBlood(transform.position);
         }
         return health;
     }
