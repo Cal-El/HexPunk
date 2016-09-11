@@ -36,6 +36,7 @@ public class PlayerCamera : MonoBehaviour {
             return;
         }
 
+        /*
         if (Input.GetKeyDown(KeyCode.UpArrow))
             useTopDown = true;
         else if (Input.GetKeyDown(KeyCode.DownArrow))
@@ -48,6 +49,7 @@ public class PlayerCamera : MonoBehaviour {
                 viewAngleIndex = viewAngle.Length - 1;
             }
         }
+        */
 
         if (!useTopDown)
             transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(viewAngle[viewAngleIndex]), Time.deltaTime*10);
