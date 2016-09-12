@@ -14,12 +14,14 @@ public class HUDProperties : MonoBehaviour {
     public float healthBarEnd;
     public Image energyBar;
     public Image xpBar;
+	public Image xpEffect;
     private float[] abilityCds = new float[4];
     public Image[] abilityCooldownIcons = new Image[4];
     public Image[] notEnoughEnergyIcons = new Image[4];
 	
 	// Update is called once per frame
 	void Update () {
+		xpEffect.rectTransform.Rotate (0, 0, Time.deltaTime * 60);
 
         for(int i = 0; i < abilityCooldownIcons.Length; i++)
         {

@@ -169,7 +169,12 @@ public class ClassAbilities : Character {
     }
 
     public virtual void GainXP(float xp) {
-        level += xp;
+		int prelevel = (int)level; 
+		level += xp;
+		if ((int)level > prelevel) {
+			GUIPopup.ShowMessage ("Level up!");
+		}
+
     }
 
     public float GetLevel() {

@@ -37,7 +37,7 @@ public class Icicle : MonoBehaviour {
 
     void OnTriggerEnter(Collider col)
     {
-        if (!col.isTrigger)
+		if (!col.isTrigger && this.enabled)
         {
             if (col.gameObject != owner && col != null)
             {

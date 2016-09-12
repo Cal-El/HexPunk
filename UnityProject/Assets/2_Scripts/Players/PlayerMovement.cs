@@ -64,7 +64,7 @@ public class PlayerMovement : NetworkBehaviour {
             }
         } else {
             Ray sh = myCam.ScreenPointToRay(Input.mousePosition);
-            Vector3 point = sh.origin + sh.direction * Mathf.Abs((sh.origin.y + 1) / sh.direction.y);
+            Vector3 point = sh.origin + sh.direction * Mathf.Abs((sh.origin.y -1) / sh.direction.y);
             Aim(point);
 
             controller.Move(direction * speed * 0.5f * Time.fixedDeltaTime);
