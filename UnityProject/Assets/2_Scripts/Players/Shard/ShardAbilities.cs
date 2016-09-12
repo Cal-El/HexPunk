@@ -437,25 +437,32 @@ public class ShardAbilities : ClassAbilities {
     {
         if (!isMist && !isActuallyGod)
         {
-            CmdSetHealth(Mathf.Clamp(health - dmg, 0, healthMax));
-            if (attacker != null && isServer) attacker.CmdAddDamageDealt(dmg);
-            playerStats.CmdAddDamageTaken(dmg);
-            if (health > 0)
+            //Used to add playerstats before the IsAlive bool is set
+            float tempHealth = Mathf.Clamp(health - dmg, 0, healthMax);
+            Debug.Log(tempHealth);
+
+            if (tempHealth <= 0)
             {
-                pam.PlayTakeDamageAudio();
-            }
-            else
-            {
-                if (IsAlive && isServer)
+                if (IsAlive)
                 {
-                    if (attacker != null)
+                    if (attacker != null && attacker.isLocalPlayer)
                     {
                         attacker.CmdAddPlayerKills(1);
-                        attacker.CmdAddKills(1);
                     }
-                    playerStats.CmdAddDeaths(1);
+                    if (isLocalPlayer)
+                    {
+                        playerStats.CmdAddDamageTaken(dmg);
+                        playerStats.CmdAddDeaths(1);
+                    }
                 }
             }
+            else            
+            {
+                if (isLocalPlayer) playerStats.CmdAddDamageTaken(dmg);
+                if (attacker != null && attacker.isLocalPlayer) attacker.CmdAddDamageDealt(dmg);
+                pam.PlayTakeDamageAudio();
+            }
+            if (isLocalPlayer) CmdSetHealth(tempHealth);
 
             BloodSplatterer.MakeBlood(transform.position);
         }

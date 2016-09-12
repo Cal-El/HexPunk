@@ -260,26 +260,35 @@ public class AethersmithAbilities : ClassAbilities {
     }
 
     public override float TakeDmg(float dmg, DamageType damageType = DamageType.Standard, PlayerStats attacker = null) {
-        if (!isActuallyGod) {
-            if(isLocalPlayer) CmdSetHealth(Mathf.Clamp(health - (dmg - dmg * ((energy * 0.5f) / energyMax)), 0, healthMax));
-            if (attacker != null && isServer) attacker.CmdAddDamageDealt(dmg);
-            if(playerStats.isLocalPlayer) playerStats.CmdAddDamageTaken(dmg);
-            if (health > 0)
+        if (!isActuallyGod)
+        {
+            //Used to add playerstats before the IsAlive bool is set
+            float reducedDmg = dmg - dmg * ((energy * 0.5f) / energyMax);
+            float tempHealth = Mathf.Clamp(health - reducedDmg, 0, healthMax);
+            Debug.Log(tempHealth);
+
+            if (tempHealth <= 0)
             {
-                pam.PlayTakeDamageAudio();
+                if (IsAlive)
+                {
+                    if (attacker != null && attacker.isLocalPlayer)
+                    {
+                        attacker.CmdAddPlayerKills(1);
+                    }
+                    if (isLocalPlayer)
+                    {
+                        playerStats.CmdAddDamageTaken(reducedDmg);
+                        playerStats.CmdAddDeaths(1);
+                    }
+                }
             }
             else
             {
-                if (IsAlive && isServer)
-                {
-                    if (attacker != null)
-                    {
-                        attacker.CmdAddPlayerKills(1);
-                        attacker.CmdAddKills(1);
-                    }
-                    playerStats.CmdAddDeaths(1);
-                }
+                if (isLocalPlayer) playerStats.CmdAddDamageTaken(reducedDmg);
+                if (attacker != null && isServer) attacker.CmdAddDamageDealt(reducedDmg);
+                pam.PlayTakeDamageAudio();
             }
+            if (isLocalPlayer) CmdSetHealth(tempHealth);
 
             BloodSplatterer.MakeBlood(transform.position);
         }

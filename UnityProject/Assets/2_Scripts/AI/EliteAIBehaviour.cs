@@ -312,12 +312,12 @@ public class EliteAIBehaviour : AIBehaviour {
 
         BloodSplatterer.MakeBlood(transform.position);
 
-        if (attacker != null && isServer) attacker.CmdAddDamageDealt(dmg);
+        if (attacker != null && attacker.isLocalPlayer) attacker.CmdAddDamageDealt(dmg);
         if (agentState == STATES.Idle)
             StartBattlecry();
         if (health <= 0)
         {
-            if (attacker != null && isServer) attacker.CmdAddKills(1);
+            if (attacker != null && attacker.isLocalPlayer) attacker.CmdAddKills(1);
             if (damageType == DamageType.FireElectric)
             {
                 am.PlayDeathBurnElectricAudio();

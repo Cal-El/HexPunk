@@ -2,11 +2,12 @@
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using UnityStandardAssets.Network;
 
 public class DefeatGUI : MonoBehaviour {
 
     public void TryAgain()
     {
-        SceneManager.LoadScene("NightClub2_LargerRoom");
+        FindObjectOfType<LobbyManager>().ServerChangeScene("Lobby");
     }
 }

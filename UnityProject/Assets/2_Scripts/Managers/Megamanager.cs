@@ -61,7 +61,23 @@ public class Megamanager : NetworkBehaviour {
     private void OnDeadPlayersChanged(int value)
     {
         deadPlayers = value;
-        if (deadPlayers == players.Length) Defeated();
+        //If 3 players are dead and betrayer is alive
+        if (deadPlayers >= players.Length - 1)
+        {
+            bool alliesDead = true;
+            foreach (ClassAbilities player in players)
+            {
+                bool isBetrayer = player.GetComponent<PlayerCommands>().IsBetrayer;
+                if (!isBetrayer)
+                {
+                    if (alliesDead)
+                    {
+                        alliesDead = !player.IsAlive;
+                    }
+                }
+            }
+            if(alliesDead) Defeated();
+        }        
     }
 
     [ServerCallback]

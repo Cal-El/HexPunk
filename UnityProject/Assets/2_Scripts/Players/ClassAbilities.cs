@@ -209,26 +209,34 @@ public class ClassAbilities : Character {
         if (isLocalPlayer && health <= 0 && IsAlive) CmdSetIsAlive(false);
     }
     public override float TakeDmg(float dmg, DamageType damageType = DamageType.Standard, PlayerStats attacker = null) {
-        if (!isActuallyGod) {
-            if(isLocalPlayer) CmdSetHealth(Mathf.Clamp(health - dmg, 0, healthMax));
-            if (attacker != null && isServer) attacker.CmdAddDamageDealt(dmg);
-            if(playerStats.isLocalPlayer) playerStats.CmdAddDamageTaken(dmg);
-            if (health > 0)
+        if (!isActuallyGod)
+        {
+            //Used to add playerstats before the IsAlive bool is set
+            float tempHealth = Mathf.Clamp(health - dmg, 0, healthMax);
+            Debug.Log(tempHealth);
+
+            if (tempHealth <= 0)
             {
-                pam.PlayTakeDamageAudio();
+                if (IsAlive)
+                {
+                    if (attacker != null && attacker.isLocalPlayer)
+                    {
+                        attacker.CmdAddPlayerKills(1);
+                    }
+                    if (isLocalPlayer)
+                    {
+                        playerStats.CmdAddDamageTaken(dmg);
+                        playerStats.CmdAddDeaths(1);
+                    }
+                }
             }
             else
             {
-                if (IsAlive && isServer)
-                {
-                    if (attacker != null)
-                    {
-                        attacker.CmdAddPlayerKills(1);
-                        attacker.CmdAddKills(1);
-                    }
-                    playerStats.CmdAddDeaths(1);
-                }
+                if (isLocalPlayer) playerStats.CmdAddDamageTaken(dmg);
+                if (attacker != null && attacker.isLocalPlayer) attacker.CmdAddDamageDealt(dmg);
+                pam.PlayTakeDamageAudio();
             }
+            if(isLocalPlayer) CmdSetHealth(tempHealth);
 
             BloodSplatterer.MakeBlood(transform.position);
         }
@@ -288,10 +296,10 @@ public class ClassAbilities : Character {
     [Command]
     protected void CmdSetIsAlive(bool value)
     {
+        IsAlive = value;
         var megamanager = FindObjectOfType<Megamanager>();
         if (megamanager != null) megamanager.AddDeadPlayer(value ? -1 : 1);
         EnableCharacter(value);
-        IsAlive = value;
         if (!value)
         {
             currentState = ANIMATIONSTATES.Dead;
@@ -323,13 +331,6 @@ public class ClassAbilities : Character {
         if (pm != null) pm.ControlEnabled = enabled;
     }
 
-    [Command]
-    protected void CmdAddDeathToMegaManager()
-    {
-        var megamanager = FindObjectOfType<Megamanager>();
-        if (megamanager != null) megamanager.AddDeadPlayer(1);
-    }
-
     protected void Ability5(RaycastHit hit)
     {
         CmdCallRevive(hit.transform.gameObject);
@@ -343,6 +344,7 @@ public class ClassAbilities : Character {
         {
             CmdSetMaxHealth(healthMax - flatMaxHealthReviveCost);
             ca.CmdSetIsReviving(true);
+            playerStats.CmdAddRevives(1);
         }
     }
 

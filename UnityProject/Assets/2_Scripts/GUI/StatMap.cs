@@ -46,8 +46,8 @@ public class StatMap : MonoBehaviour, IDragHandler
     {
         gui.PlayerName = playerName;
         gui.IsBetrayer = stats.isBetrayer;
-        gui.damageDealt.text = string.Format("Damage Dealt: {0}", stats.damageDealt);
-        gui.damageTaken.text = string.Format("Damage Taken: {0}", stats.damageTaken);
+        gui.damageDealt.text = string.Format("Damage Dealt: {0}", Mathf.Round(stats.damageDealt));
+        gui.damageTaken.text = string.Format("Damage Taken: {0}", Mathf.Round(stats.damageTaken));
         gui.kills.text = string.Format("Enemies Killed: {0}", stats.kills);
         gui.playerKills.text = string.Format("Players Killed: {0}", stats.playerKills);
         gui.deaths.text = string.Format("Deaths: {0}", stats.deaths);

@@ -16,6 +16,11 @@ public class NetworkSyncRotation : NetworkBehaviour
     private float lastRot;
     private float threshold = 1;
 
+    void Start()
+    {
+        if(isLocalPlayer) CmdSetStartRot();
+    }
+
     void Update()
     {
         LerpRotation();
