@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
+using UnityStandardAssets.Network;
 
 public class NetworkSyncPosition : NetworkBehaviour {
 
@@ -18,6 +19,11 @@ public class NetworkSyncPosition : NetworkBehaviour {
 
     private Vector3 lastPos;
     private float threshold = 0.1f;
+
+    void Start()
+    {
+        if (isLocalPlayer) CmdClientSetServerPos(LobbyManager.FindSpawnPoint(gameObject));
+    }
 
     void Update()
     {

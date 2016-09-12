@@ -360,8 +360,6 @@ namespace UnityStandardAssets.Network
                     }
                     if (prefab != null)
                     {
-                        prefab.GetComponent<NetworkSyncPosition>().RpcServerSetPosition(spawnPoint);
-                        prefab.GetComponent<NetworkSyncRotation>().RpcSetStartRot();
                         playerObjects.Add(conn.connectionId, prefab);
                         return prefab;
                     }
@@ -379,33 +377,35 @@ namespace UnityStandardAssets.Network
         public override void OnServerSceneChanged(string sceneName)
         {
             base.OnServerSceneChanged(sceneName);
+
             GameObject obj = playerObjects[client.connection.connectionId];
 
             Vector3 spawnPoint = FindSpawnPoint(obj);
             if (spawnPoint != null)
             {
                 obj.transform.position = spawnPoint;
+                obj.transform.rotation = Quaternion.Euler(0, 90, 0);
                 obj.GetComponent<NetworkSyncPosition>().RpcServerSetPosition(spawnPoint);
-                Debug.Log(spawnPoint);
-                Debug.Log(obj);
+                obj.GetComponent<NetworkSyncRotation>().RpcSetStartRot();
             }
         }
 
         public override void OnClientSceneChanged(NetworkConnection conn)
         {
+            base.OnClientSceneChanged(conn);
             foreach (var obj in GameObject.FindGameObjectsWithTag("Player"))
             {
-                if (obj.GetComponent<NetworkIdentity>().localPlayerAuthority)
+                Debug.Log(obj);
+                if (obj.GetComponent<NetworkIdentity>().isLocalPlayer)
                 {
                     var spawnPoint = FindSpawnPoint(obj);
                     obj.GetComponent<NetworkSyncPosition>().CmdClientSetServerPos(spawnPoint);
                     obj.GetComponent<NetworkSyncRotation>().CmdSetStartRot();
                 }
             }
-            base.OnClientSceneChanged(conn);
         }
 
-        private Vector3 FindSpawnPoint(GameObject obj)
+        public static Vector3 FindSpawnPoint(GameObject obj)
         {
             Vector3 spawnPoint = Vector3.zero;
 

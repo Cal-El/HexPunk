@@ -261,9 +261,9 @@ public class AethersmithAbilities : ClassAbilities {
 
     public override float TakeDmg(float dmg, DamageType damageType = DamageType.Standard, PlayerStats attacker = null) {
         if (!isActuallyGod) {
-            CmdSetHealth(Mathf.Clamp(health - (dmg - dmg * ((energy * 0.5f) / energyMax)), 0, healthMax));
+            if(isLocalPlayer) CmdSetHealth(Mathf.Clamp(health - (dmg - dmg * ((energy * 0.5f) / energyMax)), 0, healthMax));
             if (attacker != null && isServer) attacker.CmdAddDamageDealt(dmg);
-            playerStats.CmdAddDamageTaken(dmg);
+            if(playerStats.isLocalPlayer) playerStats.CmdAddDamageTaken(dmg);
             if (health > 0)
             {
                 pam.PlayTakeDamageAudio();

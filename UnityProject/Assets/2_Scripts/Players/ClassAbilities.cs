@@ -103,7 +103,7 @@ public class ClassAbilities : Character {
 
     protected void Initialize() {
         DontDestroyOnLoad(gameObject);
-        CmdSetHealth(healthMax);
+        if (isLocalPlayer) CmdSetHealth(healthMax);
         pm = GetComponent<PlayerMovement>();
         pam = GetComponentInChildren<PlayerAudioManager>();
         myGUI = pm.playerCamera.GetComponentInChildren<PlayerGUICanvas>();
@@ -210,9 +210,9 @@ public class ClassAbilities : Character {
     }
     public override float TakeDmg(float dmg, DamageType damageType = DamageType.Standard, PlayerStats attacker = null) {
         if (!isActuallyGod) {
-            CmdSetHealth(Mathf.Clamp(health - dmg, 0, healthMax));
+            if(isLocalPlayer) CmdSetHealth(Mathf.Clamp(health - dmg, 0, healthMax));
             if (attacker != null && isServer) attacker.CmdAddDamageDealt(dmg);
-            playerStats.CmdAddDamageTaken(dmg);
+            if(playerStats.isLocalPlayer) playerStats.CmdAddDamageTaken(dmg);
             if (health > 0)
             {
                 pam.PlayTakeDamageAudio();
@@ -305,7 +305,7 @@ public class ClassAbilities : Character {
         IsAlive = value;
         if (value)
         {
-            CmdSetIsReviving(false);
+            if(isLocalPlayer) CmdSetIsReviving(false);
         }
         else
         {
@@ -316,7 +316,7 @@ public class ClassAbilities : Character {
 
     protected virtual void EnableCharacter(bool enabled)
     {
-        if (enabled) CmdSetHealth(healthMax * percentHealthOnRevive / 100);
+        if (enabled && isLocalPlayer) CmdSetHealth(healthMax * percentHealthOnRevive / 100);
         var cc = GetComponent<CharacterController>();
         if (cc != null) cc.enabled = enabled;
         reviveCapsule.SetActive(!enabled);
@@ -357,7 +357,7 @@ public class ClassAbilities : Character {
         IsReviving = value;
         if (value)
         {
-            CmdSetIsAlive(value);
+            if(isLocalPlayer) CmdSetIsAlive(value);
         }
     }
 
