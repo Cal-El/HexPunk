@@ -326,7 +326,7 @@ public class ConduitAbilities : ClassAbilities {
                 try {
                     if (c != null && c.stacks != null && !c.IsInvulnerable()) {
                         float stks = c.stacks.Stacks;
-                        CmdDischargeStacks(c.gameObject);
+                        if(isLocalPlayer) CmdDischargeStacks(c.gameObject);
                         c.TakeDmg(Discharge.baseDmg * stks, DamageType.FireElectric, playerStats);
                     }
                 } catch {

@@ -22,7 +22,7 @@ public class SettingMenu : MonoBehaviour {
 		int currentRes = 0;
 		for(int i = 0; i < Screen.resolutions.Length; i++){
 			ResolutionList.options.Add (new Dropdown.OptionData (Screen.resolutions[i].ToString()));
-			if (Screen.resolutions [i].height == Screen.currentResolution.height) {
+			if (Screen.resolutions [i].height == Screen.height) {
 				currentRes = i;
 			}
 
@@ -47,6 +47,6 @@ public class SettingMenu : MonoBehaviour {
 	}
 		
 	public void SetFullscreen(bool q){
-		Screen.SetResolution(Screen.currentResolution.width, Screen.currentResolution.height, q);
+		Screen.SetResolution(Screen.width, Screen.height, q);
 	}
 }

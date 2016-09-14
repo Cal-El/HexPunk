@@ -218,7 +218,6 @@ public class ClassAbilities : Character {
         {
             //Used to add playerstats before the IsAlive bool is set
             float tempHealth = Mathf.Clamp(health - dmg, 0, healthMax);
-            Debug.Log(tempHealth);
 
             if (tempHealth <= 0)
             {

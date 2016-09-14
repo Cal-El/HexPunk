@@ -265,7 +265,6 @@ public class AethersmithAbilities : ClassAbilities {
             //Used to add playerstats before the IsAlive bool is set
             float reducedDmg = dmg - dmg * ((energy * 0.5f) / energyMax);
             float tempHealth = Mathf.Clamp(health - reducedDmg, 0, healthMax);
-            Debug.Log(tempHealth);
 
             if (tempHealth <= 0)
             {
