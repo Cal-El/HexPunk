@@ -142,7 +142,7 @@ namespace UnityStandardAssets.Network
 
             foreach (var player in FindObjectsOfType<LobbyPlayer>())
             {
-                if (player != null && player != this)
+                if (player != null && !player.isLocalPlayer)
                 {
                     player.ChangeReadyButtonColor(player.selectedClass < 0 ? NotReadyColor : ReadyColor);
                 }

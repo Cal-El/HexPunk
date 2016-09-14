@@ -287,7 +287,7 @@ public class AethersmithAbilities : ClassAbilities {
                 if (attacker != null && isServer) attacker.CmdAddDamageDealt(reducedDmg);
                 pam.PlayTakeDamageAudio();
             }
-            if (isLocalPlayer) CmdSetHealth(tempHealth);
+            if (isClient && isLocalPlayer) CmdSetHealth(tempHealth);
 
             BloodSplatterer.MakeBlood(transform.position);
         }

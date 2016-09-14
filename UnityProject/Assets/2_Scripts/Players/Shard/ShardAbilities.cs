@@ -461,7 +461,7 @@ public class ShardAbilities : ClassAbilities {
                 if (attacker != null && attacker.isLocalPlayer) attacker.CmdAddDamageDealt(dmg);
                 pam.PlayTakeDamageAudio();
             }
-            if (isLocalPlayer) CmdSetHealth(tempHealth);
+            if (isClient && isLocalPlayer) CmdSetHealth(tempHealth);
 
             BloodSplatterer.MakeBlood(transform.position);
         }
