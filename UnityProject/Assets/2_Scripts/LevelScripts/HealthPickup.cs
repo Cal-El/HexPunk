@@ -90,9 +90,20 @@ public class HealthPickup : NetworkBehaviour {
         Destroy(this.gameObject);
     }
 
-    public void SetTarget(Transform _target)
+    [ServerCallback]
+    public virtual void SetTarget(GameObject attacker)
     {
-        target = _target;
+        if (!isClient)
+        {
+            target = attacker.transform;
+        }
+        RpcSetTarget(attacker);
+    }
+
+    [ClientRpc]
+    private void RpcSetTarget(GameObject attacker)
+    {
+        target = attacker.transform;
     }
 
     private Transform FindClosestPlayer() {

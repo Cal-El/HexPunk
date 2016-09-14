@@ -86,4 +86,13 @@ public class DestructibleObject : Character
     {
         return false;
     }
+
+    [ServerCallback]
+    public virtual GameObject ServerSpawn(GameObject o, Vector3 pos, Quaternion rot)
+    {
+        GameObject spawn = Instantiate(o, pos, rot) as GameObject;
+
+        NetworkServer.Spawn(spawn);
+        return spawn;
+    }
 }
