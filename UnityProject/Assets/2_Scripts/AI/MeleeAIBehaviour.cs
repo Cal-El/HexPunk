@@ -7,6 +7,9 @@ public class MeleeAIBehaviour : AIBehaviour {
     [HideInInspector]
     public AIMeleeAudioManager am;
 
+    [Header("Scouting")]
+    public bool ImAScout = false;
+
     //Attack Statistics
     [Header("Combat Statistics")]
     public float baseDmg = 5;                   //Base damage of the melee attack
@@ -30,7 +33,15 @@ public class MeleeAIBehaviour : AIBehaviour {
         navObst = this.GetComponent<NavMeshObstacle>();
 
         navAgent.speed = navAgent.speed * Random.Range(0.5f, 1.0f);
-        navAgent.avoidancePriority = Random.Range(1,99);
+        if (ImAScout)
+        {
+            navAgent.avoidancePriority = Random.Range(75, 99);
+        }
+        else
+        {
+            navAgent.avoidancePriority = Random.Range(1, 74);
+        }
+
         SetHealth(maxHealth);
 	}
 	
