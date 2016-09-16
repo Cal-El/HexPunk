@@ -20,9 +20,9 @@ public class ScreenFader : MonoBehaviour {
 	void Update () {
 	    if(Time.time < finishTime) {
             if (toBlack)
-                im.color = new Color(0, 0, 0, (Time.time - startTime) / (finishTime - startTime));
+                im.color = new Color(1, 1, 1, (Time.time - startTime) / (finishTime - startTime));
             else
-                im.color = new Color(0, 0, 0, 1 - (Time.time - startTime) / (finishTime - startTime));
+                im.color = new Color(1, 1, 1, 1 - (Time.time - startTime) / (finishTime - startTime));
         }
         if(delayTimer > 0)
         {
@@ -39,7 +39,11 @@ public class ScreenFader : MonoBehaviour {
         }
 	}
 
-    public void Fade (float _timeToFade, bool _toBlack) {
+    public void Fade (float _timeToFade, bool _toBlack, Sprite _img = null) {
+        if(_img != null) {
+            im.sprite = _img;
+        }
+
         startTime = Time.time;
         finishTime = startTime + _timeToFade;
         toBlack = _toBlack;

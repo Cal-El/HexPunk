@@ -11,6 +11,8 @@ public class SceneChangeTrigger : NetworkBehaviour {
     [SerializeField]
     private float timeToChange = 2;
     private int stage = 0;
+    [SerializeField]
+    Sprite image;
 
 	// Use this for initialization
 	void Start ()
@@ -37,7 +39,7 @@ public class SceneChangeTrigger : NetworkBehaviour {
     void Activate() {
         startTime = Time.time;
         stage = 1;
-        FindObjectOfType<ScreenFader>().Fade(timeToChange, true);
+        FindObjectOfType<ScreenFader>().Fade(timeToChange, true, image);
     }
 
     public void OverrideActivate(string s) {

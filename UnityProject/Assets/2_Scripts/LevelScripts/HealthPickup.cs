@@ -85,7 +85,10 @@ public class HealthPickup : NetworkBehaviour {
         
 
         if (particleEffect != null) {
-            Instantiate(particleEffect, this.transform.position, this.transform.rotation);
+            particleEffect.transform.parent = null;
+            particleEffect.GetComponent<ParticleSystem>().enableEmission = false;
+            Destroy(particleEffect, 1.5f);
+            //Instantiate(particleEffect, this.transform.position, this.transform.rotation);
         }
         Destroy(this.gameObject);
     }
