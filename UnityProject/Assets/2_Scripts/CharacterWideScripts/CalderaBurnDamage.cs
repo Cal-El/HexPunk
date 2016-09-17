@@ -13,14 +13,23 @@ public class CalderaBurnDamage : MonoBehaviour {
     private int currentTick;
     public float tickDamage = 1;
     private Character c;
+    public GameObject effectPrefab;
+    private ParticleSystem ps;
 
     void Start () {
+
         c = GetComponent<Character>();
         var caldera = FindObjectOfType<CalderaAbilities>();
         if (caldera != null)
         {
             calderaStats = FindObjectOfType<CalderaAbilities>().gameObject.GetComponent<PlayerStats>();
         }
+
+        GameObject g = Instantiate(effectPrefab, transform.position, effectPrefab.transform.rotation) as GameObject;
+        g.transform.position = new Vector3(g.transform.position.x, 1, g.transform.position.z);
+        g.transform.parent = this.transform;
+        ps = g.GetComponent<ParticleSystem>();
+        ps.enableEmission = false;
     }
 
     // Update is called once per frame
@@ -41,6 +50,12 @@ public class CalderaBurnDamage : MonoBehaviour {
                     timer += dotTimer;
                 }
             }
+        }
+
+        if (isBurning) {
+            ps.enableEmission = true;
+        } else {
+            ps.enableEmission = false;
         }
 	}
 

@@ -13,7 +13,9 @@ public class ConduitAbilities : ClassAbilities {
     public GameObject punchBang;
     public Transform punchBangPoint;
     public GameObject staticStompPrefab;
-    public GameObject dischargeLightningPathPrefab;
+    public GameObject dischargeStart;
+    public GameObject dischargeEnd;
+
 
     public Ability LightingPunch = new Ability( 1, 1, 0.25f, 0.25f, 0, 2);
     public Ability StaticStomp = new Ability( 2, 0, 0.5f, 0.25f, 2, 1);
@@ -321,18 +323,20 @@ public class ConduitAbilities : ClassAbilities {
 
     private void Ability4()
     {
-        if (lightningLists != null)
-        foreach(Character c in lightningLists) {
-                try {
-                    if (c != null && c.stacks != null && !c.IsInvulnerable()) {
-                        float stks = c.stacks.Stacks;
-                        if(isLocalPlayer) CmdDischargeStacks(c.gameObject);
-                        c.TakeDmg(Discharge.baseDmg * stks, DamageType.FireElectric, playerStats);
-                    }
-                } catch {
-                    break;
+        Character[] charr = Megamanager.MM.characters.ToArray();
+        foreach (Character c in charr) {
+            try {
+                if (c != null && c.stacks != null && !c.IsInvulnerable()) {
+                    float stks = c.stacks.Stacks;
+                    if(isLocalPlayer) CmdDischargeStacks(c.gameObject);
+                    c.TakeDmg(Discharge.baseDmg * stks, DamageType.FireElectric, playerStats);
                 }
+            } catch {
+                break;
             }
+        }
+        GameObject lightningBolts = Instantiate(dischargeEnd, Position, dischargeEnd.transform.rotation) as GameObject;
+        lightningBolts.transform.parent = transform;
     }
 
     [Command]
@@ -361,27 +365,8 @@ public class ConduitAbilities : ClassAbilities {
 
     private void StartAbility4()
     {
-        GameObject lightningBolts = Instantiate(dischargeLightningPathPrefab);
-        Character[] things = GameObject.FindObjectsOfType<Character>();
-        List<GameObject> lightningList = new List<GameObject>();
-        lightningLists = new List<Character>();
-        lightningList.Add(gameObject);
-        for (int i = 0; i < things.Length; i++)
-        {
-            if (things[i].stacks.Stacks > 0 && !things[i].IsInvulnerable())
-            {
-                GameObject g = new GameObject("Point");
-                g.transform.position = things[i].transform.position;
-                g.transform.rotation = things[i].transform.rotation;
-                g.transform.parent = lightningBolts.transform;
-                lightningList.Add(g);
-                lightningLists.Add(things[i]);
-                lightningList.Add(gameObject);
-            }
-        }
-        lightningBolts.GetComponent<DigitalRuby.ThunderAndLightning.LightningBoltPathScript>().LightningPath.List = lightningList;
-        lightningBolts.GetComponent<DigitalRuby.ThunderAndLightning.LightningBoltPathScript>().AllowOrthographicMode = false;
-        lightningBolts.GetComponent<DigitalRuby.ThunderAndLightning.LightningBoltPathScript>().Camera = null;
+        GameObject lightningBolts = Instantiate(dischargeStart, Position, dischargeStart.transform.rotation) as GameObject;
+        lightningBolts.transform.parent = this.transform;
     }
 
     [Command]

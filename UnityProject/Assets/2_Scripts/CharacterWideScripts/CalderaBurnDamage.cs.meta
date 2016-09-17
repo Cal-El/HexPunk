@@ -1,11 +1,11 @@
 fileFormatVersion: 2
 guid: eff25eac731711a419a964d253925cac
-timeCreated: 1472546001
+timeCreated: 1474087951
 licenseType: Free
 MonoImporter:
   serializedVersion: 2
   defaultReferences:
-  - caldera: {fileID: 166238, guid: af98308edb95f3448aa36f9e44f11c36, type: 2}
+  - effectPrefab: {fileID: 193240, guid: ce077a13768a6364486d7199ddc80736, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
