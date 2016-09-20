@@ -26,7 +26,7 @@ public class GUIPopup : MonoBehaviour {
 		} else {
 			Destroy (this.gameObject);
 		}
-        startTime = Time.time+3;
+        startTime = Time.time+6;
 		active = true;
         myText.text = message;
         doubleDistanceOnscreen = (onScreenPos - offScreenPos) * 2 + offScreenPos;
