@@ -5,7 +5,7 @@ using System.Collections;
 public class DoorScript : NetworkBehaviour {
 
     [SyncVar]
-    private bool open = false;
+    public bool open = false;
     public float timeToOpen = 2.0f;
 
     [System.Serializable] public struct DOOR {
