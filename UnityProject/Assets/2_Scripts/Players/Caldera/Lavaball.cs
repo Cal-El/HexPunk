@@ -16,6 +16,7 @@ public class Lavaball : MonoBehaviour {
     public float safeWindow = 0.75f;
     private Vector3 startPos;
     public ParticleSystem p;
+    public GameObject deathrattle;
 
     void Start()
     {
@@ -77,6 +78,8 @@ public class Lavaball : MonoBehaviour {
     {
         float spashDamage = damage;
         var targets = Physics.OverlapSphere(origin, splashRadius);
+
+        Instantiate(deathrattle, transform.position, deathrattle.transform.rotation);
 
         foreach (var target in targets)
         {
