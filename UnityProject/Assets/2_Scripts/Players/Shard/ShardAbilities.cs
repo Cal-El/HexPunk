@@ -435,7 +435,7 @@ public class ShardAbilities : ClassAbilities {
 
     public override float TakeDmg(float dmg, DamageType damageType = DamageType.Standard, PlayerStats attacker = null)
     {
-        if (!isMist && !isActuallyGod)
+        if (!isMist && !isActuallyGod && dmg > 0.02f)
         {
             //Used to add playerstats before the IsAlive bool is set
             float tempHealth = Mathf.Clamp(health - dmg, 0, healthMax);

@@ -1,10 +1,11 @@
 fileFormatVersion: 2
 guid: f126785db651cd246a322ae559fa5353
-timeCreated: 1460249170
+timeCreated: 1474336363
 licenseType: Free
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - stacksEffectPrefab: {fileID: 186338, guid: da438d516253a574c8d10d001972cf1d, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

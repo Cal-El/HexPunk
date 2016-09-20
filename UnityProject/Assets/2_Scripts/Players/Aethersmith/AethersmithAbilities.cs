@@ -260,7 +260,7 @@ public class AethersmithAbilities : ClassAbilities {
     }
 
     public override float TakeDmg(float dmg, DamageType damageType = DamageType.Standard, PlayerStats attacker = null) {
-        if (!isActuallyGod)
+        if (!isActuallyGod && dmg > 0.02f)
         {
             //Used to add playerstats before the IsAlive bool is set
             float reducedDmg = dmg - dmg * ((energy * 0.5f) / energyMax);

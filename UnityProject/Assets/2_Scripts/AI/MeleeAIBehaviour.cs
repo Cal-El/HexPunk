@@ -225,39 +225,33 @@ public class MeleeAIBehaviour : AIBehaviour {
     
     public override float TakeDmg(float dmg, DamageType damageType = DamageType.Standard, PlayerStats attacker = null)
     {
-        SetHealth(Mathf.Clamp(health - dmg, 0, maxHealth));
+        if (dmg > 0.02f) {
+            SetHealth(Mathf.Clamp(health - dmg, 0, maxHealth));
 
-        BloodSplatterer.MakeBlood(transform.position);
+            BloodSplatterer.MakeBlood(transform.position);
 
-        if (attacker != null && attacker.isLocalPlayer) attacker.CmdAddDamageDealt(dmg);
+            if (attacker != null && attacker.isLocalPlayer) attacker.CmdAddDamageDealt(dmg);
+            if (health <= 0) {
+                if (attacker != null && attacker.isLocalPlayer) attacker.CmdAddKills(1);
+                if (damageType == DamageType.FireElectric) {
+                    am.PlayDeathBurnElectricAudio();
+                } else {
+                    am.PlayDeathAudio();
+                }
+
+                if (xpItem != null) {
+                    GameObject g = ServerSpawn(xpItem.gameObject, transform.position, transform.rotation) as GameObject;
+                    if (attacker != null && g != null) {
+                        var pickup = g.GetComponent<HealthPickup>();
+                        if (pickup != null) pickup.SetTarget(attacker.gameObject);
+                    }
+                }
+            } else {
+                am.PlayTakeDamageAudio();
+            }
+        }
         if (agentState == STATES.Idle)
             StartBattlecry();
-        if (health <= 0)
-        {
-            if (attacker != null && attacker.isLocalPlayer) attacker.CmdAddKills(1);
-            if (damageType == DamageType.FireElectric)
-            {
-                am.PlayDeathBurnElectricAudio();
-            }
-            else
-            {
-                am.PlayDeathAudio();
-            }
-
-            if (xpItem != null)
-            {
-                GameObject g = ServerSpawn(xpItem.gameObject, transform.position, transform.rotation) as GameObject;
-                if (attacker != null && g != null)
-                {
-                    var pickup = g.GetComponent<HealthPickup>();
-                    if (pickup != null) pickup.SetTarget(attacker.gameObject);
-                }
-            }
-        }
-        else
-        {
-            am.PlayTakeDamageAudio();
-        }
         return health;
     }
 
