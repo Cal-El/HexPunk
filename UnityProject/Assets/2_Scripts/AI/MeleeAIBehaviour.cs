@@ -43,7 +43,9 @@ public class MeleeAIBehaviour : AIBehaviour {
         }
 
         SetHealth(maxHealth);
-	}
+
+        mr.material.SetColor("_EmissionColor", Color.red);
+    }
 	
 	void Update () {
         if (agentState != STATES.Dead) {
@@ -58,28 +60,28 @@ public class MeleeAIBehaviour : AIBehaviour {
                 if (transform.parent == null || transform.parent.GetComponent<Room>().roomUnlocked) {
                     switch (agentState) {
                         case STATES.Idle:
-                            mr.material.SetColor("_EmissionColor", Color.green);
+                            
                             animationState = STATES.Idle;
                             IdleBehaviour();
                             break;
                         case STATES.Battlecry:
-                            mr.material.SetColor("_EmissionColor", Color.yellow);
+                            
                             animationState = STATES.Battlecry;
                             BattlecryBehaviour();
                             break;
                         case STATES.Chasing:
-                            mr.material.SetColor("_EmissionColor", Color.red);
+                            
                             Retagetting();
                             animationState = STATES.Chasing;
                             if(target != null)
                                 ChasingBehaviour();
                             break;
                         case STATES.MeleeAttacking:
-                            mr.material.SetColor("_EmissionColor", Color.white);
+                            
                             AttackingBehaviour();
                             break;
                         case STATES.Knockback:
-                            mr.material.SetColor("_EmissionColor", Color.blue);
+                            
                             break;
                         case STATES.Dead:
                             
