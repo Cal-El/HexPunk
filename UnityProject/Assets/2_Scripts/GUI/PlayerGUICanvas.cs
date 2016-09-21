@@ -25,6 +25,11 @@ public class PlayerGUICanvas : MonoBehaviour
 
     public Image bloodEdge;
     private float intensity;
+
+    public bool levelUpNow;
+    public Text levelUp;
+    private float levelUpTimer;
+    private Vector2 levelUpStartPos;
     
     public GameObject[] huds = new GameObject[4];
 
@@ -41,7 +46,9 @@ public class PlayerGUICanvas : MonoBehaviour
         playerStats = myPlayer.GetComponent<ClassAbilities>();
         startingMaxHealth = playerStats.healthMax;
         string playerName = myPlayer.gameObject.name;
-        
+        levelUpStartPos = levelUp.rectTransform.anchoredPosition;
+
+
         SetHUDs(playerName, "Conduit");
         SetHUDs(playerName, "Aethersmith");
         SetHUDs(playerName, "Caldera");
@@ -123,6 +130,22 @@ public class PlayerGUICanvas : MonoBehaviour
             xpBar.fillAmount = 0.825f + 0.175f * (visXP - 5);
         }
 
+        if (levelUpNow)
+        {
+            levelUp.rectTransform.anchoredPosition = Vector2.Lerp(levelUp.rectTransform.anchoredPosition, new Vector2(levelUpStartPos.x, levelUpStartPos.y + 90), Time.deltaTime * 2);            
+        }
+        else
+        {
+            levelUp.rectTransform.anchoredPosition = Vector2.Lerp(levelUp.rectTransform.anchoredPosition, new Vector2(levelUpStartPos.x, levelUpStartPos.y), Time.deltaTime * 2);
+        }
+
+        if(levelUpNow && Time.time > levelUpTimer)
+        {
+            levelUpNow = false;
+        }
+
+        levelUp.color = new Color(levelUp.color.r, levelUp.color.g, levelUp.color.b, Mathf.Pow(1 - (levelUpStartPos.y + 90 - levelUp.rectTransform.anchoredPosition.y) / 100, 10));
+
         if (playerStats.IsAlive) {
             intensity *= 0.99f;
             intensity += (preVisHP - visHP) / visHP;
@@ -132,6 +155,12 @@ public class PlayerGUICanvas : MonoBehaviour
             bloodEdge.color = Color.Lerp(bloodEdge.color, Color.white, Time.deltaTime * 10);
         }
 
+    }
+
+    public void LevelUp()
+    {
+        levelUpNow = true;
+        levelUpTimer = Time.time + 1;
     }
 
     //Set up the betrayer GUI

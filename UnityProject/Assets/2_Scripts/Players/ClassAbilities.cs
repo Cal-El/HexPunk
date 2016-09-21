@@ -172,7 +172,7 @@ public class ClassAbilities : Character {
 		int prelevel = (int)level; 
 		level += xp;
 		if ((int)level > prelevel && isLocalPlayer) {
-			GUIPopup.ShowMessage ("Level up!");
+            myGUI.LevelUp();
 		}
 
     }
