@@ -36,7 +36,7 @@ public class HUDProperties : MonoBehaviour {
     {
         Vector3 newPos = new Vector2(healthBarPosX, healthBar.rectTransform.anchoredPosition.y);
         maxHealthBar.rectTransform.anchoredPosition = newPos;
-        healthBar.rectTransform.anchoredPosition = newPos;
+        //healthBar.rectTransform.anchoredPosition = newPos;
         healthBarEdge.rectTransform.anchoredPosition = newPos;
     }
 
