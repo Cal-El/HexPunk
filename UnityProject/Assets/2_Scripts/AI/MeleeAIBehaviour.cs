@@ -18,6 +18,8 @@ public class MeleeAIBehaviour : AIBehaviour {
     private float attackTimer = 0;
     public float range = 2;                     //Range/Reach of the attack
     public float deathTime = 2;
+    public float speedMinimum = 0.5f;
+    public float speedMaximum = 1.0f;
     //Pathfinding Variables
     [HideInInspector]public NavMeshAgent navAgent;
     private NavMeshObstacle navObst;
@@ -32,7 +34,7 @@ public class MeleeAIBehaviour : AIBehaviour {
         navAgent = this.GetComponent<NavMeshAgent>();
         navObst = this.GetComponent<NavMeshObstacle>();
 
-        navAgent.speed = navAgent.speed * Random.Range(0.5f, 1.0f);
+        navAgent.speed = navAgent.speed * Random.Range(speedMinimum, speedMaximum);
         if (ImAScout)
         {
             navAgent.avoidancePriority = Random.Range(75, 99);

@@ -44,9 +44,9 @@ public class ShardAbilities : ClassAbilities {
     private GameObject currentIcicle;
     private Icicle icicleScript;
     private bool chargingAbility1 = false;
-    private float growthWindow = 1;
+    public float growthWindow = 1;
     private float growthTimer;
-
+    public int iceLanceDamageMod = 1;
     private int playerNum = 0;
 
     // Use this for initialization
@@ -252,7 +252,7 @@ public class ShardAbilities : ClassAbilities {
         if (currentIcicle != null && Time.time <= growthTimer)
         {
             currentIcicle.transform.localScale += Vector3.one * 0.01f;
-            icicleScript.damage += IceLance.baseDmg / 10;
+            icicleScript.damage += IceLance.baseDmg * Time.deltaTime * iceLanceDamageMod;
             energy += Time.deltaTime * IceLance.energyChargeModifier;
         }
 
