@@ -306,6 +306,7 @@ public class ShardAbilities : ClassAbilities {
     {
         if (currentIcicle != null) {
             currentIcicle.transform.parent = null;
+            currentIcicle.GetComponent<CapsuleCollider>().enabled = true;
             if (icicleScript != null) {
                 icicleScript.enabled = true;
             }
