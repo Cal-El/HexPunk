@@ -286,7 +286,7 @@ public class CalderaAbilities : ClassAbilities {
 
         Eruption script = eruption.GetComponent<Eruption>();
 
-        if(script != null)
+        if (script != null)
         {
             script.range = Eruption.range;
         }
@@ -295,12 +295,16 @@ public class CalderaAbilities : ClassAbilities {
 
         foreach (var col in targets)
         {
-            if (col != null && col.gameObject != gameObject)
+            if (IsDamagableTarget(col.transform, gameObject))
             {
-                Character ch = col.GetComponent<Character>();
-                if (ch != null && !ch.IsInvulnerable())
+                Vector3 dir = (col.transform.position - transform.position).normalized;
+
+                var closestHit = ClosestTargetInSight(transform.position, dir, Eruption.range);
+
+                Character ch;
+
+                if (IsDamagableTarget(closestHit, gameObject, out ch))
                 {
-                    Vector3 dir = (col.transform.position - transform.position).normalized;
                     ch.TakeDmg(Eruption.baseDmg * (Vector3.Distance(col.transform.position, transform.position)) / Eruption.range, DamageType.FireElectric, playerStats);
                     ch.Knockback((new Vector3(dir.x, 0, dir.z) * Eruption.knockbackStr), 1);
                     if (ch.gameObject != gameObject)
@@ -311,11 +315,63 @@ public class CalderaAbilities : ClassAbilities {
                 }
             }
         }
-
         energy = 0;
     }
 
     #endregion
+
+    /// <summary>
+    /// Checks if target is in line of sight
+    /// </summary>
+    bool IsDamagableTarget(Transform col, GameObject owner)
+    {
+        if (col != null && col.gameObject != owner)
+        {
+            Character ch = col.GetComponent<Character>();
+            if (ch != null && !ch.IsInvulnerable())
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Checks if target is in line of sight and returns the character
+    /// </summary>
+    bool IsDamagableTarget(Transform col, GameObject owner, out Character ch)
+    {
+        ch = null;
+        if (col != null && col.gameObject != owner)
+        {
+            ch = col.GetComponent<Character>();
+            if (ch != null && !ch.IsInvulnerable())
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    Transform ClosestTargetInSight(Vector3 startPos, Vector3 direction, float distance)
+    {
+        var hits = Physics.RaycastAll(startPos, direction, distance);
+        Transform closestHit = null;
+        float closestDist = distance;
+
+        foreach (var hit in hits)
+        {
+            float hitDistance = Vector3.Distance(hit.transform.position, transform.position);
+            if (hitDistance <= closestDist)
+            {
+                closestHit = hit.transform;
+                closestDist = hitDistance;
+            }
+        }
+
+        return closestHit;
+    }
 
     protected override void UseAbility(Ability a)
     {
