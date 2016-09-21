@@ -199,17 +199,20 @@ public class AethersmithAbilities : ClassAbilities {
         CanAimWhileCasting = true;
 
         RaycastHit hit;
-        if (Physics.SphereCast(transform.position, 0.5f, transform.forward, out hit))
+        if (Physics.SphereCast(Position, 0.5f, transform.forward, out hit))
         {
-            Character c = hit.transform.GetComponent<Character>();
-            if (c != null && !c.IsInvulnerable())
+            if (!hit.collider.isTrigger)
             {
-                c.Knockback(transform.forward * SpectralSpear.knockbackStr, 1);
-                c.TakeDmg(SpectralSpear.baseDmg, DamageType.Standard, playerStats);
+                Character c = hit.transform.GetComponent<Character>();
+                if (c != null && !c.IsInvulnerable())
+                {
+                    c.Knockback(transform.forward * SpectralSpear.knockbackStr, 1);
+                    c.TakeDmg(SpectralSpear.baseDmg, DamageType.Standard, playerStats);
+                }
+                GameObject g = Instantiate(javalinPrefab, javalinParticle.transform.position, Quaternion.identity) as GameObject;
+                g.transform.LookAt(new Vector3(hit.point.x, 1, hit.point.z));
+                g.transform.localScale = new Vector3(1, 1, hit.distance);
             }
-            GameObject g = Instantiate(javalinPrefab, javalinParticle.transform.position, Quaternion.identity) as GameObject;
-            g.transform.LookAt(new Vector3(hit.point.x, 1, hit.point.z));
-            g.transform.localScale = new Vector3(1, 1, hit.distance);
         }
         else
         {
