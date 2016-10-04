@@ -42,8 +42,7 @@ public class Fireball : MonoBehaviour {
 
     void OnTriggerEnter(Collider col)
     {        
-        if (col != null && !col.isTrigger)
-        {
+        if (col != null && !col.isTrigger && col.tag != "Guard" && col.tag != "Trigger") {
             Character ch = col.GetComponent<Character>();
             //Give the owner a safeWindow
             if (col.gameObject != owner && col != null)

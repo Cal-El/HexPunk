@@ -43,8 +43,7 @@ public class Lavaball : MonoBehaviour {
 
     void OnTriggerStay(Collider col)
     {
-        if (!col.isTrigger && col != null)
-        {
+        if (!col.isTrigger && col != null && col.tag != "Guard" && col.tag != "Trigger") {
             Character ch = col.GetComponent<Character>();
             if (ch != null && !ch.IsInvulnerable())
             {

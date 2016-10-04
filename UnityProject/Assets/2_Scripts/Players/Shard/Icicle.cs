@@ -37,8 +37,7 @@ public class Icicle : MonoBehaviour {
 
     void OnTriggerEnter(Collider col)
     {
-		if (!col.isTrigger && this.enabled)
-        {
+		if (!col.isTrigger && this.enabled && col.tag != "Guard" && col.tag != "Trigger") {
             if (col.gameObject != owner && col != null)
             {
                 Character ch = col.GetComponent<Character>();

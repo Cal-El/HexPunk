@@ -225,7 +225,7 @@ public class EliteAIBehaviour : AIBehaviour {
         } else if (rangeAttack.attackTimer >= rangeAttack.castingTime && target != null) {
             //Time to attack
             Ray ray = new Ray(transform.position, rangeTarget - transform.position);
-            RaycastHit[] hits = Physics.SphereCastAll(ray, 1, rangeAttack.range);
+            RaycastHit[] hits = Physics.SphereCastAll(ray, 2, rangeAttack.range);
 
             hits = Megamanager.SortByDistance(hits);
 
@@ -239,7 +239,8 @@ public class EliteAIBehaviour : AIBehaviour {
                     if (ch == this) continue;
                     ch.TakeDmg(rangeAttack.baseDmg);
                     ch.Knockback(transform.forward * 1000, 1);
-                } else { break; }
+                } else if (hit.transform.tag == "Guard" || hit.transform.tag == "Trigger") { }
+                else { break; }
             }
             beamEffect.SetActive(true);
             warningEffect.SetActive(false);
