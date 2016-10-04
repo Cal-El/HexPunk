@@ -23,6 +23,7 @@ public class ConduitAbilities : ClassAbilities {
     public Ability Discharge = new Ability( 4, 1, 1, 0.5f, 0, 1000);
 
     private int playerNum = 0;
+    private int totalstacksGiven = 0;
 
     private List<Character> lightningLists;
 
@@ -203,13 +204,20 @@ public class ConduitAbilities : ClassAbilities {
 
     private void Ability1()
     {
-        Ray ray = new Ray(transform.position+Vector3.up, transform.forward);
-        RaycastHit hit;
-        if(Physics.Raycast(ray, out hit, LightingPunch.range)) {
-            Character ch = hit.transform.GetComponent<Character>();
+        RaycastHit[] sphereHits = Physics.SphereCastAll(new Ray(transform.position + Vector3.up, transform.forward), 1, LightingPunch.range);
+        if (sphereHits != null && sphereHits.Length > 0) {
+            Character ch = null;
+            for (int i = 0; i < sphereHits.Length; i++)
+            {
+                Character cha = sphereHits[i].transform.GetComponent<Character>();
+                if (cha != null && cha != this)
+                {
+                    ch = cha;
+                    break;
+                }
+            }
             if (ch != null && !ch.IsInvulnerable()) {
                 Instantiate(punchBang, punchBangPoint.position, punchBangPoint.rotation);
-                
                 if (ch.stacks.Stacks > 0) {
                     List<Character> alreadyHit = new List<Character>();
                     alreadyHit.Add(ch);
@@ -220,6 +228,7 @@ public class ConduitAbilities : ClassAbilities {
                     {
                         try {
                             hits[i].stacks.AddStack();
+                            totalstacksGiven++;
                             if (i > 0) {
                                 hits[i].TakeDmg(LightingPunch.baseDmg / 2, DamageType.FireElectric, playerStats);
                             }
@@ -241,9 +250,11 @@ public class ConduitAbilities : ClassAbilities {
                     lightningBolts.GetComponent<DigitalRuby.ThunderAndLightning.LightningBoltPathScript>().Camera = null;
                 } else {
                     ch.stacks.AddStack();
+                    totalstacksGiven++;
                 }
                 ch.TakeDmg(LightingPunch.baseDmg, DamageType.Standard, playerStats);
             }
+
         }
     }
 
@@ -260,7 +271,11 @@ public class ConduitAbilities : ClassAbilities {
             {
                 var ch = h.transform.GetComponent<Character>();
                 if (ch != null && ch.stacks != null && h.transform != transform && !ch.IsInvulnerable())
-                    h.transform.GetComponent<ConduitStacks>().AddStack();
+                {
+                    ch.stacks.AddStack();
+                    totalstacksGiven++;
+                }
+
                 alreadyHit.Add(h.transform.gameObject);
             }
         }
@@ -301,11 +316,13 @@ public class ConduitAbilities : ClassAbilities {
                         {
                             telePos = ray.origin + (ray.direction * (hit[i].distance + 1.5f));
                             ch.stacks.AddStack();
+                            totalstacksGiven++;
                             ch.TakeDmg(LightningDash.baseDmg, DamageType.FireElectric, playerStats);
                         }
                         else
                         {
                             ch.stacks.AddStack();
+                            totalstacksGiven++;
                             ch.TakeDmg(LightningDash.baseDmg, DamageType.FireElectric, playerStats);
                         }
                     }
@@ -328,6 +345,7 @@ public class ConduitAbilities : ClassAbilities {
             try {
                 if (c != null && c.stacks != null && !c.IsInvulnerable()) {
                     float stks = c.stacks.Stacks;
+                    totalstacksGiven = 0;
                     if(isLocalPlayer) CmdDischargeStacks(c.gameObject);
                     c.TakeDmg(Discharge.baseDmg * stks, DamageType.FireElectric, playerStats);
                 }
@@ -388,6 +406,7 @@ public class ConduitAbilities : ClassAbilities {
     #endregion
 
     protected override void UseAbility(Ability a) {
+        if(a.abilityNum == Discharge.abilityNum && totalstacksGiven < 10) { return; }
         if (currCooldown <= 0 && energy >= a.energyCost) {
             base.UseAbility(a);
             if (waitingForAbility == 4) {

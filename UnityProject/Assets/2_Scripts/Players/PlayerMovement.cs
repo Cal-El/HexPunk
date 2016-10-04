@@ -4,6 +4,8 @@ using System.Collections;
 
 public class PlayerMovement : NetworkBehaviour {
 
+    private const float PROJECTILEHEIGHTMOD = -1;
+
 	private CharacterController controller;
     private ClassAbilities myPlayer;
     public GameObject playerCamera;
@@ -64,7 +66,7 @@ public class PlayerMovement : NetworkBehaviour {
             }
         } else {
             Ray sh = myCam.ScreenPointToRay(Input.mousePosition);
-            Vector3 point = sh.origin + sh.direction * Mathf.Abs((sh.origin.y +1) / sh.direction.y);
+            Vector3 point = sh.origin + sh.direction * Mathf.Abs((sh.origin.y + PROJECTILEHEIGHTMOD) / sh.direction.y);
             Aim(point);
 
             controller.Move(direction * speed * 0.5f * Time.fixedDeltaTime);
@@ -113,7 +115,7 @@ public class PlayerMovement : NetworkBehaviour {
                 {
                     Quaternion currRot = transform.rotation;
                     Ray sh = myCam.ScreenPointToRay(Input.mousePosition);
-                    Vector3 point = sh.origin + sh.direction * Mathf.Abs((sh.origin.y + 1) / sh.direction.y);
+                    Vector3 point = sh.origin + sh.direction * Mathf.Abs((sh.origin.y + PROJECTILEHEIGHTMOD) / sh.direction.y);
                     Aim(point);
                 }
                 isCasting = value;

@@ -198,21 +198,44 @@ public class AethersmithAbilities : ClassAbilities {
     private void Ability2() {
         CanAimWhileCasting = true;
 
-        RaycastHit hit;
-        if (Physics.SphereCast(Position, 0.5f, transform.forward, out hit))
+        RaycastHit[] sphereHits = Physics.SphereCastAll(Position, 0.5f, transform.forward, SpectralSpear.range);
+        if (sphereHits != null)
         {
-            if (!hit.collider.isTrigger)
+            int penetration = 0;
+            int maxPenetration = 3;
+            int lastHit = 0;
+            for (int i = 0; i < sphereHits.Length; i++)
             {
-                Character c = hit.transform.GetComponent<Character>();
-                if (c != null && !c.IsInvulnerable())
+
+                lastHit = i;
+                if (!sphereHits[i].collider.isTrigger && sphereHits[i].transform.tag != "Trigger" && sphereHits[i].transform.tag != "Guard" && sphereHits[i].transform.tag != "Aetherwall")
                 {
-                    c.Knockback(transform.forward * SpectralSpear.knockbackStr, 1);
-                    c.TakeDmg(SpectralSpear.baseDmg, DamageType.Standard, playerStats);
+                    Character ch = sphereHits[i].transform.GetComponent<Character>();
+                    if (ch != null)
+                    {
+                        if (!ch.IsInvulnerable() && ch != this)
+                        {
+                            ch.Knockback(transform.forward * SpectralSpear.knockbackStr, 1);
+                            ch.TakeDmg(SpectralSpear.baseDmg, DamageType.Standard, playerStats);
+                            penetration++;
+                            if (penetration >= maxPenetration)
+                            {
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        
+                    }
                 }
-                GameObject g = Instantiate(javalinPrefab, javalinParticle.transform.position, Quaternion.identity) as GameObject;
-                g.transform.LookAt(new Vector3(hit.point.x, 1, hit.point.z));
-                g.transform.localScale = new Vector3(1, 1, hit.distance);
+                else
+                {
+                }
             }
+            GameObject g = Instantiate(javalinPrefab, javalinParticle.transform.position, Quaternion.identity) as GameObject;
+            g.transform.LookAt(new Vector3(sphereHits[lastHit].point.x, 1, sphereHits[lastHit].point.z));
+            g.transform.localScale = new Vector3(1, 1, sphereHits[lastHit].distance);
         }
         else
         {
@@ -267,6 +290,7 @@ public class AethersmithAbilities : ClassAbilities {
         {
             //Used to add playerstats before the IsAlive bool is set
             float reducedDmg = dmg - dmg * ((energy * 0.5f) / energyMax);
+            energy = Mathf.Clamp(energy + reducedDmg * 2, 0, energyMax);
             float tempHealth = Mathf.Clamp(health - reducedDmg, 0, healthMax);
 
             if (tempHealth <= 0)
