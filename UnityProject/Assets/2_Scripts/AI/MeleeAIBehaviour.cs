@@ -26,6 +26,8 @@ public class MeleeAIBehaviour : AIBehaviour {
     private float inactiveTimer = 0.0f;
     private float knockbackTimer = 0.0f;
 
+    public SkinnedMeshRenderer secondaryMr;
+
     void Awake () {
         base.Initialise();
 
@@ -47,6 +49,7 @@ public class MeleeAIBehaviour : AIBehaviour {
         SetHealth(maxHealth);
 
         mr.material.SetColor("_EmissionColor", Color.red);
+        if (secondaryMr != null) secondaryMr.material.SetColor("_EmissionColor", Color.red);
     }
 	
 	void Update () {
@@ -99,6 +102,7 @@ public class MeleeAIBehaviour : AIBehaviour {
             }
         } else {
             mr.material.SetColor("_EmissionColor", Color.black);
+            if(secondaryMr != null) secondaryMr.material.SetColor("_EmissionColor", Color.black);
             animationState = STATES.Dead;
             DeadBehaviour();
         }
