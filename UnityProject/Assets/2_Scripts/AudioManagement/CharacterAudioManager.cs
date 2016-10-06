@@ -30,7 +30,7 @@ public class CharacterAudioManager : MonoBehaviour {
 
     protected void PlayRandomFromClips(AudioSourceManager sourceManager)
     {
-        if (!sourceManager.source.isPlaying)
+        if (sourceManager != null && !sourceManager.source.isPlaying)
         {
             sourceManager.source.PlayOneShot(sourceManager.audioClips[Random.Range(0, sourceManager.audioClips.Length - 1)]);
         }

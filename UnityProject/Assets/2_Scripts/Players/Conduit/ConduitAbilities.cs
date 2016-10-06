@@ -341,16 +341,14 @@ public class ConduitAbilities : ClassAbilities {
     private void Ability4()
     {
         Character[] charr = Megamanager.MM.characters.ToArray();
-        foreach (Character c in charr) {
-            try {
-                if (c != null && c.stacks != null && !c.IsInvulnerable()) {
-                    float stks = c.stacks.Stacks;
-                    totalstacksGiven = 0;
-                    if(isLocalPlayer) CmdDischargeStacks(c.gameObject);
-                    c.TakeDmg(Discharge.baseDmg * stks, DamageType.FireElectric, playerStats);
-                }
-            } catch {
-                break;
+        int index = 0;
+        while (index < charr.Length) {
+            if (charr[index] != null && charr[index].stacks != null && !charr[index].IsInvulnerable()) {
+                float stks = charr[index].stacks.Stacks;
+                totalstacksGiven = 0;
+                if(isLocalPlayer && Megamanager.MM.players.Length > 1) CmdDischargeStacks(charr[index].gameObject);
+                charr[index].TakeDmg(Discharge.baseDmg * stks, DamageType.FireElectric, playerStats);
+                index++;
             }
         }
         GameObject lightningBolts = Instantiate(dischargeEnd, Position, dischargeEnd.transform.rotation) as GameObject;

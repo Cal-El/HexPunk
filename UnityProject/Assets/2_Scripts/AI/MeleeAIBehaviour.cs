@@ -240,9 +240,11 @@ public class MeleeAIBehaviour : AIBehaviour {
             if (health <= 0) {
                 if (attacker != null && attacker.isLocalPlayer) attacker.CmdAddKills(1);
                 if (damageType == DamageType.FireElectric) {
-                    am.PlayDeathBurnElectricAudio();
+                    if (am != null)
+                        am.PlayDeathBurnElectricAudio();
                 } else {
-                    am.PlayDeathAudio();
+                    if (am != null)
+                        am.PlayDeathAudio();
                 }
 
                 if (xpItem != null) {
@@ -253,7 +255,8 @@ public class MeleeAIBehaviour : AIBehaviour {
                     }
                 }
             } else {
-                am.PlayTakeDamageAudio();
+                if(am !=null)
+                    am.PlayTakeDamageAudio();
             }
         }
         if (agentState == STATES.Idle)
