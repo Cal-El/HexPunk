@@ -10,9 +10,9 @@ public class DestructibleObject : Character
     private bool _isDestroyed = false;
 
     [SerializeField]
-    private float maxHealth;
+    protected float maxHealth;
     [SyncVar (hook = "OnHealthChanged")]
-    private float health;
+    protected float health;
 
     void Start() {
         Initialize();

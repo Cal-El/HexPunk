@@ -31,6 +31,9 @@ public class EnemySpawner : DestructibleObject {
     private float totalSeverity = 0;
     private float timer = 0;
     private List<Spawnable> spawnedList;
+    [SerializeField]
+    private Renderer RedCentre;
+    private float redness = 1;
 
 	// Use this for initialization
 	void Start () {
@@ -43,10 +46,16 @@ public class EnemySpawner : DestructibleObject {
         
         spawnedList = new List<Spawnable>();
 
-	}
+        redness = (health / maxHealth);
+        RedCentre.material.SetColor("_EmissionColor", Color.Lerp(Color.black, Color.red, redness));
+
+    }
 	
 	// Update is called once per frame
 	void Update () {
+        redness = Mathf.Lerp(redness, 1, Time.deltaTime);
+        RedCentre.material.SetColor("_EmissionColor", Color.Lerp(Color.black, Color.red, redness));
+
         switch (agentState)
         {
             case STATES.Idle:
@@ -125,6 +134,12 @@ public class EnemySpawner : DestructibleObject {
             }
 
         }
+    }
+
+    public override float TakeDmg(float dmg, DamageType damageType = DamageType.Standard, PlayerStats attacker = null) {
+        redness -= (dmg*10) / maxHealth;
+        redness = Mathf.Clamp(redness, 0.1f, 1);
+        return base.TakeDmg(dmg, damageType, attacker);
     }
 
     private void DeathBehaviour()

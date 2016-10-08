@@ -12,7 +12,7 @@ public class ShardAbilities : ClassAbilities {
 
     public GameObject iciclePrefab;
     public GameObject iceFieldPrefab;
-    public GameObject mistCloud;
+    public ParticleSystem mistCloudEffect;
     [SyncVar]
     public bool isMist;
     public GameObject iceRamPrefab;
@@ -58,6 +58,7 @@ public class ShardAbilities : ClassAbilities {
         iceLanceCooldown = IceLance.cooldown;
         IceLance.cooldown = Time.deltaTime;
         playerRenderer = graphicObj.gameObject.GetComponent<SkinnedMeshRenderer>();
+        mistCloudEffect.enableEmission = false;
     }
 
     // Update is called once per frame
@@ -352,10 +353,10 @@ public class ShardAbilities : ClassAbilities {
 
     private void Ability3()
     {
-        if (!mistCloud.activeInHierarchy)
+        if (!isMist)
         {
             isMist = true;
-            mistCloud.SetActive(true);
+            mistCloudEffect.enableEmission = true;
             playerRenderer.enabled = false;
         }
 
@@ -364,11 +365,11 @@ public class ShardAbilities : ClassAbilities {
 
     private void StopMistCloud()
     {
-        if (mistCloud.activeSelf)
+        if (isMist)
         {
             isMist = false;
             playerRenderer.enabled = true;
-            mistCloud.SetActive(false);
+            mistCloudEffect.enableEmission = false;
         }
     }
 

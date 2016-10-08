@@ -12,6 +12,7 @@ public class Icicle : MonoBehaviour {
     public float speed = 10;
     private Vector3 startPos;
     public ParticleSystem p;
+    public GameObject deathRattle;
 
     void Start()
     {
@@ -31,6 +32,8 @@ public class Icicle : MonoBehaviour {
             p.enableEmission = false;
             p.loop = false;
             Destroy(p.gameObject, 5);
+            Destroy(Instantiate(deathRattle, transform.position, deathRattle.transform.rotation)as GameObject, 5);
+            
             Destroy(gameObject);
         }
     }
@@ -49,6 +52,8 @@ public class Icicle : MonoBehaviour {
                 p.enableEmission = false;
                 p.loop = false;
                 Destroy(p.gameObject, 5);
+
+                Destroy(Instantiate(deathRattle, transform.position, deathRattle.transform.rotation) as GameObject, 5);
                 Destroy(gameObject);
             }
         }
