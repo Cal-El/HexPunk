@@ -23,7 +23,7 @@ public class BasementMusic : MonoBehaviour {
             m.adsc = gameObject.AddComponent<AudioSource>();
             m.adsc.spatialBlend = 0;
             m.adsc.clip = m.track;
-            m.adsc.volume = m.volumeCurve.Evaluate(lerper);
+            m.adsc.volume = m.volumeCurve.Evaluate(lerper)* Audiomanager.GetVolume(Audiomanager.SOUNDTYPES.MUSIC);
             m.adsc.loop = true;
             m.adsc.Play();
         }
@@ -33,7 +33,7 @@ public class BasementMusic : MonoBehaviour {
 	void Update () {
         lerper = Mathf.Lerp(lerper, Megamanager.GetAllCharacters().Length, Time.deltaTime);
         foreach (MusicTrack m in tracks) {
-            m.adsc.volume = m.volumeCurve.Evaluate(lerper);
+            m.adsc.volume = m.volumeCurve.Evaluate(lerper) * Audiomanager.GetVolume(Audiomanager.SOUNDTYPES.MUSIC);
         }
     }
 }

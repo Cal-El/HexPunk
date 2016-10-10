@@ -28,7 +28,7 @@ public class Room : NetworkBehaviour {
             ads.clip = bossTalk;
             ads.loop = false;
             ads.spatialBlend = 0;
-            ads.volume = 1;
+            ads.volume = Audiomanager.GetVolume(Audiomanager.SOUNDTYPES.VOICELINE);
             ads.playOnAwake = false;
         }
     }

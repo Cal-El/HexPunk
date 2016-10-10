@@ -8,4 +8,12 @@ public class AudioSourceManager : MonoBehaviour
     public Type type;
     public AudioSource source;
     public AudioClip[] audioClips;
+
+    void Start() {
+        if (type == Type.Footsteps) {
+            source.volume = Audiomanager.GetVolume(Audiomanager.SOUNDTYPES.FOOTSTEPS);
+        } else {
+            source.volume = Audiomanager.GetVolume(Audiomanager.SOUNDTYPES.REACTIONS);
+        }
+    }
 }
