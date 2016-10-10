@@ -9,6 +9,10 @@ public class AethersmithAbilities : ClassAbilities {
     [SerializeField] private GameObject javalinPrefab;
     [SerializeField]private GameObject javalinVisual;
     [SerializeField]private ParticleSystem javalinParticle;
+    [SerializeField]
+    private GameObject javalinHitEffect;
+    [SerializeField]
+    private GameObject hammerSwingEffect;
 
     public Ability HammerSwing = new Ability( 1, 3, 0.5f, 0, 0, 2f, 200);
     public Ability SpectralSpear = new Ability( 2, 5, 0.25f, 0.1f, 10, 100f, 1000);
@@ -38,6 +42,8 @@ public class AethersmithAbilities : ClassAbilities {
 
         //Energy
         //Is based on Hammer Swing attack
+        
+
 
         if (currCooldown > 0) {
             currCooldown = Mathf.Max(currCooldown - Time.deltaTime, 0);
@@ -106,6 +112,10 @@ public class AethersmithAbilities : ClassAbilities {
                 waitingForAbility = 0;
             }
         }
+
+        if (energy < 10)
+            energy += Time.deltaTime;
+        energy = Mathf.Clamp(energy, 0, energyMax);
 
         base.BaseUpdate();
 	}
@@ -186,6 +196,7 @@ public class AethersmithAbilities : ClassAbilities {
                 
             }
         }
+        Destroy(Instantiate(hammerSwingEffect, Position, transform.rotation) as GameObject, 0.5f);
         //60 degree cone of size HammerSwing.range
         //Add energy for each character hit
         //Small Knockback
@@ -217,6 +228,7 @@ public class AethersmithAbilities : ClassAbilities {
                         {
                             ch.Knockback(transform.forward * SpectralSpear.knockbackStr, 1);
                             ch.TakeDmg(SpectralSpear.baseDmg, DamageType.Standard, playerStats);
+                            Destroy(Instantiate(javalinHitEffect, new Vector3(ch.transform.position.x, 1, ch.transform.position.z), javalinHitEffect.transform.rotation) as GameObject, 0.5f);
                             penetration++;
                             if (penetration >= maxPenetration)
                             {

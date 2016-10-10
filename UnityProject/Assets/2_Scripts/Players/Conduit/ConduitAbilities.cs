@@ -50,7 +50,7 @@ public class ConduitAbilities : ClassAbilities {
         //Energy
         if (energy < energyMax)
         {
-            energy = Mathf.Clamp(energy + Time.deltaTime, 0, energyMax);
+            energy = Mathf.Clamp(energy + Time.deltaTime*2, 0, energyMax);
         }
 
         //Hud ability indicators
