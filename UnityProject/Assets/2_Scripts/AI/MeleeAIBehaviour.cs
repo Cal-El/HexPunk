@@ -7,6 +7,9 @@ public class MeleeAIBehaviour : AIBehaviour {
     [HideInInspector]
     public AIMeleeAudioManager am;
 
+    [SyncVar(hook = "OnHealthChanged")]
+    protected float health;
+
     [Header("Scouting")]
     public bool ImAScout = false;
 
@@ -207,18 +210,18 @@ public class MeleeAIBehaviour : AIBehaviour {
     }
 
     [ServerCallback]
-    protected override void SetHealth(float value)
+    protected void SetHealth(float value)
     {
-        base.SetHealth(value);
+        health = value;
         if (health <= 0)
         {
             StartDeath();
         }
     }
 
-    protected override void OnHealthChanged(float value)
+    protected void OnHealthChanged(float value)
     {
-        base.OnHealthChanged(value);
+        health = value;
         if (health <= 0)
         {
             StartDeath();

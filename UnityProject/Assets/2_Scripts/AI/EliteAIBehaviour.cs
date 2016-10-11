@@ -6,8 +6,11 @@ public class EliteAIBehaviour : AIBehaviour {
 
     public AIEliteAudioManager am;
 
+    [SyncVar(hook = "OnHealthChanged")]
+    protected float health;
+
     //Attack Statistics
-    
+
     [System.Serializable]
     public struct Attack {
         public float baseDmg;                   //Base damage of the melee attack
@@ -283,23 +286,23 @@ public class EliteAIBehaviour : AIBehaviour {
         Destroy(gameObject, 5);
     }
 
-    public override float GetHealth() {
+    public float GetHealth() {
         return health;
     }
 
     [ServerCallback]
-    protected override void SetHealth(float value)
+    protected void SetHealth(float value)
     {
-        base.SetHealth(value);
+        health = value;
         if (health <= 0)
         {
             StartDeath();
         }
     }
 
-    protected override void OnHealthChanged(float value)
+    protected void OnHealthChanged(float value)
     {
-        base.OnHealthChanged(value);
+        health = value;
         if (health <= 0)
         {
             StartDeath();

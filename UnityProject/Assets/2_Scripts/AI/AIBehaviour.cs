@@ -19,8 +19,6 @@ public class AIBehaviour : Character {
     protected GameObject xpItem;
 
     //Health Values
-    [SyncVar (hook = "OnHealthChanged")]
-    protected float health;
     public float maxHealth = 5;
 
     //Battlecry Variable
@@ -64,7 +62,7 @@ public class AIBehaviour : Character {
         }
     }
 
-    protected void StartBattlecry()
+    protected void StartBattlecry() 
     {
         battlecryTimer = battlecryTime;
         agentState = STATES.Battlecry;
@@ -72,23 +70,12 @@ public class AIBehaviour : Character {
 
     public override float GetHealth()
     {
-        return health;
-    }
-
-    [ServerCallback]
-    protected virtual void SetHealth(float value)
-    {
-        health = value;
-    }
-
-    protected virtual void OnHealthChanged(float value)
-    {
-        health = value;
+        throw new NotImplementedException();
     }
 
     public override void Heal(float healVal)
     {
-        SetHealth(Mathf.Clamp(health + healVal, 0, maxHealth));
+        throw new NotImplementedException();
     }
     
     public override float TakeDmg(float dmg, DamageType damageType = DamageType.Standard, PlayerStats attacker = null)

@@ -154,7 +154,7 @@ public class Megamanager : NetworkBehaviour {
     public static Character FindClosestAttackable(Character toMe, int passNum) {
         SortedDictionary<float, Character> listOfThings = new SortedDictionary<float, Character>();
         foreach (Character g in GetAllCharacters()) {
-            if (g != toMe) {
+            if (g != null && g != toMe) {
                 float newValue = Vector3.Distance(toMe.transform.position, g.transform.position);
                 if(!listOfThings.ContainsKey(newValue))
                 listOfThings.Add(newValue,g);

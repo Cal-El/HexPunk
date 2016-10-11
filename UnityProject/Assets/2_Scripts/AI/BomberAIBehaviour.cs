@@ -6,6 +6,9 @@ public class BomberAIBehaviour : AIBehaviour {
 
     public AIBomberAudioManager am;
 
+    [SyncVar(hook = "OnHealthChanged")]
+    protected float health;
+
     //Attack Statistics
     [Header("Combat Statistics")]
     public float baseDmg = 5;                   //Base damage of the melee attack
@@ -237,19 +240,24 @@ public class BomberAIBehaviour : AIBehaviour {
         return health;
     }
 
-    [ServerCallback]
-    protected override void SetHealth(float value)
+    public override float GetHealth()
     {
-        base.SetHealth(value);
+        return health;
+    }
+
+    [ServerCallback]
+    protected void SetHealth(float value)
+    {
+        health = value;
         if (health <= 0)
         {
             StartDeath();
         }
     }
 
-    protected override void OnHealthChanged(float value)
+    protected void OnHealthChanged(float value)
     {
-        base.OnHealthChanged(value);
+        health = value;
         if (health <= 0)
         {
             StartDeath();
