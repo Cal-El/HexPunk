@@ -9,6 +9,7 @@ public class AIBehaviour : Character {
 
     public enum STATES { Idle, Battlecry, Chasing, MeleeAttacking, RangedAttacking, Knockback, Dead }
     [HideInInspector]
+    [SyncVar]
     public STATES agentState = STATES.Idle;
     [HideInInspector]
     public STATES animationState = STATES.Idle;
@@ -62,10 +63,16 @@ public class AIBehaviour : Character {
         }
     }
 
+    [ServerCallback]
+    protected void SetAgentState(STATES newState)
+    {
+        agentState = newState;
+    }
+
     protected void StartBattlecry() 
     {
         battlecryTimer = battlecryTime;
-        agentState = STATES.Battlecry;
+        SetAgentState(STATES.Battlecry);
     }
 
     public override float GetHealth()

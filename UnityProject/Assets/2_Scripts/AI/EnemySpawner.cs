@@ -6,6 +6,7 @@ using System.Collections.Generic;
 public class EnemySpawner : DestructibleObject {
 
     public enum STATES { Idle, Activated, Dying};
+    [SyncVar]
     public STATES agentState = STATES.Idle;
 
     private Animation anim;
@@ -135,6 +136,12 @@ public class EnemySpawner : DestructibleObject {
 
         }
     }
+    
+    [ServerCallback]
+    protected void SetAgentState(STATES newState)
+    {
+        agentState = newState;
+    }
 
     public override float TakeDmg(float dmg, DamageType damageType = DamageType.Standard, PlayerStats attacker = null) {
         redness -= (dmg*10) / maxHealth;
@@ -150,6 +157,6 @@ public class EnemySpawner : DestructibleObject {
     public void Activate()
     {
         anim.Play();
-        agentState = STATES.Activated;
+        SetAgentState(STATES.Activated);
     }
 }

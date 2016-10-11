@@ -38,7 +38,7 @@ public class EliteAIBehaviour : AIBehaviour {
     void Awake () {
         base.Initialise();
 
-        agentState = STATES.Idle;
+        SetAgentState(STATES.Idle);
 
         am = GetComponentInChildren<AIEliteAudioManager>();
 
@@ -62,7 +62,7 @@ public class EliteAIBehaviour : AIBehaviour {
                 if (transform.parent == null || transform.parent.GetComponent<Room>().roomUnlocked) {
                     if (agentState != STATES.RangedAttacking && agentState != STATES.Idle && agentState != STATES.Battlecry) {
                         if (rangeAttack.attackTimer <= 0) {
-                            agentState = STATES.RangedAttacking;
+                            SetAgentState(STATES.RangedAttacking);
                         } else {
                             rangeAttack.attackTimer -= Time.deltaTime;
                         }
@@ -145,7 +145,7 @@ public class EliteAIBehaviour : AIBehaviour {
         if (Vector3.Distance(this.transform.position, target.transform.position) < meleeAttack.range - 0.5f) {
             navAgent.enabled = false;
             navObst.enabled = true;
-            agentState = STATES.MeleeAttacking;
+            SetAgentState(STATES.MeleeAttacking);
         }
     }
 
@@ -271,7 +271,7 @@ public class EliteAIBehaviour : AIBehaviour {
         inactiveTimer = TIME_FOR_NAVMESH_UPDATE;
         navObst.enabled = false;
         rb.isKinematic = true;
-        agentState = STATES.Chasing;
+        SetAgentState(STATES.Chasing);
     }
 
     private void StartDeath() {
@@ -282,7 +282,7 @@ public class EliteAIBehaviour : AIBehaviour {
         beamEffect.SetActive(false);
         GetComponent<CapsuleCollider>().enabled = true;
         base.Destroyed();
-        agentState = STATES.Dead;
+        SetAgentState(STATES.Dead);
         Destroy(gameObject, 5);
     }
 

@@ -134,7 +134,7 @@ public class BomberAIBehaviour : AIBehaviour {
         if (Vector3.Distance(this.transform.position, target.transform.position) < range - 0.5f && knockbackTimer <= 0) {
             navAgent.enabled = false;
             navObst.enabled = true;
-            agentState = STATES.MeleeAttacking;
+            SetAgentState(STATES.MeleeAttacking);
         }
     }
 
@@ -193,7 +193,7 @@ public class BomberAIBehaviour : AIBehaviour {
         inactiveTimer = TIME_FOR_NAVMESH_UPDATE;
         navObst.enabled = false;
         rb.isKinematic = true;
-        agentState = STATES.Chasing;
+        SetAgentState(STATES.Chasing);
     }
 
     private void StartDeath() {
@@ -204,7 +204,7 @@ public class BomberAIBehaviour : AIBehaviour {
         warningParticleEffect.SetActive(true);
         warningParticleEffect.transform.localScale = new Vector3(blastRadius, blastRadius, warningParticleEffect.transform.localScale.z);
         base.Destroyed();
-        agentState = STATES.Dead;
+        SetAgentState(STATES.Dead);
     }
     
     public override float TakeDmg(float dmg, DamageType damageType = DamageType.Standard, PlayerStats attacker = null)
@@ -276,7 +276,7 @@ public class BomberAIBehaviour : AIBehaviour {
         rb.AddForce(force);
         knockbackTimer = timer;
         if(GetHealth() > 0) {
-            agentState = STATES.Knockback;
+            SetAgentState(STATES.Knockback);
         }
     }
 

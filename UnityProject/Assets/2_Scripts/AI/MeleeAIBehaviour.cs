@@ -143,7 +143,7 @@ public class MeleeAIBehaviour : AIBehaviour {
         if (Vector3.Distance(this.transform.position, target.transform.position) < range - 0.5f && knockbackTimer <= 0) {
             navAgent.enabled = false;
             navObst.enabled = true;
-            agentState = STATES.MeleeAttacking;
+            SetAgentState(STATES.MeleeAttacking);
         }
     }
 
@@ -191,7 +191,7 @@ public class MeleeAIBehaviour : AIBehaviour {
         inactiveTimer = TIME_FOR_NAVMESH_UPDATE;
         navObst.enabled = false;
         rb.isKinematic = true;
-        agentState = STATES.Chasing;
+        SetAgentState(STATES.Chasing);
     }
 
     private void StartDeath(Transform whoKilledMe = null) {
@@ -200,7 +200,7 @@ public class MeleeAIBehaviour : AIBehaviour {
         rb.isKinematic = true;
         GetComponent<CapsuleCollider>().enabled = false;
         base.Destroyed();
-        agentState = STATES.Dead;
+        SetAgentState(STATES.Dead);
 
         Destroy(gameObject, deathTime);
     }
@@ -278,7 +278,7 @@ public class MeleeAIBehaviour : AIBehaviour {
         rb.AddForce(force);
         knockbackTimer = timer;
         if (GetHealth() > 0) {
-            agentState = STATES.Knockback;
+            SetAgentState(STATES.Knockback);
         }
     }
 
