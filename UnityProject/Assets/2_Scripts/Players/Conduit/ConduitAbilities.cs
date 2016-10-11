@@ -346,17 +346,13 @@ public class ConduitAbilities : ClassAbilities {
             if (charr[index] != null && charr[index].stacks != null && !charr[index].IsInvulnerable()) {
                 float stks = charr[index].stacks.Stacks;
                 totalstacksGiven = 0;
+                                
+                if (isLocalPlayer) CmdDischargeStacks(charr[index].gameObject);
 
-                //Only perform command for local player. Check again to see if the rpc will reach object
-                if (isLocalPlayer && charr[index].gameObject != null)
-                {
-                    CmdDischargeStacks(charr[index].gameObject);
+                charr[index].TakeDmg(Discharge.baseDmg * stks, DamageType.FireElectric, playerStats);
 
-                    charr[index].TakeDmg(Discharge.baseDmg * stks, DamageType.FireElectric, playerStats);
-                }
-
-                index++;
             }
+            index++;
         }
         GameObject lightningBolts = Instantiate(dischargeEnd, Position, dischargeEnd.transform.rotation) as GameObject;
         lightningBolts.transform.parent = transform;
