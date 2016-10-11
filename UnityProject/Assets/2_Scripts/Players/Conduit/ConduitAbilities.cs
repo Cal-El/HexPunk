@@ -346,8 +346,15 @@ public class ConduitAbilities : ClassAbilities {
             if (charr[index] != null && charr[index].stacks != null && !charr[index].IsInvulnerable()) {
                 float stks = charr[index].stacks.Stacks;
                 totalstacksGiven = 0;
-                if(isLocalPlayer && Megamanager.MM.players.Length > 1) CmdDischargeStacks(charr[index].gameObject);
-                charr[index].TakeDmg(Discharge.baseDmg * stks, DamageType.FireElectric, playerStats);
+
+                //Only perform command for local player. Check again to see if the rpc will reach object
+                if (isLocalPlayer && charr[index].gameObject != null)
+                {
+                    CmdDischargeStacks(charr[index].gameObject);
+
+                    charr[index].TakeDmg(Discharge.baseDmg * stks, DamageType.FireElectric, playerStats);
+                }
+
                 index++;
             }
         }
