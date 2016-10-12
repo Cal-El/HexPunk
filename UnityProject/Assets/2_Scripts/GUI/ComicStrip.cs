@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections.Generic;
 using System.Collections;
 
@@ -16,6 +17,7 @@ public class ComicStrip : MonoBehaviour {
 
 
     public PlayerGUICanvas playerGui;
+    public PlayerMovement myPlayerMovement;
     public List<GameObject> classes = new List<GameObject>();
     public List<GameObject> betrayerPanels = new List<GameObject>();
     public List<GameObject> nonBetrayerPanels = new List<GameObject>();
@@ -27,6 +29,7 @@ public class ComicStrip : MonoBehaviour {
         if (playerGui.myPlayer != null)
         {
             Setup();
+            myPlayerMovement = playerGui.myPlayer.GetComponent<PlayerMovement>();
         }
     }
 
@@ -41,6 +44,11 @@ public class ComicStrip : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
+        if(myPlayerMovement == null)
+        {
+            myPlayerMovement = playerGui.myPlayer.GetComponent<PlayerMovement>();
+        }
+
         if(playerGui.IsBetrayer && !betrayerChosen)
         {
             foreach (GameObject panel in nonBetrayerPanels)
@@ -51,6 +59,12 @@ public class ComicStrip : MonoBehaviour {
 
         if (currentTotalTime < totalComicTime)
         {
+            ////Disable player
+            //if (myPlayerMovement.ControlEnabled)
+            //{
+            //    myPlayerMovement.ControlEnabled = false;
+            //}
+
             if (transitionTimer >= timeToTransition)
             {
                 transitionTimer = 0;
@@ -64,6 +78,14 @@ public class ComicStrip : MonoBehaviour {
             }
 
             currentTotalTime += Time.deltaTime;
+        }
+        else
+        {
+            ////Enable player
+            //if (!myPlayerMovement.ControlEnabled)
+            //{
+            //    myPlayerMovement.ControlEnabled = true;
+            //}
         }
     }
 

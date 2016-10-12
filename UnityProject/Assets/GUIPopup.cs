@@ -21,9 +21,12 @@ public class GUIPopup : MonoBehaviour {
     [SerializeField]private string message;
     private float startTime;
 	private bool active;
+    private bool popUpStarted;
+    
+    public PlayerMovement myPlayerMovement;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
 		if (Popup == null) {
 			Popup = this;
 			DontDestroyOnLoad (this.gameObject);
@@ -37,8 +40,10 @@ public class GUIPopup : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        FindLocalPlayerMovement();
+
         //Active after comic ends
-        if (!active)
+        if (!active && !popUpStarted)
         {
             timer += Time.deltaTime;
             if(comic == null)
@@ -49,16 +54,27 @@ public class GUIPopup : MonoBehaviour {
             {
                 if (timer >= comic.totalComicTime - comic.totalComicTime / comic.numberOfSlides)
                 {
-                    startTime = Time.time + 3;
+                    startTime = Time.time + 4;
                     active = true;
+                    popUpStarted = true;
+                    
+                    ////Enable player
+                    //myPlayerMovement.ControlEnabled = true;
+                }
+                else
+                {            
+                    ////Disable player        
+                    //myPlayerMovement.ControlEnabled = false;
                 }
             }
         }
 
-		if (active) {
-			myText.text = message;
+		if (active) {            
+
+            myText.text = message;
 			parent.anchoredPosition = Vector3.Lerp (offScreenPos, doubleDistanceOnscreen, anim.Evaluate (Time.time - startTime) / 2);
-			if ((Time.time - startTime) > anim.keys [anim.keys.Length - 1].time) {
+
+            if ((Time.time - startTime) > anim.keys [anim.keys.Length - 1].time) {
 				active = false;
 			}
 		}
@@ -69,4 +85,18 @@ public class GUIPopup : MonoBehaviour {
 		Popup.active = true;
 		Popup.startTime = Time.time;
 	}
+
+    void FindLocalPlayerMovement()
+    {
+        if(myPlayerMovement == null)
+        {
+            foreach(PlayerMovement pm in FindObjectsOfType<PlayerMovement>())
+            {
+                if (pm.isLocalPlayer)
+                {
+                    myPlayerMovement = pm;
+                }
+            }
+        }
+    }
 }
