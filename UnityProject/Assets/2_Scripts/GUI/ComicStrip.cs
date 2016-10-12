@@ -18,6 +18,7 @@ public class ComicStrip : MonoBehaviour {
 
     public PlayerGUICanvas playerGui;
     public PlayerMovement myPlayerMovement;
+    private bool hasEnabled;
     public List<GameObject> classes = new List<GameObject>();
     public List<GameObject> betrayerPanels = new List<GameObject>();
     public List<GameObject> nonBetrayerPanels = new List<GameObject>();
@@ -40,16 +41,16 @@ public class ComicStrip : MonoBehaviour {
         SetHUDs(playerGui.myPlayer.name, "Caldera");
         SetHUDs(playerGui.myPlayer.name, "Shard");
     }
-	
-	// Update is called once per frame
-	void Update ()
+
+    // Update is called once per frame
+    void Update()
     {
-        if(myPlayerMovement == null)
+        if (myPlayerMovement == null)
         {
             myPlayerMovement = playerGui.myPlayer.GetComponent<PlayerMovement>();
         }
 
-        if(playerGui.IsBetrayer && !betrayerChosen)
+        if (playerGui.IsBetrayer && !betrayerChosen)
         {
             foreach (GameObject panel in nonBetrayerPanels)
             {
@@ -59,12 +60,6 @@ public class ComicStrip : MonoBehaviour {
 
         if (currentTotalTime < totalComicTime)
         {
-            ////Disable player
-            //if (myPlayerMovement.ControlEnabled)
-            //{
-            //    myPlayerMovement.ControlEnabled = false;
-            //}
-
             if (transitionTimer >= timeToTransition)
             {
                 transitionTimer = 0;
@@ -79,13 +74,26 @@ public class ComicStrip : MonoBehaviour {
 
             currentTotalTime += Time.deltaTime;
         }
+
+        if (currentTotalTime >= totalComicTime - totalComicTime / numberOfSlides)
+        {
+            if (!hasEnabled)
+            {
+                //Enable player
+                if (!myPlayerMovement.ControlEnabled)
+                {
+                    myPlayerMovement.ControlEnabled = true;
+                    hasEnabled = true;
+                }
+            }
+        }
         else
         {
-            ////Enable player
-            //if (!myPlayerMovement.ControlEnabled)
-            //{
-            //    myPlayerMovement.ControlEnabled = true;
-            //}
+            //Disable player
+            if (myPlayerMovement.ControlEnabled)
+            {
+                myPlayerMovement.ControlEnabled = false;
+            }
         }
     }
 

@@ -77,7 +77,7 @@ public class ConduitAbilities : ClassAbilities {
         }
 
         //Abilities
-        if (IsAlive)
+        if (IsAlive && pm.ControlEnabled)
         {
             if (Input.GetButtonDown("Ability 1")) { CanAimWhileCasting = true; UseAbility(LightingPunch); }
             if (GetAxisDown1("Ability 2")) { CanAimWhileCasting = true; UseAbility(StaticStomp); }

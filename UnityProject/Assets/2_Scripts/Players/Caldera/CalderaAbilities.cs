@@ -98,7 +98,7 @@ public class CalderaAbilities : ClassAbilities {
         }        
 
         //Abilities
-        if (IsAlive)
+        if (IsAlive && pm.ControlEnabled)
         {
             if (!pastPressureThreshold)
             {

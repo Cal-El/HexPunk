@@ -157,7 +157,7 @@ public class ClassAbilities : Character {
             {
                 currentState = ANIMATIONSTATES.Dead;
             }
-            else if (pm.IsMoving)
+            else if (pm.IsMoving && pm.ControlEnabled)
             {
                 currentState = ANIMATIONSTATES.Running;
             }

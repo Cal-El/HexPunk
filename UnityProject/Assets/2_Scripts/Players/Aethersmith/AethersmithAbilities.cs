@@ -68,7 +68,7 @@ public class AethersmithAbilities : ClassAbilities {
         }
 
         //Abilities
-        if (IsAlive) {
+        if (IsAlive && pm.ControlEnabled) {
             if (Input.GetButtonDown("Ability 1")) { UseAbility(HammerSwing); }
             if (GetAxisDown1("Ability 2")) { CanAimWhileCasting = true; UseAbility(SpectralSpear); }
             else if (Input.GetButtonDown("Ability 3")) { CanAimWhileCasting = true; UseAbility(BubbleShield); }

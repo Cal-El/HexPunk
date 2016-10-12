@@ -22,8 +22,6 @@ public class GUIPopup : MonoBehaviour {
     private float startTime;
 	private bool active;
     private bool popUpStarted;
-    
-    public PlayerMovement myPlayerMovement;
 
     // Use this for initialization
     void Start () {
@@ -40,8 +38,6 @@ public class GUIPopup : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        FindLocalPlayerMovement();
-
         //Active after comic ends
         if (!active && !popUpStarted)
         {
@@ -57,14 +53,6 @@ public class GUIPopup : MonoBehaviour {
                     startTime = Time.time + 4;
                     active = true;
                     popUpStarted = true;
-                    
-                    ////Enable player
-                    //myPlayerMovement.ControlEnabled = true;
-                }
-                else
-                {            
-                    ////Disable player        
-                    //myPlayerMovement.ControlEnabled = false;
                 }
             }
         }
@@ -85,18 +73,4 @@ public class GUIPopup : MonoBehaviour {
 		Popup.active = true;
 		Popup.startTime = Time.time;
 	}
-
-    void FindLocalPlayerMovement()
-    {
-        if(myPlayerMovement == null)
-        {
-            foreach(PlayerMovement pm in FindObjectsOfType<PlayerMovement>())
-            {
-                if (pm.isLocalPlayer)
-                {
-                    myPlayerMovement = pm;
-                }
-            }
-        }
-    }
 }

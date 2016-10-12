@@ -111,7 +111,7 @@ public class ShardAbilities : ClassAbilities {
         }
 
         //Abilities
-        if (IsAlive)
+        if (IsAlive && pm.ControlEnabled)
         {
             if (Input.GetButtonDown("Ability 1") && !isMist)
             {
