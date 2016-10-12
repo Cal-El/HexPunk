@@ -5,7 +5,10 @@ using System.Collections;
 public class ComicStrip : MonoBehaviour {
     
     public AnimationCurve transitionAnimation;
-    public float timeToTransition = 5;
+    public float totalComicTime = 40;
+    private float currentTotalTime;
+    public int numberOfSlides = 5;
+    private float timeToTransition;
     private float transitionTimer = 0;
     private float pastYPos = 0;
     private float currentYPos = 0;
@@ -20,6 +23,7 @@ public class ComicStrip : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        timeToTransition = totalComicTime / numberOfSlides;
         if (playerGui.myPlayer != null)
         {
             Setup();
@@ -45,16 +49,21 @@ public class ComicStrip : MonoBehaviour {
             }
         }
 
-        if (transitionTimer >= timeToTransition)
+        if (currentTotalTime < totalComicTime)
         {
-            transitionTimer = 0;
-            pastYPos = currentYPos;
-            currentYPos += 1080;
-        }
-        else
-        {
-            transitionTimer += Time.deltaTime;
-            transform.localPosition = Vector3.Lerp(new Vector3(0, pastYPos, 0), new Vector3(0, currentYPos, 0), transitionAnimation.Evaluate(transitionTimer / timeToTransition));
+            if (transitionTimer >= timeToTransition)
+            {
+                transitionTimer = 0;
+                pastYPos = currentYPos;
+                currentYPos += 1080;
+            }
+            else
+            {
+                transitionTimer += Time.deltaTime;
+                transform.localPosition = Vector3.Lerp(new Vector3(0, pastYPos, 0), new Vector3(0, currentYPos, 0), transitionAnimation.Evaluate(transitionTimer / timeToTransition));
+            }
+
+            currentTotalTime += Time.deltaTime;
         }
     }
 
