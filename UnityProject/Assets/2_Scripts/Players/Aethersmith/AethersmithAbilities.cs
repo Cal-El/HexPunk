@@ -214,11 +214,13 @@ public class AethersmithAbilities : ClassAbilities {
         {
             int penetration = 0;
             int maxPenetration = 3;
-            int lastHit = 0;
+            int farthestHit = 0;
+
+
             for (int i = 0; i < sphereHits.Length; i++)
             {
-
-                lastHit = i;
+                if(sphereHits[i].distance > sphereHits[farthestHit].distance)
+                    farthestHit = i;
                 if (!sphereHits[i].collider.isTrigger && sphereHits[i].transform.tag != "Trigger" && sphereHits[i].transform.tag != "Guard" && sphereHits[i].transform.tag != "Aetherwall")
                 {
                     Character ch = sphereHits[i].transform.GetComponent<Character>();
@@ -232,6 +234,7 @@ public class AethersmithAbilities : ClassAbilities {
                             penetration++;
                             if (penetration >= maxPenetration)
                             {
+                                farthestHit = i;
                                 break;
                             }
                         }
@@ -246,8 +249,8 @@ public class AethersmithAbilities : ClassAbilities {
                 }
             }
             GameObject g = Instantiate(javalinPrefab, javalinParticle.transform.position, Quaternion.identity) as GameObject;
-            g.transform.LookAt(new Vector3(sphereHits[lastHit].point.x, 1, sphereHits[lastHit].point.z));
-            g.transform.localScale = new Vector3(1, 1, sphereHits[lastHit].distance);
+            g.transform.LookAt(new Vector3(sphereHits[farthestHit].point.x, 1, sphereHits[farthestHit].point.z));
+            g.transform.localScale = new Vector3(1, 1, sphereHits[farthestHit].distance);
         }
         else
         {

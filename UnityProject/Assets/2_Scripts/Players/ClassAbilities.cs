@@ -170,7 +170,7 @@ public class ClassAbilities : Character {
 
     public virtual void GainXP(float xp) {
 		int prelevel = (int)level; 
-		level += xp;
+		level = Mathf.Clamp(level + xp, 0, 6);
 		if ((int)level > prelevel && isLocalPlayer) {
             myGUI.LevelUp();
 		}

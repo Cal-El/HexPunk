@@ -254,7 +254,7 @@ public class MeleeAIBehaviour : AIBehaviour {
                     GameObject g = ServerSpawn(xpItem.gameObject, transform.position, transform.rotation) as GameObject;
                     if (attacker != null && g != null) {
                         var pickup = g.GetComponent<HealthPickup>();
-                        if (pickup != null) pickup.SetTarget(attacker.gameObject);
+                        if (pickup != null) pickup.SetTarget(attacker.GetComponent<ClassAbilities>());
                     }
                 }
             } else {

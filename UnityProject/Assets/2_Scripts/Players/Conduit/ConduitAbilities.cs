@@ -407,7 +407,7 @@ public class ConduitAbilities : ClassAbilities {
     #endregion
 
     protected override void UseAbility(Ability a) {
-        if(a.abilityNum == Discharge.abilityNum && totalstacksGiven < 10) { return; }
+        if(a.abilityNum == Discharge.abilityNum && totalstacksGiven < 1) { return; }
         if (currCooldown <= 0 && energy >= a.energyCost) {
             base.UseAbility(a);
             if (waitingForAbility == 4) {

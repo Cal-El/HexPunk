@@ -94,13 +94,20 @@ public class HealthPickup : NetworkBehaviour {
     }
 
     [ServerCallback]
-    public virtual void SetTarget(GameObject attacker)
+    public virtual void SetTarget(ClassAbilities attacker)
     {
+        if (attacker == null || !attacker.IsAlive) {
+            attacker = GetClosestValidPlayer();
+            if(attacker == null) {
+                Destroy (this.gameObject);
+                return;
+            }
+        }
         if (!isClient)
         {
             target = attacker.transform;
         }
-        RpcSetTarget(attacker);
+        RpcSetTarget(attacker.gameObject);
     }
 
     [ClientRpc]
@@ -129,5 +136,31 @@ public class HealthPickup : NetworkBehaviour {
 
     public void TakeDmg() {
         Destroy(this.gameObject);
+    }
+
+    public ClassAbilities GetClosestValidPlayer() {
+        //BubbleSort
+        ClassAbilities[] players = (ClassAbilities[])Megamanager.MM.players.Clone();
+        int count = players.Length-1;
+        bool sFlag = true;
+        while (sFlag) {
+            sFlag = false;
+            for (int j = 0; j < count; j++) {
+                if (Vector3.Distance(players[j + 1].transform.position, transform.position) < Vector3.Distance(players[j].transform.position, transform.position)) {
+                    ClassAbilities temp = players[j];
+                    players[j] = players[j + 1];
+                    players[j + 1] = temp;
+                    sFlag = true;
+                }
+            }
+            count--;
+        }
+        for(int i = 0; i < players.Length; i++) {
+            if (players[i].IsAlive) {
+                return players[i];
+            }
+        }
+
+        return null;
     }
 }
