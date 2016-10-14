@@ -56,6 +56,10 @@ namespace UnityStandardAssets.Network
 
         protected LobbyHook _lobbyHooks;
 
+        [Tooltip("0-Menu\n1-Conduit\n2-Aethersmith\n3-Caldera\n4-Shard")]
+        [SerializeField]
+        private Texture2D[] cursors;
+
         void Start()
         {
             s_Singleton = this;
@@ -339,6 +343,7 @@ namespace UnityStandardAssets.Network
                     GameObject prefab = null;
                     Vector3 spawnPoint = Vector3.zero;
                     Quaternion spawnRot = Quaternion.Euler(0, 90, 0);
+                    Cursor.SetCursor(cursors[lobbyPlayer.selectedClass+1], Vector2.one* cursors[lobbyPlayer.selectedClass + 1].width, CursorMode.Auto);
                     switch (lobbyPlayer.selectedClass)
                     {
                         case 0:
