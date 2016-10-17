@@ -132,7 +132,7 @@ public class PlayerGUICanvas : MonoBehaviour
 
         if (levelUpNow)
         {
-            levelUp.rectTransform.anchoredPosition = Vector2.Lerp(levelUp.rectTransform.anchoredPosition, new Vector2(levelUpStartPos.x, levelUpStartPos.y + 90), Time.deltaTime * 2);            
+            levelUp.rectTransform.anchoredPosition = Vector2.Lerp(levelUp.rectTransform.anchoredPosition, new Vector2(levelUpStartPos.x, levelUpStartPos.y + 120), Time.deltaTime * 2);            
         }
         else
         {
@@ -144,7 +144,7 @@ public class PlayerGUICanvas : MonoBehaviour
             levelUpNow = false;
         }
 
-        levelUp.color = new Color(levelUp.color.r, levelUp.color.g, levelUp.color.b, Mathf.Pow(1 - (levelUpStartPos.y + 90 - levelUp.rectTransform.anchoredPosition.y) / 100, 10));
+        levelUp.color = new Color(levelUp.color.r, levelUp.color.g, levelUp.color.b, Mathf.Pow(((levelUp.rectTransform.anchoredPosition.y-levelUpStartPos.y)/120), 2));
 
         if (playerStats.IsAlive) {
             intensity *= 0.99f;
@@ -160,7 +160,7 @@ public class PlayerGUICanvas : MonoBehaviour
     public void LevelUp()
     {
         levelUpNow = true;
-        levelUpTimer = Time.time + 1;
+        levelUpTimer = Time.time + 2;
     }
 
     //Set up the betrayer GUI
