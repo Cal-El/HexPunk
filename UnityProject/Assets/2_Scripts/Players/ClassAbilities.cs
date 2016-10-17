@@ -6,6 +6,9 @@ using System;
 
 public class ClassAbilities : Character {
 
+    public enum CLASSES { Null, Conduit, Aethersmith, Caldera, Shard}
+    public CLASSES myClass;
+
     public enum ANIMATIONSTATES { Idle, Running, Ability1, Ability2, Ability3, Ability4, Ability5, Dead, Revived };
     public ANIMATIONSTATES currentState;
 
@@ -103,7 +106,10 @@ public class ClassAbilities : Character {
 
     protected void Initialize() {
         DontDestroyOnLoad(gameObject);
-        if (isLocalPlayer) CmdSetHealth(healthMax);
+        if (isLocalPlayer) {
+            Cursor.SetCursor(FindObjectOfType<UnityStandardAssets.Network.LobbyManager>().cursors[(int)myClass], Vector2.zero, CursorMode.Auto);
+            CmdSetHealth(healthMax);
+        }
         pm = GetComponent<PlayerMovement>();
         pam = GetComponentInChildren<PlayerAudioManager>();
         myGUI = pm.playerCamera.GetComponentInChildren<PlayerGUICanvas>();
