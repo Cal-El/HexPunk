@@ -39,7 +39,10 @@ public class SceneChangeTrigger : NetworkBehaviour {
     void Activate() {
         startTime = Time.time;
         stage = 1;
-        FindObjectOfType<ScreenFader>().Fade(timeToChange, true, image);
+        ScreenFader fader =FindObjectOfType<ScreenFader>();
+        if(fader != null) {
+            fader.Fade(timeToChange, true, image);
+        }
     }
 
     public void OverrideActivate(string s) {

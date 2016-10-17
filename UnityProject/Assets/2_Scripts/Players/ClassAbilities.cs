@@ -113,6 +113,7 @@ public class ClassAbilities : Character {
         pm = GetComponent<PlayerMovement>();
         pam = GetComponentInChildren<PlayerAudioManager>();
         myGUI = pm.playerCamera.GetComponentInChildren<PlayerGUICanvas>();
+        if(myGUI != null)
         myHud = myGUI.myHud;
         reviveCapsule = transform.FindChild("ReviveCapsule").gameObject;
         EButtonPrompt.SetActive(false);
@@ -129,6 +130,7 @@ public class ClassAbilities : Character {
         if(myGUI == null || myHud == null)
         {
             myGUI = pm.playerCamera.GetComponentInChildren<PlayerGUICanvas>();
+            if(myGUI != null)
             myHud = myGUI.myHud;
         }
 
@@ -147,12 +149,12 @@ public class ClassAbilities : Character {
         if (Input.GetKeyDown(KeyCode.K))
             Knockback(-transform.forward *1000, 1);
 
-        if (Input.GetButtonDown("HelpGUI") && !myGUI.helpGUI.activeSelf)
+        if (Input.GetButtonDown("HelpGUI") && myGUI != null && !myGUI.helpGUI.activeSelf)
         {
             myGUI.ShowHelp(true);
         }
 
-        if (Input.GetButtonUp("HelpGUI") && myGUI.helpGUI.activeSelf)
+        if (Input.GetButtonUp("HelpGUI") && myGUI != null && myGUI.helpGUI.activeSelf)
         {
             if (myGUI.helpGUI.activeSelf) myGUI.ShowHelp(false);
         }
@@ -178,6 +180,7 @@ public class ClassAbilities : Character {
 		int prelevel = (int)level; 
 		level = Mathf.Clamp(level + xp, 0, 6);
 		if ((int)level > prelevel && isLocalPlayer) {
+            if(myGUI != null)
             myGUI.LevelUp();
 		}
 

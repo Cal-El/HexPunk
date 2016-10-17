@@ -63,7 +63,10 @@ public class Room : NetworkBehaviour {
 
             if (message.Length > 0)
             {
-                FindObjectOfType<TextMessage>().SendText(message);
+                TextMessage texter = FindObjectOfType<TextMessage>();
+                if (texter != null) { 
+                    texter.SendText(message);
+                }
             }
 
             if (ads != null)
