@@ -43,32 +43,38 @@ public class Lavaball : MonoBehaviour {
 
     void OnTriggerStay(Collider col)
     {
-        if (!col.isTrigger && col != null && col.tag != "Guard" && col.tag != "Trigger") {
-            Character ch = col.GetComponent<Character>();
-            if (ch != null && !ch.IsInvulnerable())
+        if (!col.isTrigger && col != null && col.tag != "Guard" && col.tag != "Trigger")
+        {
+            //Not a spawner
+            DestructibleObject dObj = col.GetComponent<DestructibleObject>();
+            if (dObj == null)
             {
-                if (col.gameObject != owner)
+                Character ch = col.GetComponent<Character>();
+                if (ch != null && !ch.IsInvulnerable())
                 {
-                    ch.TakeDmg(damage * Time.deltaTime * damageModifyer, Character.DamageType.FireElectric, ownerStats);
-                    if (ch.burn != null)
-                        ch.burn.IsBurning = true;
+                    if (col.gameObject != owner)
+                    {
+                        ch.TakeDmg(damage * Time.deltaTime * damageModifyer, Character.DamageType.FireElectric, ownerStats);
+                        if (ch.burn != null)
+                            ch.burn.IsBurning = true;
+                    }
+                    else
+                    {
+                        if (Time.time > safeWindow)
+                        {
+                            ch.TakeDmg(damage * Time.deltaTime * damageModifyer / 2, Character.DamageType.FireElectric, ownerStats);
+                        }
+                    }
                 }
                 else
                 {
-                    if (Time.time > safeWindow)
-                    {
-                        ch.TakeDmg(damage * Time.deltaTime * damageModifyer / 2, Character.DamageType.FireElectric, ownerStats);
-                    }
+                    p.transform.parent = null;
+                    p.enableEmission = false;
+                    p.loop = false;
+                    Destroy(p.gameObject, 5);
+                    Splash(transform.position);
+                    Destroy(gameObject);
                 }
-            }
-            else
-            {
-                p.transform.parent = null;
-                p.enableEmission = false;
-                p.loop = false;
-                Destroy(p.gameObject, 5);
-                Splash(transform.position);
-                Destroy(gameObject);
             }
         }
     }
