@@ -324,10 +324,7 @@ public class CalderaAbilities : ClassAbilities {
                 base.UseAbility(a);
         }
     }
-    public override bool IsInvulnerable()
-    {
-        return isMist || isActuallyGod;
-    }
+
     public override void GainXP(float xp)
     {
         float preLevel = level;
