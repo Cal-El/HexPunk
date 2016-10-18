@@ -156,7 +156,19 @@ public class EnemySpawner : DestructibleObject {
 
     public void Activate()
     {
-        anim.Play();
+        PlayAnimation();
         SetAgentState(STATES.Activated);
+    }
+
+    [ServerCallback]
+    private void PlayAnimation()
+    {
+        RpcPlayAnimation();
+    }
+
+    [ClientRpc]
+    private void RpcPlayAnimation()
+    {
+        anim.Play();
     }
 }
