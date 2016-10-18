@@ -92,7 +92,7 @@ public class EliteAIBehaviour : AIBehaviour {
                         case STATES.RangedAttacking:
                             
                             animationState = STATES.RangedAttacking;
-                            RangeAttackingBehaviour();
+                            ServerRangedAttack();
                             break;
                         case STATES.Dead:
                             
@@ -261,6 +261,19 @@ public class EliteAIBehaviour : AIBehaviour {
                 transform.rotation = Quaternion.Euler(new Vector3(0, transform.rotation.eulerAngles.y, 0));
             }
         }
+    }
+
+    [ServerCallback]
+    private void ServerRangedAttack()
+    {
+        if(!isClient) RangeAttackingBehaviour();
+        RpcRangedAttack();
+    }
+
+    [ClientRpc]
+    private void RpcRangedAttack()
+    {
+        RangeAttackingBehaviour();
     }
 
     private void DeadBehaviour() {
