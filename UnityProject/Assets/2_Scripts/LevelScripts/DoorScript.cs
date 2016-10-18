@@ -49,10 +49,7 @@ public class DoorScript : NetworkBehaviour {
     {
         if (unlockedMat != false)
         {
-            foreach (Renderer t in doorFrames)
-            {
-                t.material = unlockedMat;
-            }
+            ChangeMat(false);
         }
         open = true;
     }
@@ -61,12 +58,34 @@ public class DoorScript : NetworkBehaviour {
     {
         if (lockedMat != false)
         {
+            ChangeMat(true);
+        }
+        open = false;
+
+    }
+
+    [ServerCallback]
+    private void ChangeMat(bool locked)
+    {
+        RpcChangeMat(locked);
+    }
+
+    [ClientRpc]
+    private void RpcChangeMat(bool locked)
+    {
+        if (locked)
+        {
             foreach (Renderer t in doorFrames)
             {
                 t.material = lockedMat;
             }
         }
-        open = false;
-
+        if (!locked)
+        {
+            foreach (Renderer t in doorFrames)
+            {
+                t.material = unlockedMat;
+            }
+        }
     }
 }
