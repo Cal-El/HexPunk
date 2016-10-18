@@ -13,6 +13,7 @@ namespace UnityStandardAssets.Network
     //Any LobbyHook can then grab it and pass those value to the game player prefab (see the Pong Example in the Samples Scenes)
     public class LobbyPlayer : NetworkLobbyPlayer
     {
+        public RectTransform myRectTransform;
         public Text playerNameText;
         public Button readyButton;
         public Button waitingPlayerButton;
@@ -31,10 +32,6 @@ namespace UnityStandardAssets.Network
         [SyncVar]
         public int selectedClass; //unselected
         public GameObject[] classTiles = new GameObject[4];
-        public GameObject conduitPrefab;
-        public GameObject aethersmithPrefab;
-        public GameObject calderaPrefab;
-        public GameObject shardPrefab;
 
         public Color OddRowColor = new Color(17f / 255.0f, 16f / 255.0f, 50f / 255.0f, 1.0f);
         public Color EvenRowColor = new Color(7f / 255.0f, 6.0f / 255.0f, 22.0f / 255.0f, 1.0f);
@@ -46,6 +43,8 @@ namespace UnityStandardAssets.Network
         public Sprite CalderaGrey;
         public Sprite Shard;
         public Sprite ShardGrey;
+
+        private Vector2 startPos = Vector2.zero;
 
         static Color JoinColor = new Color(247f / 255.0f, 104f / 255.0f, 140f / 255.0f, 1.0f);
         static Color NotReadyColor = new Color(1, 1, 1, 0.5f);
@@ -65,10 +64,22 @@ namespace UnityStandardAssets.Network
 
             playerNameText.text = string.Format("Player {0}", connectionId + 1);
 
-            if(connectionId != 0)
+            var lobbyPlayers = FindObjectsOfType<LobbyPlayer>();
+
+            if (connectionId != 0)
             {
-                var host = FindObjectsOfType<LobbyPlayer>().First(i => i.connectionId == 0);
+                var host = lobbyPlayers.First(i => i.connectionId == 0);
                 if (host != null) ipAddressText.text = host.ipAddressString;
+            }
+
+            //Check if the same connected player exists
+            var playersWithSameId = lobbyPlayers.Where(i => i.connectionId == connectionId).ToList();
+            if (playersWithSameId.Count > 1)
+            {
+                foreach(var player in playersWithSameId)
+                {
+                    if (player != this) Destroy(player.gameObject);
+                }
             }
 
             if (isLocalPlayer)
@@ -85,7 +96,7 @@ namespace UnityStandardAssets.Network
         {
             base.OnStartAuthority();
 
-            CmdSetIpAddress();
+            if(connectionId == 0) CmdSetIpAddress();
 
             //if we return from a game, color of text can still be the one for "Ready"
             readyButton.transform.GetChild(0).GetComponent<Text>().color = Color.white;
@@ -198,6 +209,8 @@ namespace UnityStandardAssets.Network
                     }
                 }
             }
+
+            if(myRectTransform != null) myRectTransform.anchoredPosition = new Vector2(connectionId * 480, 0);
         }
 
         //This enable/disable the remove button depending on if that is the only local player or not

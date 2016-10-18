@@ -59,7 +59,7 @@ namespace UnityStandardAssets.Network
             int i = 0;
             foreach (LobbyPlayer p in _players)
             {
-                p.OnPlayerListChanged(i);
+                if(p != null) p.OnPlayerListChanged(i);
                 ++i;
             }
         }

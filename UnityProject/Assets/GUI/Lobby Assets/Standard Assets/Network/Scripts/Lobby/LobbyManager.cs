@@ -46,6 +46,13 @@ namespace UnityStandardAssets.Network
 
         public Dictionary<int, GameObject> playerObjects = new Dictionary<int, GameObject>();
 
+        [Space]
+        [Header("Character Prefabs")]
+        public GameObject conduitPrefab;
+        public GameObject aethersmithPrefab;
+        public GameObject calderaPrefab;
+        public GameObject shardPrefab;
+
         //used to disconnect a client properly when exiting the matchmaker
         [HideInInspector]
         public bool _isMatchmaking = false;
@@ -71,7 +78,7 @@ namespace UnityStandardAssets.Network
             DontDestroyOnLoad(gameObject);
         }
 
-        public override void OnLobbyClientSceneChanged(NetworkConnection conn)
+        private void ChangeToLobbyScene(NetworkConnection conn)
         {
             if (SceneManager.GetSceneAt(0).name == lobbyScene)
             {
@@ -346,20 +353,20 @@ namespace UnityStandardAssets.Network
                     switch (lobbyPlayer.selectedClass)
                     {
                         case 0:
-                            spawnPoint = FindSpawnPoint(lobbyPlayer.conduitPrefab);
-                            prefab = Instantiate(lobbyPlayer.conduitPrefab, spawnPoint, spawnRot) as GameObject;
+                            spawnPoint = FindSpawnPoint(conduitPrefab);
+                            prefab = Instantiate(conduitPrefab, spawnPoint, spawnRot) as GameObject;
                             break;
                         case 1:
-                            spawnPoint = FindSpawnPoint(lobbyPlayer.aethersmithPrefab);
-                            prefab = Instantiate(lobbyPlayer.aethersmithPrefab, spawnPoint, spawnRot) as GameObject;
+                            spawnPoint = FindSpawnPoint(aethersmithPrefab);
+                            prefab = Instantiate(aethersmithPrefab, spawnPoint, spawnRot) as GameObject;
                             break;
                         case 2:
-                            spawnPoint = FindSpawnPoint(lobbyPlayer.calderaPrefab);
-                            prefab = Instantiate(lobbyPlayer.calderaPrefab, spawnPoint, spawnRot) as GameObject;
+                            spawnPoint = FindSpawnPoint(calderaPrefab);
+                            prefab = Instantiate(calderaPrefab, spawnPoint, spawnRot) as GameObject;
                             break;
                         case 3:
-                            spawnPoint = FindSpawnPoint(lobbyPlayer.shardPrefab);
-                            prefab = Instantiate(lobbyPlayer.shardPrefab, spawnPoint, spawnRot) as GameObject;
+                            spawnPoint = FindSpawnPoint(shardPrefab);
+                            prefab = Instantiate(shardPrefab, spawnPoint, spawnRot) as GameObject;
                             break;
                     }
                     if (prefab != null)
@@ -373,40 +380,52 @@ namespace UnityStandardAssets.Network
             return base.OnLobbyServerCreateGamePlayer(conn, playerControllerId);
         }
 
-        public override void ServerChangeScene(string sceneName)
-        {
-            base.ServerChangeScene(sceneName);
-        }
-
         public override void OnServerSceneChanged(string sceneName)
         {
             base.OnServerSceneChanged(sceneName);
 
-            GameObject obj = playerObjects[client.connection.connectionId];
+            ChangeToLobbyScene(client.connection);
 
-            Vector3 spawnPoint = FindSpawnPoint(obj);
-            if (spawnPoint != null)
+            if (sceneName != lobbyScene)
             {
-                obj.transform.position = spawnPoint;
-                obj.transform.rotation = Quaternion.Euler(0, 90, 0);
-                obj.GetComponent<NetworkSyncPosition>().RpcServerSetPosition(spawnPoint);
-                obj.GetComponent<NetworkSyncRotation>().RpcSetStartRot();
+                GameObject obj = playerObjects[client.connection.connectionId];
+
+                Vector3 spawnPoint = FindSpawnPoint(obj);
+                if (spawnPoint != null)
+                {
+                    obj.transform.position = spawnPoint;
+                    obj.transform.rotation = Quaternion.Euler(0, 90, 0);
+                    obj.GetComponent<NetworkSyncPosition>().RpcServerSetPosition(spawnPoint);
+                    obj.GetComponent<NetworkSyncRotation>().RpcSetStartRot();
+                }
             }
         }
 
         public override void OnClientSceneChanged(NetworkConnection conn)
         {
+            if (conn.connectionId != 0) ChangeToLobbyScene(client.connection);
+
             base.OnClientSceneChanged(conn);
-            foreach (var obj in GameObject.FindGameObjectsWithTag("Player"))
+
+            if (SceneManager.GetActiveScene().name != lobbyScene)
             {
-                Debug.Log(obj);
-                if (obj.GetComponent<NetworkIdentity>().isLocalPlayer)
+                foreach (var obj in GameObject.FindGameObjectsWithTag("Player"))
                 {
-                    var spawnPoint = FindSpawnPoint(obj);
-                    obj.GetComponent<NetworkSyncPosition>().CmdClientSetServerPos(spawnPoint);
-                    obj.GetComponent<NetworkSyncRotation>().CmdSetStartRot();
+                    Debug.Log(obj);
+                    if (obj.GetComponent<NetworkIdentity>().isLocalPlayer)
+                    {
+                        var spawnPoint = FindSpawnPoint(obj);
+                        obj.GetComponent<NetworkSyncPosition>().CmdClientSetServerPos(spawnPoint);
+                        obj.GetComponent<NetworkSyncRotation>().CmdSetStartRot();
+                    }
                 }
             }
+        }
+
+        public void ReturnToLobby()
+        {
+            if(client.connection.connectionId == 0) ServerReturnToLobby();
+            playerObjects.Clear();
         }
 
         public static Vector3 FindSpawnPoint(GameObject obj)

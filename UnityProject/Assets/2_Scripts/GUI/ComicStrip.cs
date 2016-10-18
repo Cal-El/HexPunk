@@ -45,7 +45,7 @@ public class ComicStrip : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        if (myPlayerMovement == null)
+        if (myPlayerMovement == null && playerGui != null && playerGui.myPlayer != null)
         {
             myPlayerMovement = playerGui.myPlayer.GetComponent<PlayerMovement>();
         }
