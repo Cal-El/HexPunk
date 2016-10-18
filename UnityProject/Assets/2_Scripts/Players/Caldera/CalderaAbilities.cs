@@ -324,4 +324,33 @@ public class CalderaAbilities : ClassAbilities {
                 base.UseAbility(a);
         }
     }
+    public override bool IsInvulnerable()
+    {
+        return isMist || isActuallyGod;
+    }
+    public override void GainXP(float xp)
+    {
+        float preLevel = level;
+        base.GainXP(xp);
+        if (preLevel < 1 && level >= 1)
+        {
+            Lavaball.energyAdded *= 1.3f;
+        }
+        else if (preLevel < 2 && level >= 2)
+        {
+            Eruption.range *= 1.3f;
+        }
+        else if (preLevel < 3 && level >= 3)
+        {
+            Fireball.energyAdded *= 0.8f;
+        }
+        else if (preLevel < 4 && level >= 4)
+        {
+            Afterburner.castingTime *= 0.4f;
+        }
+        else if (preLevel < 5 && level >= 5)
+        {
+            Fireball.baseDmg *= 2f;
+        }
+    }
 }

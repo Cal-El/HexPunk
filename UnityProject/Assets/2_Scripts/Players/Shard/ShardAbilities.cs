@@ -473,4 +473,29 @@ public class ShardAbilities : ClassAbilities {
     public override bool IsInvulnerable() {
         return isMist || isActuallyGod;
     }
+    public override void GainXP(float xp)
+    {
+        float preLevel = level;
+        base.GainXP(xp);
+        if (preLevel < 1 && level >= 1)
+        {
+            Icefield.range *= 1.3f;
+        }
+        else if (preLevel < 2 && level >= 2)
+        {
+            IceRam.baseDmg *= 1.5f;
+        }
+        else if (preLevel < 3 && level >= 3)
+        {
+            IceLance.energyAdded *= 1.2f;
+        }
+        else if (preLevel < 4 && level >= 4)
+        {
+            MistCloud.energyCost *= 0.8f;
+        }
+        else if (preLevel < 5 && level >= 5)
+        {
+            IceLance.baseDmg *= 1.3f;
+        }
+    }
 }
