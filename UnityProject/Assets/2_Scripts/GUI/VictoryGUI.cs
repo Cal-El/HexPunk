@@ -7,8 +7,10 @@ using UnityStandardAssets.Network;
 
 public class VictoryGUI : NetworkBehaviour {
 
+    public PlayerGUICanvas myGui;
+
     public void ReturnToMenu()
     {
-        FindObjectOfType<LobbyManager>().ReturnToLobby();
+        myGui.myPlayer.GetComponent<PlayerCommands>().ReturnToMenu();
     }
 }

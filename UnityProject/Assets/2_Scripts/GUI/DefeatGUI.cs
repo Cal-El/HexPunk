@@ -7,14 +7,10 @@ using UnityStandardAssets.Network;
 
 public class DefeatGUI : NetworkBehaviour
 {
+    public PlayerGUICanvas myGui;
+
     public void TryAgain()
     {
-        ReturnToLobby();
-    }
-
-    [ServerCallback]
-    void ReturnToLobby()
-    {
-        LobbyManager.s_Singleton.ReturnToLobby();
+        myGui.myPlayer.GetComponent<PlayerCommands>().ReturnToMenu();
     }
 }

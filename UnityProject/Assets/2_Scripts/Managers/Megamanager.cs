@@ -52,6 +52,17 @@ public class Megamanager : NetworkBehaviour {
         }
     }
 
+    public void ResetManager()
+    {
+        players = new ClassAbilities[0];
+        deadPlayers = 0;
+        characters.Clear();
+        SceneHasChanged = false;
+        roomTree = new RoomConnection[0];
+        allPlayersInList = false;
+        enabled = false;
+    }
+
     [ServerCallback]
     public void AddDeadPlayer(int value)
     {

@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
+using UnityStandardAssets.Network;
+
 /// <summary>
-/// Used to send information to the local player camera.
+/// Used to send information to and from the local player camera.
 /// </summary>
 public class PlayerCommands : NetworkBehaviour {
 
@@ -65,5 +67,16 @@ public class PlayerCommands : NetworkBehaviour {
             gui.Victory = value;
             Victory = value;
         }
+    }
+
+    public void ReturnToMenu()
+    {
+        CmdReturnToLobby();
+    }
+
+    [Command]
+    void CmdReturnToLobby()
+    {
+        if(isServer) FindObjectOfType<LobbyManager>().ReturnToLobby();
     }
 }
