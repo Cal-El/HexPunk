@@ -256,7 +256,7 @@ public class EliteAIBehaviour : AIBehaviour {
         } else {
             RpcUpdateRangeAttackTimer(rangeAttack.attackTimer + Time.deltaTime);
             if (target != null) {
-                rangeTarget = Vector3.Lerp(rangeTarget, target.Position, Time.deltaTime);
+                rangeTarget = Vector3.Lerp(rangeTarget, target.Position, Time.deltaTime * 5);
                 RpcLookAt(rangeTarget);
             }
         }
