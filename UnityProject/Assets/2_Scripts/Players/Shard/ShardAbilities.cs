@@ -358,7 +358,7 @@ public class ShardAbilities : ClassAbilities {
             isMist = true;
             mistCloudEffect.enableEmission = true;
             playerRenderer.enabled = false;
-            energy -= MistCloud.energyCost;
+            energy += MistCloud.energyAdded;
         }
 
         energy -= Time.deltaTime * MistCloud.energyChargeModifier;
