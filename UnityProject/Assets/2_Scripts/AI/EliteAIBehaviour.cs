@@ -92,7 +92,7 @@ public class EliteAIBehaviour : AIBehaviour {
                         case STATES.RangedAttacking:
                             
                             animationState = STATES.RangedAttacking;
-                            ServerRangedAttack();
+                            RangeAttackingBehaviour();
                             break;
                         case STATES.Dead:
                             
@@ -183,12 +183,12 @@ public class EliteAIBehaviour : AIBehaviour {
             }
         }
     }
-
+    
+    [ServerCallback]
     private void RangeAttackingBehaviour() {
         //Target player
         if (rangeAttack.attackTimer <= 0) {
-            navAgent.enabled = false;
-            navObst.enabled = true;
+            RpcRangedNav();
 
             //Find farthest player in los
             target = null;
@@ -217,12 +217,12 @@ public class EliteAIBehaviour : AIBehaviour {
             }
             //No Target found
             if (target == null) {
-                rangeAttack.attackTimer = rangeAttack.cooldown;
-                StartChase();
+                RpcUpdateRangeAttackTimer(rangeAttack.cooldown);
+                RpcStartChase();
                 Debug.Log("No targetFound");
             } else {
-                rangeAttack.attackTimer = 0 + Time.deltaTime;
-                warningEffect.SetActive(true);
+                RpcUpdateRangeAttackTimer(Time.deltaTime);
+                RpcSetWarningEffect(true);
                 rangeTarget = target.Position;
             }
         } else if (rangeAttack.attackTimer >= rangeAttack.castingTime && target != null) {
@@ -245,39 +245,68 @@ public class EliteAIBehaviour : AIBehaviour {
                 } else if (hit.transform.tag == "Guard" || hit.transform.tag == "Trigger") { }
                 else { break; }
             }
-            beamEffect.SetActive(true);
-            warningEffect.SetActive(false);
+            RpcSetBeamEffect(true);
+            RpcSetWarningEffect(false);
             target = null;
         } else if (rangeAttack.attackTimer >= rangeAttack.castingTime + 1) {
             //Start cooldown and chase
-            beamEffect.SetActive(false);
-            rangeAttack.attackTimer = rangeAttack.cooldown;
-            StartChase();
+            RpcSetBeamEffect(false);
+            RpcUpdateRangeAttackTimer(rangeAttack.cooldown);
+            RpcStartChase();
         } else {
-            rangeAttack.attackTimer += Time.deltaTime;
+            RpcUpdateRangeAttackTimer(rangeAttack.attackTimer + Time.deltaTime);
             if (target != null) {
                 rangeTarget = Vector3.Lerp(rangeTarget, target.Position, Time.deltaTime);
-                transform.LookAt(rangeTarget);
-                transform.rotation = Quaternion.Euler(new Vector3(0, transform.rotation.eulerAngles.y, 0));
+                RpcLookAt(rangeTarget);
             }
         }
     }
 
-    [ServerCallback]
-    private void ServerRangedAttack()
+    #region Ranged networking
+
+    [ClientRpc]
+    private void RpcRangedNav()
     {
-        if(!isClient) RangeAttackingBehaviour();
-        RpcRangedAttack();
+        navAgent.enabled = false;
+        navObst.enabled = true;
     }
 
     [ClientRpc]
-    private void RpcRangedAttack()
+    private void RpcSetWarningEffect(bool active)
     {
-        RangeAttackingBehaviour();
+        warningEffect.SetActive(active);
+    }
+    
+    [ClientRpc]
+    private void RpcSetBeamEffect(bool active)
+    {
+        beamEffect.SetActive(active);
     }
 
-    private void DeadBehaviour() {
-        
+    [ClientRpc]
+    private void RpcStartChase()
+    {
+        StartChase();
+    }
+
+    [ClientRpc]
+    private void RpcLookAt(Vector3 tar)
+    {
+        transform.LookAt(tar);
+        transform.rotation = Quaternion.Euler(new Vector3(0, transform.rotation.eulerAngles.y, 0));
+    }
+
+    [ClientRpc]
+    private void RpcUpdateRangeAttackTimer(float timer)
+    {
+        rangeAttack.attackTimer = timer;
+    }
+
+    #endregion
+
+    private void DeadBehaviour()
+    {
+
     }
 
     private void StartChase() {
