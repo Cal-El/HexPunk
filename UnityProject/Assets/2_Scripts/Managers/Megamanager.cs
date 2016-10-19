@@ -138,7 +138,7 @@ public class Megamanager : NetworkBehaviour {
             roomTree[ID].UnlockConnection();
             Debug.Log("Unlocking Connection " + ID);
             if(players.Length > 1) 
-                RpcUnlockConnection(ID);
+                if(Megamanager.MM != null) Megamanager.MM.RpcUnlockConnection(ID);
         }
     }
 
@@ -148,7 +148,6 @@ public class Megamanager : NetworkBehaviour {
         if (roomTree[ID] != null)
         {
             roomTree[ID].UnlockConnection();
-            Debug.Log("Unlocking Connection " + ID);
         }
     }
 

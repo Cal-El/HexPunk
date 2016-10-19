@@ -13,6 +13,7 @@ public class SceneChangeTrigger : NetworkBehaviour {
     private int stage = 0;
     [SerializeField]
     Sprite image;
+    private bool hasBeenQueued = false;
 
 	// Use this for initialization
 	void Start ()
@@ -25,7 +26,11 @@ public class SceneChangeTrigger : NetworkBehaviour {
         if(stage == 1 && startTime != 0 && Time.time > startTime + timeToChange)
         {
             stage = 2;
-            QueueSceneChange();
+            if (!hasBeenQueued)
+            {
+                QueueSceneChange();
+                hasBeenQueued = true;
+            }
         }
     }
 

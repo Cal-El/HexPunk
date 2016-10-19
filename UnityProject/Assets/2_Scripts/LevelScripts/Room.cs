@@ -53,7 +53,12 @@ public class Room : NetworkBehaviour {
                 roomActive = true;
                 foreach (Spawner s in spawners)
                 {
-                    Character c = s.ActivateSpawner(roomAlignment).GetComponent<Character>();
+                    Character c = null;
+                    GameObject spawner = s.ActivateSpawner(roomAlignment);
+                    if(spawner != null)
+                    {
+                        c = spawner.GetComponent<Character>();
+                    }
                     if (c != null)
                     {
                         enemys.Add(c);
@@ -63,7 +68,8 @@ public class Room : NetworkBehaviour {
 
             if (message.Length > 0)
             {
-                FindObjectOfType<TextMessage>().SendText(message);
+                var text = FindObjectOfType<TextMessage>();
+                if(text != null) text.SendText(message);
             }
 
             if (ads != null)
