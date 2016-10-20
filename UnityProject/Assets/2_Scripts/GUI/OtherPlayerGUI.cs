@@ -17,6 +17,22 @@ public class OtherPlayerGUI : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        Setup();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (player == null) return;
+        if(playerStats == null)
+        {
+            Setup();
+        }
+        healthBar.fillAmount = playerStats.health / 100;
+    }
+
+    void Setup()
+    {
         if (player == null) return;
         playerStats = player.GetComponent<ClassAbilities>();
 
@@ -36,13 +52,5 @@ public class OtherPlayerGUI : MonoBehaviour
         {
             icon.sprite = sprites[3];
         }
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (player == null) return;
-        healthBar.fillAmount = playerStats.health / 100;
     }
 }

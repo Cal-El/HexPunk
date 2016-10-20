@@ -14,11 +14,9 @@ public class PlayerGUICanvas : MonoBehaviour
 
     public GameObject betrayerCanvas;
     private bool isBetrayer = false;
-    private OtherPlayerGUI[] guiList = new OtherPlayerGUI[3];
 
-    public GameObject victoryGUI;
+    public GameObject endGameGUI;
     private bool victory = false;
-    public GameObject defeatGUI;
     private bool defeat = false;
     public ScreenFader fader;
     public GameObject helpGUI;
@@ -57,10 +55,6 @@ public class PlayerGUICanvas : MonoBehaviour
         visHP = playerStats.health;
         visMaxHp = playerStats.healthMax;
         visEP = playerStats.energy;
-
-        guiList = new[] { betrayerCanvas.transform.FindChild("OtherPlayerGUI1").GetComponent<OtherPlayerGUI>(),
-                    betrayerCanvas.transform.FindChild("OtherPlayerGUI2").GetComponent<OtherPlayerGUI>(),
-                    betrayerCanvas.transform.FindChild("OtherPlayerGUI3").GetComponent<OtherPlayerGUI>() };
     }
 
     private void SetHUDs(string playerName, string className)
@@ -173,37 +167,22 @@ public class PlayerGUICanvas : MonoBehaviour
 
         set
         {
-            SetBetrayerGUI();
-            betrayerCanvas.SetActive(value);
-            if (myHud != null)
+            if (value)
             {
-                if (myHud.icon != null)
-                {
-                    myHud.icon.sprite = myHud.betrayerIcon;
-                }
+                var betrayGUI = Instantiate(betrayerCanvas) as GameObject;
+                betrayGUI.transform.SetParent(transform);
+                betrayGUI.transform.SetSiblingIndex(myHud.transform.GetSiblingIndex() + 1);
+                betrayGUI.GetComponent<RectTransform>().anchoredPosition3D = Vector3.zero;
+                betrayGUI.transform.rotation = new Quaternion();
+                betrayGUI.transform.localScale = Vector3.one;
+                var script = betrayGUI.GetComponent<BetrayerGUI>();
+                script.myPlayer = myPlayer;
+                script.SetBetrayerGUI();
+                myHud.icon.sprite = myHud.betrayerIcon;
             }
             isBetrayer = value;
         }
-    }
-
-    private void SetBetrayerGUI()
-    {
-        var players = GameObject.FindGameObjectsWithTag("Player");
-        
-        var x = 0;
-        foreach (var player in players)
-        {
-            if (player != null && player != myPlayer)
-            {
-                if (guiList[x] != null)
-                {
-                    if (guiList[x].player == null)
-                        guiList[x].player = player;
-                    if (x < players.Length - 1) x++;
-                }
-            }
-        }
-    }
+    }    
 
     public bool Victory
     {
@@ -214,7 +193,8 @@ public class PlayerGUICanvas : MonoBehaviour
 
         set
         {
-            victoryGUI.SetActive(value);
+            endGameGUI.SetActive(value);
+            endGameGUI.GetComponent<EndGameGUI>().Victory();
             victory = value;
         }
     }
@@ -228,7 +208,8 @@ public class PlayerGUICanvas : MonoBehaviour
 
         set
         {
-            defeatGUI.SetActive(value);
+            endGameGUI.SetActive(value);
+            endGameGUI.GetComponent<EndGameGUI>().Defeat();
             defeat = value;
         }
     }
