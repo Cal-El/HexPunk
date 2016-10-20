@@ -189,6 +189,7 @@ public class AethersmithAbilities : ClassAbilities {
                 Character c = hit.transform.GetComponent<Character>();
                 if (c != null) {
                     energy += 5;
+                    energy = Mathf.Clamp(energy, 0, energyMax);
                     c.Knockback(transform.forward * HammerSwing.knockbackStr, 1);
                     c.TakeDmg(HammerSwing.baseDmg, DamageType.Standard, playerStats);
                     

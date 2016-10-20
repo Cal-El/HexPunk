@@ -9,10 +9,9 @@ public class ScreenFader : MonoBehaviour {
     private bool toBlack;
     private Image im;
     private float delayTimer = 0;
+    private bool hasEnabled = false;
 
     public PlayerMovement myPlayerMovement;
-    private bool hasEnabled;
-    private int currentStage;
 
     // Use this for initialization
     void Start () {
@@ -26,25 +25,20 @@ public class ScreenFader : MonoBehaviour {
 
         if (Time.time < finishTime)
         {
-            //Disable player
-            if (myPlayerMovement.ControlEnabled)
-            {
-                myPlayerMovement.ControlEnabled = false;
-            }
-
             if (toBlack)
-                im.color = new Color(1, 1, 1, (Time.time - startTime) / (finishTime - startTime));
+                im.color = new Color(1, 1, 1, (Time.time - startTime) / (finishTime - startTime) * 5);
             else
-                im.color = new Color(1, 1, 1, 1 - (Time.time - startTime) / (finishTime - startTime));
+                im.color = new Color(1, 1, 1, 1 - (Time.time - startTime) / (finishTime - startTime) * 5);
         }
         else
         {
-            //Enable player
-            if (!hasEnabled)
+            if (!toBlack && !hasEnabled)
             {
-                currentStage++;
-                hasEnabled = true;
-                if(currentStage % 2 == 0 && !myPlayerMovement.ControlEnabled) myPlayerMovement.ControlEnabled = true;
+                if (myPlayerMovement != null)
+                {
+                    myPlayerMovement.ControlEnabled = true;
+                    hasEnabled = true;
+                }
             }
         }
 
@@ -68,11 +62,15 @@ public class ScreenFader : MonoBehaviour {
             im.sprite = _img;
         }
 
-        hasEnabled = false;
-
         startTime = Time.time;
         finishTime = startTime + _timeToFade;
         toBlack = _toBlack;
+
+        if (myPlayerMovement != null && toBlack)
+        {
+            myPlayerMovement.ControlEnabled = false;
+            hasEnabled = false;
+        }
     }
 
     void FindLocalPlayerMovement()

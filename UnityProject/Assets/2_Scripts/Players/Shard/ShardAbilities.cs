@@ -255,6 +255,7 @@ public class ShardAbilities : ClassAbilities {
             currentIcicle.transform.localScale += Vector3.one * 0.01f;
             icicleScript.damage += IceLance.baseDmg * Time.deltaTime * iceLanceDamageMod;
             energy += Time.deltaTime * IceLance.energyChargeModifier;
+            energy = Mathf.Clamp(energy, 0, energyMax);
         }
 
     }
@@ -288,6 +289,7 @@ public class ShardAbilities : ClassAbilities {
         growthTimer = Time.time + growthWindow;
 
         energy += IceLance.energyAdded;
+        energy = Mathf.Clamp(energy, 0, energyMax);
     }
 
     [Command]
@@ -345,6 +347,7 @@ public class ShardAbilities : ClassAbilities {
         }
 
         energy += Icefield.energyAdded;
+        energy = Mathf.Clamp(energy, 0, energyMax);
     }
 
     #endregion

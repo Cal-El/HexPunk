@@ -44,32 +44,41 @@ public class Room : NetworkBehaviour {
             }
         }
     }
-        
+    
+    [ServerCallback]
     public void UnlockRoom() {
-        if (!roomUnlocked) {            
-            if (isServer)
+        if (!roomUnlocked) {
+            roomUnlocked = true;
+            roomActive = true;
+            foreach (Spawner s in spawners)
             {
-                roomUnlocked = true;
-                roomActive = true;
-                foreach (Spawner s in spawners)
+                Character c = null;
+                GameObject spawner = s.ActivateSpawner(roomAlignment);
+                if(spawner != null)
                 {
-                    Character c = s.ActivateSpawner(roomAlignment).GetComponent<Character>();
-                    if (c != null)
-                    {
-                        enemys.Add(c);
-                    }
+                    c = spawner.GetComponent<Character>();
+                }
+                if (c != null)
+                {
+                    enemys.Add(c);
                 }
             }
+            RpcSendTextAndPlayAds();
+        }
+    }
 
-            if (message.Length > 0)
-            {
-                FindObjectOfType<TextMessage>().SendText(message);
-            }
+    [ClientRpc]
+    void RpcSendTextAndPlayAds()
+    {
+        if (message.Length > 0)
+        {
+            var text = FindObjectOfType<TextMessage>();
+            if (text != null) text.SendText(message);
+        }
 
-            if (ads != null)
-            {
-                ads.Play();
-            }
+        if (ads != null)
+        {
+            ads.Play();
         }
     }
 

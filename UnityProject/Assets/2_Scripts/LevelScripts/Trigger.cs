@@ -14,7 +14,7 @@ public class Trigger : MonoBehaviour {
                 foreach (MeleeAIBehaviour enemy in FindObjectsOfType<MeleeAIBehaviour>())
                     enemy.ReceiveMessage(triggerMessage);
             else if (triggerType == TYPES.Door)
-                Megamanager.MM.UnlockConnection(connectionID);
+                if(Megamanager.MM != null) Megamanager.MM.UnlockConnection(connectionID);
             Destroy(this.gameObject);
         }
     }
