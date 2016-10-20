@@ -26,9 +26,9 @@ public class ScreenFader : MonoBehaviour {
         if (Time.time < finishTime)
         {
             if (toBlack)
-                im.color = new Color(1, 1, 1, (Time.time - startTime) / (finishTime - startTime));
+                im.color = new Color(1, 1, 1, (Time.time - startTime) / (finishTime - startTime) * 5);
             else
-                im.color = new Color(1, 1, 1, 1 - (Time.time - startTime) / (finishTime - startTime));
+                im.color = new Color(1, 1, 1, 1 - (Time.time - startTime) / (finishTime - startTime) * 5);
         }
         else
         {

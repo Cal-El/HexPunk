@@ -37,8 +37,20 @@ public class SceneChangeTrigger : NetworkBehaviour {
     void OnTriggerEnter(Collider col)
     {
         if (col.gameObject.tag == "Player" && stage == 0) {
-            Activate();
+            ServerActivate();
         }
+    }
+
+    [ServerCallback]
+    void ServerActivate()
+    {
+        RpcActivate();
+    }
+
+    [ClientRpc]
+    void RpcActivate()
+    {
+        Activate();
     }
 
     void Activate() {

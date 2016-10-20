@@ -435,7 +435,7 @@ namespace UnityStandardAssets.Network
 
         public void ReturnToLobby()
         {
-            if(client.connection.connectionId == 0) ServerReturnToLobby();
+            if (client.connection.connectionId == 0) ServerReturnToLobby();
             playerObjects.Clear();
         }
 

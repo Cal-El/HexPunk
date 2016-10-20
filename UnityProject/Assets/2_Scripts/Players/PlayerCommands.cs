@@ -21,12 +21,14 @@ public class PlayerCommands : NetworkBehaviour {
     void Start()
     {
         var movement = gameObject.GetComponent<PlayerMovement>();
-        if(movement != null) playerCamera = movement.playerCamera;
+        if (!isLocalPlayer) return;
+        if (movement != null) playerCamera = movement.playerCamera;
         if(playerCamera != null) gui = playerCamera.GetComponentInChildren<PlayerGUICanvas>();
     }
 	
 	// Update is called once per frame
 	void Update () {
+        if (!isLocalPlayer) return;
         if (playerCamera == null)
             playerCamera = gameObject.GetComponent<PlayerMovement>().playerCamera;
         if (gui == null)
@@ -47,8 +49,8 @@ public class PlayerCommands : NetworkBehaviour {
         if (isLocalPlayer)
         {
             if(gui != null) gui.IsBetrayer = value;
-            IsBetrayer = value;
         }
+        IsBetrayer = value;
     }
 
     private void OnDefeat(bool value)
@@ -56,8 +58,8 @@ public class PlayerCommands : NetworkBehaviour {
         if (isLocalPlayer)
         {
             gui.Defeat = value;
-            Defeat = value;
         }
+        Defeat = value;
     }
 
     private void OnVictory(bool value)
@@ -65,8 +67,8 @@ public class PlayerCommands : NetworkBehaviour {
         if (isLocalPlayer)
         {
             gui.Victory = value;
-            Victory = value;
         }
+        Victory = value;
     }
 
     public void ReturnToMenu()
