@@ -11,6 +11,7 @@ public class MainMenuManager : MonoBehaviour {
     private MENUSTATES currState = MENUSTATES.MainMenu;
     public GameObject lobbyManager;
     private string startScene;
+    public RectTransform CreditsScreen;
 
     [System.Serializable]
     public class MenuElement {
@@ -120,6 +121,9 @@ public class MainMenuManager : MonoBehaviour {
             m.ChangeState(currState);
         }
     }
+    public void Credits() {
+        CreditsScreen.gameObject.SetActive(true);
+    }
 
     public void Back() {
         currState = MENUSTATES.MainMenu;
@@ -130,5 +134,9 @@ public class MainMenuManager : MonoBehaviour {
 
     public void Quit() {
         Application.Quit();
+    }
+    
+    public static MENUSTATES GetState() {
+        return singleton.currState;
     }
 }

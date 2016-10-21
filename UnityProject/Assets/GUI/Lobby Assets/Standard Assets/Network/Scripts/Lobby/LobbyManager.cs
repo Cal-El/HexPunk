@@ -65,6 +65,7 @@ namespace UnityStandardAssets.Network
 
         [Tooltip("0-Menu\n1-Conduit\n2-Aethersmith\n3-Caldera\n4-Shard")]
         public Texture2D[] cursors;
+        private Canvas canv;
 
         void Start()
         {
@@ -73,9 +74,16 @@ namespace UnityStandardAssets.Network
             currentPanel = mainMenuPanel;
 
             backButton.gameObject.SetActive(false);
-            GetComponent<Canvas>().enabled = true;
+            canv = GetComponent<Canvas>();
+            canv.enabled = true;
 
             DontDestroyOnLoad(gameObject);
+        }
+
+        void Update() {
+            if(canv != null && canv.enabled == true && canv.worldCamera == null) {
+                canv.worldCamera = FindObjectOfType<Camera>();
+            }
         }
 
         private void ChangeToLobbyScene(NetworkConnection conn)
